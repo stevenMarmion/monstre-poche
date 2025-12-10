@@ -1,62 +1,133 @@
 @startuml
 
+class Combat {
+    -joueur1 : Joueur
+    -joueur2 : Joueur
+    -tourActuel : Joueur
 
-class Jeu{
-    + nombreTours
- public static void main jouer()
+    +static main(String[] args) : void
+
+    +demarrerCombat() : void
+    +selectionnerMonstre(Joueur joueur) : void
+    +selectionnerAttaque(Joueur joueur, Monstre monstre) : void
+    +demarreTour() : void
+    +executerTour() : void
+    +estCombatTermine() : boolean
 }
 
 class Joueur{
-    + enAttenteAction : boolean
-    + monstres: ArrayList<Monstre>
+    -enAttenteAction : boolean
+    -monstres: ArrayList<Monstre>
+    -objets : ArrayList<Objet>
+    -monstreActuel: Monstre
+    -nomJoueur : String
+
+    +choisirAttaque() : void
+    +choisirObjet() : void
+    +changerMonstre() : void
+
+    +sontMonstresMorts() : boolean
 }
 
 abstract class Type {
-    -label
+    #label : String
+    #fortContre : Type
+    #faibleContre : Type
 }
 
+class Eau extends Type{
+    -probabiliteInnondation : double
+    -probabiliteFaireChuter : double
 
-class Normal extends Type{}
-class Eau extends Type{}
-class Foudre extends Type{}
-class Nature extends Type{}
-
-class Plante extends Nature{}
-class Insecte extends Nature{}
-
-class Terre extends Type{}
-class Feu extends Type{}
-
-abstract class Etat {
+    +faitChuter(Monstre cible) : boolean
 }
+class Foudre extends Type{
+    -chanceParalysie : double
+
+    +paralyser(Monstre cible) : boolean
+}
+class Terre extends Type{
+    -chanceFuite : double
+
+    +fuit() : boolean
+}
+class Feu extends Type{
+    -chanceBrulure : double
+
+    +bruler(Monstre cible) : boolean
+}
+class Nature extends Type{
+    +recupereSanteur(Monstre cible) : void
+}
+class Plante extends Nature{
+    -chanceSoigner : double
+
+    +soigner(Monstre cible) : boolean
+    +supprimerEffetStatut(Monstre cible) : void
+}
+class Insecte extends Nature{
+    -chanceEmpoisonner : double
+
+    +empoisonner(Monstre cible) : boolean
+}
+
+abstract class StatutMonstre {
+    #labelStatut : String
+    #nbToursEffet : int
+    #chanceEffet : double
+
+    +decrementerToursEffet() : void
+}
+class Brule extends StatutMonstre{
+    +appliquerDegats(Monstre cible) : void
+}
+class Mouille extends StatutMonstre{
+    +glisser() : boolean
+}
+class Paralyse extends StatutMonstre{
+    +rateAttaque() : double
+    +estSortieParalysie() : boolean
+}
+class Empoisonne extends StatutMonstre{
+    +appliquerDegats(Monstre cible) : void
+}
+class Normal extends StatutMonstre{}
 
 class Monstre {
-    - type: Type
+    -type: Type
     -statut: StatutMonstre
     -attaques: ArrayList<Attaque>
+    -nomMonstre
     -pointsDeVie
     -attaque
     -defense
     -vitesse
 
     +attaquer()
+    +getStatut() : StatutMonstre
+    +setStatut(StatutMonstre statut)
 }
 
-
-abstract class StatutMonstre {
-
+class Attaque {
+    -nomAttaque : String
+    -typeAttaque : Type
+    -nbutilisations : int
+    -puissanceAttaque : int
+    -probabiliteEchec : double
 }
 
-class Brule extends StatutMonstre{}
-class Inonde extends StatutMonstre{}
-class Paralyse extends StatutMonstre{}
-class Normal extends StatutMonstre{}
+class Objet {
+    #nomObjet : String
+    
+    +abstract utiliserObjet(Monstre cible) : void
+}
 
-class Attaque extends Type{
-    -nom
-    -nbutilisations
-    -puissanceAttaque
-    -probabiliteEchec
+class Potion extends Objet {
+    +utiliserObjet(Monstre cible) : void
+}
+
+class Medicament extends Objet {
+    +utiliserObjet(Monstre cible) : void
 }
 
 
