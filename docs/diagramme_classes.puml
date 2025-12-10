@@ -1,0 +1,209 @@
+@startuml
+
+
+class Jeu{
+    + nombreTours
+ public static void main jouer()
+}
+
+class Joueur{
+    + enAttenteAction : boolean
+    + monstres: ArrayList<Monstre>
+}
+
+abstract class Type {
+    -label
+}
+
+
+class Normal extends Type{}
+class Eau extends Type{}
+class Foudre extends Type{}
+class Nature extends Type{}
+
+class Plante extends Nature{}
+class Insecte extends Nature{}
+
+class Terre extends Type{}
+class Feu extends Type{}
+
+abstract class Etat {
+}
+
+class Monstre {
+    - type: Type
+    -statut: StatutMonstre
+    -attaques: ArrayList<Attaque>
+    -pointsDeVie
+    -attaque
+    -defense
+    -vitesse
+
+    +attaquer()
+}
+
+
+abstract class StatutMonstre {
+
+}
+
+class Brule extends StatutMonstre{}
+class Inonde extends StatutMonstre{}
+class Paralyse extends StatutMonstre{}
+class Normal extends StatutMonstre{}
+
+class Attaque extends Type{
+    -nom
+    -nbutilisations
+    -puissanceAttaque
+    -probabiliteEchec
+}
+
+
+
+
+
+
+
+
+
+
+' Define packages
+package "pootd2" {
+    class ExplorerApp {
+        +main(String[] args)
+    }
+}
+
+package "pootd2.commands" {
+    abstract class Command {
+        +doCommand(ExplorerController explorerController) : String
+    }
+
+    class ChangeDirectoryCommand extends Command {
+        -String args
+        +ChangeDirectoryCommand(String args)
+        +getArgs() : String
+        +doCommand(ExplorerController explorerController) : String
+    }
+
+    class MakeDirectoryCommand extends Command {
+        -String args
+        +MakeDirectoryCommand(String args)
+        +getArgs() : String
+        +doCommand(ExplorerController explorerController) : String
+    }
+
+    class TouchCommand extends Command {
+        -String args
+        +TouchCommand(String args)
+        +getArgs() : String
+        +doCommand(ExplorerController explorerController) : String
+    }
+
+    class ErrorCommand extends Command {
+        -String args
+        +ErrorCommand(String args)
+        +getArgs() : String
+        +doCommand(ExplorerController explorerController) : String
+    }
+
+    class ListCommand extends Command {
+        +doCommand(ExplorerController explorerController) : String
+    }
+}
+
+package "pootd2.controllers" {
+    interface IExplorerController {
+        +executeCommand(String commandStr) : String
+    }
+
+    class ExplorerController implements IExplorerController {
+        -FolderInode currentDirectory
+        -ICommandParser parser
+        +ExplorerController()
+        +getCurrentDirectory() : FolderInode
+        +setCurrentDirectory(FolderInode newCurrentDirectory)
+        +executeCommand(String commandStr) : String
+    }
+}
+
+package "pootd2.interfaces" {
+    interface IUserInterface {
+        +run()
+    }
+
+    abstract class AbstractInterface {
+        #IExplorerController controller
+        +AbstractInterface(IExplorerController controller)
+    }
+
+    class HttpInterface extends AbstractInterface implements IUserInterface{
+        -HttpServer server
+        -ExecutorService threadPool
+        -boolean serverShouldClose
+        +HttpInterface(IExplorerController controller)
+        +run()
+        +handle(HttpExchange exchange)
+    }
+
+    class TextInterface extends AbstractInterface implements IUserInterface {
+        -IExplorerController explorerController
+        +TextInterface(IExplorerController explorerController)
+        +run()
+    }
+}
+
+interface HttpHandler {}
+
+package "pootd2.models" {
+    abstract class Inode {
+        -String name
+        #FolderInode parent
+        +Inode(String name)
+        +getName() : String
+        +getParent() : FolderInode
+        +getSize() : int {abstract}
+    }
+
+    class FolderInode extends Inode {
+        -ArrayList<Inode> childrens
+        +FolderInode(String name)
+        +addInode(Inode inode)
+        +getChildrens() : ArrayList<Inode>
+        +getSize() : int
+    }
+
+    class FileInode extends Inode {
+        -int size
+        +FileInode(String name)
+        +getSize() : int
+    }
+}
+
+package "pootd2.parsers" {
+    interface ICommandParser {
+        +parse(String command) : Command
+    }
+
+    class UnixLikeCommandParser implements ICommandParser {
+        +parse(String command) : Command
+        -splitArguments(String command) : String[]
+        -mapCommand(String[] listArguments) : Command
+    }
+}
+
+
+
+
+ExplorerController --> FolderInode
+ExplorerController --> ICommandParser
+AbstractInterface --> IExplorerController
+HttpInterface --> HttpServer
+HttpInterface ..|> HttpHandler
+HttpInterface --> ExecutorService
+FolderInode --> Inode
+UnixLikeCommandParser --> Command
+
+
+@enduml
