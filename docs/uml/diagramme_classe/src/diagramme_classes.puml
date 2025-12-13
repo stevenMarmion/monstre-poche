@@ -15,61 +15,133 @@ Combat --> Joueur : -joueur1
 Combat --> Joueur : -joueur2
 Combat --> Joueur : -tourActuel
 
-class Joueur{
-    -enAttenteAction : boolean
+class Joueur {
     -nomJoueur : String
-
+    -enAttenteAtion : boolean
+    
+    +Joueur(String nomJoueur)
+    +getNomJoueur() : String
+    +isEnAttenteAtion() : boolean
+    +getMonstres() : Monstre[]
+    +getMonstreActuel() : Monstre
+    +setNomJoueur(String nomJoueur) : void
+    +setEnAttenteAtion(boolean enAttenteAtion) : void
+    +setMonstres(Monstre[] monstres) : void
+    +setMonstreActuel(Monstre monstreActuel) : void
+    +ajouterMonstre(Monstre monstre) : void
     +choisirAttaque() : void
     +choisirObjet() : void
     +changerMonstre() : void
-
     +sontMonstresMorts() : boolean
 }
 
-Joueur --> Monstre : -monstres[]
-Joueur --> Objet : -objets[]
-Joueur --> Monstre : -monstreActuel
+class Monstre {
+    -nomMonstre : String
+    -pointsDeVie : int
+    -attaque : int
+    -defense : int
+    -vitesse : int
+    
+    +Monstre(String nomMonstre, int pointsDeVie, int attaque, int defense, int vitesse, ArrayList<Attaque> attaques, Type typeMonstre)
+    +getNomMonstre() : String
+    +getPointsDeVie() : int
+    +getAttaque() : int
+    +getDefense() : int
+    +getVitesse() : int
+    +getAttaques() : ArrayList<Attaque>
+    +getTypeMonstre() : Type
+    +getStatut() : StatutMonstre
+    +setNomMonstre(String nomMonstre) : void
+    +setPointsDeVie(int pointsDeVie) : void
+    +setAttaque(int attaque) : void
+    +setDefense(int defense) : void
+    +setVitesse(int vitesse) : void
+    +setAttaques(ArrayList<Attaque> attaques) : void
+    +setStatut(StatutMonstre statut) : void
+    +setTypeMonstre(Type typeMonstre) : void
+    +attaquer(Monstre cible) : void
+}
+
+class Attaque {
+    -nomAttaque : String
+    -nbUtilisations : int
+    -puissanceAttaque : int
+    -probabiliteEchec : double
+    
+    +Attaque(String nomAttaque, int nbUtilisations, int puissanceAttaque, double probabiliteEchec)
+    +getNomAttaque() : String
+    +getNbUtilisations() : int
+    +getPuissanceAttaque() : int
+    +getProbabiliteEchec() : double
+    +setNomAttaque(String nomAttaque) : void
+    +setNbUtilisations(int nbUtilisations) : void
+    +setPuissanceAttaque(int puissanceAttaque) : void
+    +setProbabiliteEchec(double probabiliteEchec) : void
+}
 
 abstract class Type {
-    #label : String
+    #labelType : String
 }
 
-Type --> Type : #fortContre
-Type --> Type : #faibleContre
-
-class Eau extends Type{
+class Eau extends Type {
     -probabiliteInnondation : double
     -probabiliteFaireChuter : double
-
+    
+    +Eau()
+    +getProbabiliteInnondation() : double
+    +getProbabiliteFaireChuter() : double
+    +setProbabiliteInnondation(double probabiliteInnondation) : void
+    +setProbabiliteFaireChuter(double probabiliteFaireChuter) : void
     +faitChuter(Monstre cible) : boolean
 }
-class Foudre extends Type{
-    -chanceParalysie : double
 
-    +paralyser(Monstre cible) : boolean
-}
-class Terre extends Type{
-    -chanceFuite : double
-
-    +fuit() : boolean
-}
-class Feu extends Type{
+class Feu extends Type {
     -chanceBrulure : double
-
+    
+    +Feu()
+    +getChanceBrulure() : double
+    +setChanceBrulure(double chanceBrulure) : void
     +bruler(Monstre cible) : boolean
 }
-class Nature extends Type{
-    +recupereSanteur(Monstre cible) : void
+
+class Foudre extends Type {
+    -chanceParalysie : double
+    
+    +Foudre()
+    +getChanceParalysie() : double
+    +setChanceParalysie(double chanceParalysie) : void
+    +paralyser(Monstre cible) : boolean
 }
-class Plante extends Nature{
+
+class Terre extends Type {
+    -chanceFuite : double
+    
+    +Terre()
+    +getChanceFuite() : double
+    +setChanceFuite(double chanceFuite) : void
+    +fuit() : boolean
+}
+
+class Nature extends Type {
+    +recupererSante(Monstre cible) : void
+}
+
+class Plante extends Nature {
     -chanceSoigner : double
-
-    +soigner(Monstre cible) : boolean
-    +supprimerEffetStatut(Monstre cible) : void
+    
+    +Plante()
+    +getChanceSoigner() : double
+    +setChanceSoigner(double chanceSoigner) : void
+    +soigner() : boolean
+    +supprimerEffetStatut() : void
 }
-class Insecte extends Nature{
-    -chanceEmpoisonner : double
 
+class Insecte extends Nature {
+    -chanceEmpoisonner : double
+    
+    +Insecte()
+    +getChanceEmpoisonner() : double
+    +setChanceEmpoisonner(double chanceEmpoisonner) : void
     +empoisonner(Monstre cible) : boolean
 }
 
@@ -77,208 +149,105 @@ abstract class StatutMonstre {
     #labelStatut : String
     #nbToursEffet : int
     #chanceEffet : double
-
-    +decrementerToursEffet() : void
-}
-class Brule extends StatutMonstre{
-    +appliquerDegats(Monstre cible) : void
-}
-class Mouille extends StatutMonstre{
-    +glisser() : boolean
-}
-class Paralyse extends StatutMonstre{
-    +rateAttaque() : double
-    +estSortieParalysie() : boolean
-}
-class Empoisonne extends StatutMonstre{
-    +appliquerDegats(Monstre cible) : void
-}
-class Normal extends StatutMonstre{}
-
-class Monstre {
-    -nomMonstre : String
-    -pointsDeVie : int
-    -attaque : int
-    -defense : int 
-    -vitesse : int
-
-    +attaquer(Monstre cible) : void
-    +getStatut() : StatutMonstre
-    +setStatut(StatutMonstre statut) : void
-}
-
-Monstre --> Type : -typeMonstre
-Monstre --> StatutMonstre : -statut
-Monstre --> Attaque : -attaques[]
-
-class Attaque {
-    -nomAttaque : String
-    -nbutilisations : int
-    -puissanceAttaque : int
-    -probabiliteEchec : double
-}
-
-Attaque --> Type : -typeAttaque
-
-class abstract Objet {
-    #nomObjet : String
     
-    +abstract utiliserObjet(Monstre cible) : void
+    +decrementerNbToursEffet() : void
 }
 
-class Potion extends Objet {
-    +utiliserObjet(Monstre cible) : void
+class Brule extends StatutMonstre {
+    +Brule()
+    +appliquerDegats(Monstre cible) : void
 }
 
-class Medicament extends Objet {
-    +utiliserObjet(Monstre cible) : void
+class Mouille extends StatutMonstre {
+    +Mouille()
+    +glisser(Monstre cible) : boolean
 }
 
+class Paralyse extends StatutMonstre {
+    +Paralyse()
+    +rateAttaque(Monstre cible) : double
+    +estSortieParalysie(Monstre cible) : void
+}
 
+class Empoisonne extends StatutMonstre {
+    +Empoisonne()
+    +appliquerDegats(Monstre cible) : void
+}
 
+class Normal extends StatutMonstre {
+    +Normal()
+}
 
+abstract class Objet {
+    #nomObjet : String
+}
 
+abstract class Potion extends Objet {
+    +Potion(String nomObjet)
+    +{abstract} utiliserPotion(Monstre cible) : void
+}
 
+class PotionSante extends Potion {
+    -pointsDeSoin : int
+    
+    +PotionSante(String nomObjet, int pointsDeSoin)
+    +getPointsDeSoin() : int
+    +setPointsDeSoin(int pointsDeSoin) : void
+    +utiliserPotion(Monstre cible) : void
+}
 
+class PotionDegat extends Potion {
+    -pointsDeDegat : int
+    
+    +PotionDegat(String nomObjet, int pointsDeDegat)
+    +getPointsDeDegat() : int
+    +setPointsDeDegat(int pointsDeDegat) : void
+    +utiliserPotion(Monstre cible) : void
+}
 
+class PotionVitesse extends Potion {
+    -pointsDeVitesse : int
+    
+    +PotionVitesse(String nomObjet, int pointsDeVitesse)
+    +getPointsDeVitesse() : int
+    +setPointsDeVitesse(int pointsDeVitesse) : void
+    +utiliserPotion(Monstre cible) : void
+}
 
+abstract class Medicament extends Objet {
+    +Medicament(String nomObjet)
+    +{abstract} utiliserMedicament(Monstre cible) : void
+}
 
-' ' Define packages
-' package "pootd2" {
-'     class ExplorerApp {
-'         +main(String[] args)
-'     }
-' }
+class MedicamentAntiBrulure extends Medicament {
+    +MedicamentAntiBrulure(String nomObjet)
+    +utiliserMedicament(Monstre cible) : void
+}
 
-' package "pootd2.commands" {
-'     abstract class Command {
-'         +doCommand(ExplorerController explorerController) : String
-'     }
+class MedicamentAntiInnondation extends Medicament {
+    +MedicamentAntiInnondation(String nomObjet)
+    +utiliserMedicament(Monstre cible) : void
+}
 
-'     class ChangeDirectoryCommand extends Command {
-'         -String args
-'         +ChangeDirectoryCommand(String args)
-'         +getArgs() : String
-'         +doCommand(ExplorerController explorerController) : String
-'     }
+class MedicamentAntiParalysie extends Medicament {
+    +MedicamentAntiParalysie(String nomObjet)
+    +utiliserMedicament(Monstre cible) : void
+}
 
-'     class MakeDirectoryCommand extends Command {
-'         -String args
-'         +MakeDirectoryCommand(String args)
-'         +getArgs() : String
-'         +doCommand(ExplorerController explorerController) : String
-'     }
+class MedicamentAntiPoison extends Medicament {
+    +MedicamentAntiPoison(String nomObjet)
+    +utiliserMedicament(Monstre cible) : void
+}
 
-'     class TouchCommand extends Command {
-'         -String args
-'         +TouchCommand(String args)
-'         +getArgs() : String
-'         +doCommand(ExplorerController explorerController) : String
-'     }
+' Relations principales
+Joueur "1" --> "0..3" Monstre : -monstres
+Joueur "1" --> "1" Monstre : -monstreActuel
+Monstre "1" --> "0..*" Attaque : -attaques
+Monstre "1" --> "1" Type : -typeMonstre
+Monstre "1" --> "0..1" StatutMonstre : -statut
 
-'     class ErrorCommand extends Command {
-'         -String args
-'         +ErrorCommand(String args)
-'         +getArgs() : String
-'         +doCommand(ExplorerController explorerController) : String
-'     }
-
-'     class ListCommand extends Command {
-'         +doCommand(ExplorerController explorerController) : String
-'     }
-' }
-
-' package "pootd2.controllers" {
-'     interface IExplorerController {
-'         +executeCommand(String commandStr) : String
-'     }
-
-'     class ExplorerController implements IExplorerController {
-'         -FolderInode currentDirectory
-'         -ICommandParser parser
-'         +ExplorerController()
-'         +getCurrentDirectory() : FolderInode
-'         +setCurrentDirectory(FolderInode newCurrentDirectory)
-'         +executeCommand(String commandStr) : String
-'     }
-' }
-
-' package "pootd2.interfaces" {
-'     interface IUserInterface {
-'         +run()
-'     }
-
-'     abstract class AbstractInterface {
-'         #IExplorerController controller
-'         +AbstractInterface(IExplorerController controller)
-'     }
-
-'     class HttpInterface extends AbstractInterface implements IUserInterface{
-'         -HttpServer server
-'         -ExecutorService threadPool
-'         -boolean serverShouldClose
-'         +HttpInterface(IExplorerController controller)
-'         +run()
-'         +handle(HttpExchange exchange)
-'     }
-
-'     class TextInterface extends AbstractInterface implements IUserInterface {
-'         -IExplorerController explorerController
-'         +TextInterface(IExplorerController explorerController)
-'         +run()
-'     }
-' }
-
-' interface HttpHandler {}
-
-' package "pootd2.models" {
-'     abstract class Inode {
-'         -String name
-'         #FolderInode parent
-'         +Inode(String name)
-'         +getName() : String
-'         +getParent() : FolderInode
-'         +getSize() : int {abstract}
-'     }
-
-'     class FolderInode extends Inode {
-'         -ArrayList<Inode> childrens
-'         +FolderInode(String name)
-'         +addInode(Inode inode)
-'         +getChildrens() : ArrayList<Inode>
-'         +getSize() : int
-'     }
-
-'     class FileInode extends Inode {
-'         -int size
-'         +FileInode(String name)
-'         +getSize() : int
-'     }
-' }
-
-' package "pootd2.parsers" {
-'     interface ICommandParser {
-'         +parse(String command) : Command
-'     }
-
-'     class UnixLikeCommandParser implements ICommandParser {
-'         +parse(String command) : Command
-'         -splitArguments(String command) : String[]
-'         -mapCommand(String[] listArguments) : Command
-'     }
-' }
-
-
-
-
-' ExplorerController --> FolderInode
-' ExplorerController --> ICommandParser
-' AbstractInterface --> IExplorerController
-' HttpInterface --> HttpServer
-' HttpInterface ..|> HttpHandler
-' HttpInterface --> ExecutorService
-' FolderInode --> Inode
-' UnixLikeCommandParser --> Command
-
+' Relations entre Types (auto-association)
+Type --> Type : #faibleContre
+Type --> Type : #fortContre
 
 @enduml
