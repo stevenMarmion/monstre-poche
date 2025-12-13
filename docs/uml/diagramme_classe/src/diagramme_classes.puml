@@ -1,0 +1,284 @@
+@startuml
+
+class Combat {
+    +static main(String[] args) : void
+
+    +demarrerCombat() : void
+    +selectionnerMonstre(Joueur joueur) : void
+    +selectionnerAttaque(Joueur joueur, Monstre monstre) : void
+    +demarreTour() : void
+    +executerTour() : void
+    +estCombatTermine() : boolean
+}
+
+Combat --> Joueur : -joueur1
+Combat --> Joueur : -joueur2
+Combat --> Joueur : -tourActuel
+
+class Joueur{
+    -enAttenteAction : boolean
+    -nomJoueur : String
+
+    +choisirAttaque() : void
+    +choisirObjet() : void
+    +changerMonstre() : void
+
+    +sontMonstresMorts() : boolean
+}
+
+Joueur --> Monstre : -monstres[]
+Joueur --> Objet : -objets[]
+Joueur --> Monstre : -monstreActuel
+
+abstract class Type {
+    #label : String
+}
+
+Type --> Type : #fortContre
+Type --> Type : #faibleContre
+
+class Eau extends Type{
+    -probabiliteInnondation : double
+    -probabiliteFaireChuter : double
+
+    +faitChuter(Monstre cible) : boolean
+}
+class Foudre extends Type{
+    -chanceParalysie : double
+
+    +paralyser(Monstre cible) : boolean
+}
+class Terre extends Type{
+    -chanceFuite : double
+
+    +fuit() : boolean
+}
+class Feu extends Type{
+    -chanceBrulure : double
+
+    +bruler(Monstre cible) : boolean
+}
+class Nature extends Type{
+    +recupereSanteur(Monstre cible) : void
+}
+class Plante extends Nature{
+    -chanceSoigner : double
+
+    +soigner(Monstre cible) : boolean
+    +supprimerEffetStatut(Monstre cible) : void
+}
+class Insecte extends Nature{
+    -chanceEmpoisonner : double
+
+    +empoisonner(Monstre cible) : boolean
+}
+
+abstract class StatutMonstre {
+    #labelStatut : String
+    #nbToursEffet : int
+    #chanceEffet : double
+
+    +decrementerToursEffet() : void
+}
+class Brule extends StatutMonstre{
+    +appliquerDegats(Monstre cible) : void
+}
+class Mouille extends StatutMonstre{
+    +glisser() : boolean
+}
+class Paralyse extends StatutMonstre{
+    +rateAttaque() : double
+    +estSortieParalysie() : boolean
+}
+class Empoisonne extends StatutMonstre{
+    +appliquerDegats(Monstre cible) : void
+}
+class Normal extends StatutMonstre{}
+
+class Monstre {
+    -nomMonstre : String
+    -pointsDeVie : int
+    -attaque : int
+    -defense : int 
+    -vitesse : int
+
+    +attaquer(Monstre cible) : void
+    +getStatut() : StatutMonstre
+    +setStatut(StatutMonstre statut) : void
+}
+
+Monstre --> Type : -typeMonstre
+Monstre --> StatutMonstre : -statut
+Monstre --> Attaque : -attaques[]
+
+class Attaque {
+    -nomAttaque : String
+    -nbutilisations : int
+    -puissanceAttaque : int
+    -probabiliteEchec : double
+}
+
+Attaque --> Type : -typeAttaque
+
+class abstract Objet {
+    #nomObjet : String
+    
+    +abstract utiliserObjet(Monstre cible) : void
+}
+
+class Potion extends Objet {
+    +utiliserObjet(Monstre cible) : void
+}
+
+class Medicament extends Objet {
+    +utiliserObjet(Monstre cible) : void
+}
+
+
+
+
+
+
+
+
+
+
+' ' Define packages
+' package "pootd2" {
+'     class ExplorerApp {
+'         +main(String[] args)
+'     }
+' }
+
+' package "pootd2.commands" {
+'     abstract class Command {
+'         +doCommand(ExplorerController explorerController) : String
+'     }
+
+'     class ChangeDirectoryCommand extends Command {
+'         -String args
+'         +ChangeDirectoryCommand(String args)
+'         +getArgs() : String
+'         +doCommand(ExplorerController explorerController) : String
+'     }
+
+'     class MakeDirectoryCommand extends Command {
+'         -String args
+'         +MakeDirectoryCommand(String args)
+'         +getArgs() : String
+'         +doCommand(ExplorerController explorerController) : String
+'     }
+
+'     class TouchCommand extends Command {
+'         -String args
+'         +TouchCommand(String args)
+'         +getArgs() : String
+'         +doCommand(ExplorerController explorerController) : String
+'     }
+
+'     class ErrorCommand extends Command {
+'         -String args
+'         +ErrorCommand(String args)
+'         +getArgs() : String
+'         +doCommand(ExplorerController explorerController) : String
+'     }
+
+'     class ListCommand extends Command {
+'         +doCommand(ExplorerController explorerController) : String
+'     }
+' }
+
+' package "pootd2.controllers" {
+'     interface IExplorerController {
+'         +executeCommand(String commandStr) : String
+'     }
+
+'     class ExplorerController implements IExplorerController {
+'         -FolderInode currentDirectory
+'         -ICommandParser parser
+'         +ExplorerController()
+'         +getCurrentDirectory() : FolderInode
+'         +setCurrentDirectory(FolderInode newCurrentDirectory)
+'         +executeCommand(String commandStr) : String
+'     }
+' }
+
+' package "pootd2.interfaces" {
+'     interface IUserInterface {
+'         +run()
+'     }
+
+'     abstract class AbstractInterface {
+'         #IExplorerController controller
+'         +AbstractInterface(IExplorerController controller)
+'     }
+
+'     class HttpInterface extends AbstractInterface implements IUserInterface{
+'         -HttpServer server
+'         -ExecutorService threadPool
+'         -boolean serverShouldClose
+'         +HttpInterface(IExplorerController controller)
+'         +run()
+'         +handle(HttpExchange exchange)
+'     }
+
+'     class TextInterface extends AbstractInterface implements IUserInterface {
+'         -IExplorerController explorerController
+'         +TextInterface(IExplorerController explorerController)
+'         +run()
+'     }
+' }
+
+' interface HttpHandler {}
+
+' package "pootd2.models" {
+'     abstract class Inode {
+'         -String name
+'         #FolderInode parent
+'         +Inode(String name)
+'         +getName() : String
+'         +getParent() : FolderInode
+'         +getSize() : int {abstract}
+'     }
+
+'     class FolderInode extends Inode {
+'         -ArrayList<Inode> childrens
+'         +FolderInode(String name)
+'         +addInode(Inode inode)
+'         +getChildrens() : ArrayList<Inode>
+'         +getSize() : int
+'     }
+
+'     class FileInode extends Inode {
+'         -int size
+'         +FileInode(String name)
+'         +getSize() : int
+'     }
+' }
+
+' package "pootd2.parsers" {
+'     interface ICommandParser {
+'         +parse(String command) : Command
+'     }
+
+'     class UnixLikeCommandParser implements ICommandParser {
+'         +parse(String command) : Command
+'         -splitArguments(String command) : String[]
+'         -mapCommand(String[] listArguments) : Command
+'     }
+' }
+
+
+
+
+' ExplorerController --> FolderInode
+' ExplorerController --> ICommandParser
+' AbstractInterface --> IExplorerController
+' HttpInterface --> HttpServer
+' HttpInterface ..|> HttpHandler
+' HttpInterface --> ExecutorService
+' FolderInode --> Inode
+' UnixLikeCommandParser --> Command
+
+
+@enduml
