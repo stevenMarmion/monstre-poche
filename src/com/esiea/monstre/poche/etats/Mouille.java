@@ -1,14 +1,10 @@
 package src.com.esiea.monstre.poche.etats;
 
-import src.com.esiea.monstre.poche.entites.Monstre;
-
 public class Mouille extends StatutMonstre {
     
-    public Mouille() {
+    public Mouille(int nbToursEffet) {
         this.labelStatut = "Mouille";
-    }
-
-    public boolean glisser(Monstre cible) {
-        return true;
+        this.nbToursEffet = nbToursEffet;
+        this.nbToursAvecEffet = nbToursEffet;
     }
 }

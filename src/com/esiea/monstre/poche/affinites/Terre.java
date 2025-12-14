@@ -1,21 +1,25 @@
 package src.com.esiea.monstre.poche.affinites;
 
+import src.com.esiea.monstre.poche.entites.Monstre;
+import src.com.esiea.monstre.poche.etats.SousTerre;
+
 public class Terre extends Type {
-    private double chanceFuite;
+    private static final double CHANCE_FUITE = 0.05;
 
     public Terre() {
         this.labelType = "Terre";
+        this.fortContre = new Foudre();
+        this.faibleContre = new Nature();
     }
 
-    public double getChanceFuite() {
-        return chanceFuite;
-    }
-
-    public void setChanceFuite(double chanceFuite) {
-        this.chanceFuite = chanceFuite;
-    }
-
-    public boolean fuit() {
-        return false;
+    public boolean fuit(Monstre cible) {
+        boolean fuite = Math.random() < CHANCE_FUITE;
+        if (fuite) {
+            cible.setStatut(new SousTerre());
+            cible.setDefense(cible.getDefense() * 2); // surement problématique car grande chance que def * 2 puis def * 2 * 2, etc.
+            return true;
+        } else {
+            return false;
+        }
     }
 }

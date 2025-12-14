@@ -1,6 +1,6 @@
 package src.com.esiea.monstre.poche;
 
-import src.com.esiea.monstre.poche.entites.Joueur;
+// import src.com.esiea.monstre.poche.entites.Joueur;
 
 public class Combat {
 

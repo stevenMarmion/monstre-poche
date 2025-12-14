@@ -3,11 +3,15 @@ package src.com.esiea.monstre.poche.etats;
 public abstract class StatutMonstre {
     protected String labelStatut;
     protected int nbToursEffet;
-    protected double chanceEffet;
+    protected int nbToursAvecEffet;
 
-    public void decrementerNbToursEffet() {
-        if (nbToursEffet > 0) {
-            nbToursEffet--;
+    public void decrementerNbToursAvecEffet() {
+        if (nbToursAvecEffet > 0) {
+            nbToursAvecEffet--;
         }
+    }
+
+    public String getLabelStatut() {
+        return this.labelStatut;
     }
 }
