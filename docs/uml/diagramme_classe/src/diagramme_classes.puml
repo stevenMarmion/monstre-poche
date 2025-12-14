@@ -1,4 +1,4 @@
-@startuml
+@startuml MonstrePocheDiagrammeClasses
 
 class Combat {
     +static main(String[] args) : void
@@ -242,7 +242,7 @@ class MedicamentAntiPoison extends Medicament {
 ' Relations principales
 Joueur "1" --> "0..3" Monstre : -monstres
 Joueur "1" --> "1" Monstre : -monstreActuel
-Monstre "1" --> "0..*" Attaque : -attaques
+Monstre "1" --> "0..4" Attaque : -attaques
 Monstre "1" --> "1" Type : -typeMonstre
 Monstre "1" --> "0..1" StatutMonstre : -statut
 
