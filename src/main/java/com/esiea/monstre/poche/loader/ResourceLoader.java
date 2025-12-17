@@ -1,4 +1,4 @@
-package main.java.com.esiea.monstre.poche.loader;
+package com.esiea.monstre.poche.loader;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

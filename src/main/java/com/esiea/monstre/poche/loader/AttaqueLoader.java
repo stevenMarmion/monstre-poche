@@ -1,4 +1,4 @@
-    package main.java.com.esiea.monstre.poche.loader;
+    package com.esiea.monstre.poche.loader;
 
     import com.esiea.monstre.poche.actions.Attaque;
     import com.esiea.monstre.poche.affinites.*;
