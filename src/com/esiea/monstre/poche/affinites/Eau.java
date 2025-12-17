@@ -20,13 +20,19 @@ public class Eau extends Type {
     }
 
     public boolean faitChuter(Monstre cible) {
-        return Math.random() < this.probabiliteFaireChuter;
+        return (Math.random() < this.probabiliteFaireChuter);
     }
 
-    public void innondeTerrain(Terrain terrain) {
+    public void appliqueCapaciteSpeciale(Terrain terrain) {
         boolean innonde = Math.random() < this.probabiliteInnondation;
         if (innonde) {
             terrain.setStatutTerrain(new Innonde((int) (Math.random() * NB_TOURS_MAX_INNONDATION) + NB_TOURS_MIN_INNONDATION));
         }
+    }
+
+    @Override
+    public void appliqueCapaciteSpeciale(Monstre cible) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'appliqueCapaciteSpeciale'");
     }
 }

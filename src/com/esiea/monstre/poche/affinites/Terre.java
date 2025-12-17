@@ -12,14 +12,12 @@ public class Terre extends Type {
         this.faibleContre = new Nature();
     }
 
-    public boolean fuit(Monstre cible) {
+    @Override
+    public void appliqueCapaciteSpeciale(Monstre cible) {
         boolean fuite = Math.random() < CHANCE_FUITE;
         if (fuite) {
             cible.setStatut(new SousTerre());
-            cible.getStatut().appliquerEffets(cible);
-            return true;
-        } else {
-            return false;
+            ((SousTerre) cible.getStatut()).appliquerEffets(cible);
         }
     }
 }

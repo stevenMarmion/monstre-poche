@@ -10,9 +10,10 @@ public class Plante extends Nature {
         this.labelType = "Plante";
     }
 
-    public void soigner(Monstre cible) {
+    @Override
+    public void appliqueCapaciteSpeciale(Monstre cible) {
         if (CHANCE_SOIN < Math.random()) {
-            cible.setStatut(new Normal()); // le monstre n'est plus brulé ou empoisoné, ou un état quelconque
+            cible.setStatut(new Normal());
         }
     }
 }

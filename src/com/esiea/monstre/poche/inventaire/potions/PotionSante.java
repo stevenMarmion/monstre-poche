@@ -11,7 +11,7 @@ public class PotionSante extends Potion {
     }
 
     @Override
-    public void utiliserPotion(Monstre cible) {
+    public void utiliserObjet(Monstre cible) {
         System.out.println("Utilisation de " + this.nomObjet + " sur " + cible.getNomMonstre());
         if (cible.getPointsDeVie() + this.pointsDeSoin > cible.getPointsDeVieMax()) {
             cible.setPointsDeVie(cible.getPointsDeVieMax());

@@ -11,7 +11,7 @@ public class PotionVitesse  extends Potion {
     }
 
     @Override
-    public void utiliserPotion(Monstre cible) {
+    public void utiliserObjet(Monstre cible) {
         System.out.println("Utilisation de " + this.nomObjet + " sur " + cible.getNomMonstre());
         cible.setVitesse(cible.getVitesse() + this.pointsDeVitesse);
     }

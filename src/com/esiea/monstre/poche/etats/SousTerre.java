@@ -12,11 +12,20 @@ public class SousTerre extends StatutMonstre {
         this.nbToursAvecEffet = nbToursEffet;
     }
 
-    @Override
     public void appliquerEffets(Monstre cible) {
         if (this.nbToursEffet > 0) {
-            cible.setDefense(cible.getDefense() * 2); // surement problématique car grande chance que def * 2 puis def * 2 * 2, etc.
+            if (!cible.getStatut().getLabelStatut().equals("SousTerre")) {
+                cible.setDefense(cible.getDefense() * 2);
+            }
             this.decrementerNbToursAvecEffet();
+            sortirSousTerre(cible);
+        }
+    }
+
+    public void sortirSousTerre(Monstre cible) {
+        if (this.nbToursAvecEffet == 0) {
+            cible.setStatut(new Normal());
+            cible.setDefense(cible.getDefense() / 2);
         }
     }
 }

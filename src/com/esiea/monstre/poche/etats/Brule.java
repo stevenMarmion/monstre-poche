@@ -10,11 +10,12 @@ public class Brule extends StatutMonstre {
         this.labelStatut = "Brule";
     }
 
-    @Override
-    public void appliquerEffets(Monstre cible) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'appliquerEffets'");
+    public void appliquerEffets(Monstre cible, double degats) {
+        double degatsPoison = degats / 10;
+        if (cible.getPointsDeVie() - degatsPoison < 0) {
+            degatsPoison = 0;
+        } else {
+            cible.setPointsDeVie(cible.getPointsDeVie() - degatsPoison);
+        }
     }
-
-    // public void appliquerDegats(Monstre cible) {}
 }

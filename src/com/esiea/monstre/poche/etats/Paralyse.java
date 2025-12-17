@@ -10,12 +10,7 @@ public class Paralyse extends StatutMonstre {
     }
 
     public boolean rateAttaque(Monstre cible) {
-        if (Math.random() < CHANCE_RATER_ATTAQUE) {
-            System.out.println(cible.getNomMonstre() + " est paralysé et rate son attaque !");
-            return true;
-        } else {
-            return false;
-        }
+        return (Math.random() < CHANCE_RATER_ATTAQUE);
     }
 
     public void sortParalysie(Monstre cible) {
@@ -25,14 +20,15 @@ public class Paralyse extends StatutMonstre {
         }
     }
 
-    @Override
-    public void appliquerEffets(Monstre cible) {
+    public boolean appliquerEffets(Monstre cible, int degats) {
         if (this.nbToursEffet > 0) {
             sortParalysie(cible);
+            decrementerNbToursAvecEffet();
             if (cible.getStatut().getLabelStatut().equals("Paralyse")) {
-                rateAttaque(cible); //  A GERER PARCE QUE DU COUP COMMENT ON REMONTE L'INFO QUE L'ATTAQUE A RATE ???
-            }
-            this.decrementerNbToursAvecEffet();
+                return rateAttaque(cible);
+            } 
+            return false;
         }
+        return false;
     }
 }

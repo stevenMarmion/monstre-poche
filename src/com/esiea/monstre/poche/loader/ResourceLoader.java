@@ -84,6 +84,8 @@ public abstract class ResourceLoader<T> {
         return ressources.size();
     }
 
+    public abstract T getRessourceParNom(String nom);
+
     /**
      * Exception personnalisée pour les erreurs de parsing
      */
