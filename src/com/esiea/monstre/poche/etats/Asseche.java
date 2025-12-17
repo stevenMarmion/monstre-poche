@@ -9,6 +9,6 @@ public class Asseche extends StatutTerrain {
     }
 
     public void appliquerEffets(Terrain terrain) {
-        terrain.setStatutTerrain(null);
+        terrain.setStatutTerrain(new Asseche());
     }
 }

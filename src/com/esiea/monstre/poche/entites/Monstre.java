@@ -8,9 +8,13 @@ import src.com.esiea.monstre.poche.affinites.Nature;
 import src.com.esiea.monstre.poche.affinites.Feu;
 import src.com.esiea.monstre.poche.affinites.Terre;
 import src.com.esiea.monstre.poche.affinites.Type;
+import src.com.esiea.monstre.poche.affinites.utils.AffinitesUtils;
 import src.com.esiea.monstre.poche.etats.Normal;
 import src.com.esiea.monstre.poche.etats.Paralyse;
 import src.com.esiea.monstre.poche.etats.StatutMonstre;
+import src.com.esiea.monstre.poche.etats.utils.StatutMonstreUtils;
+import src.com.esiea.monstre.poche.etats.utils.StatutTerrainUtils;
+
 import java.util.ArrayList;
 
 public class Monstre {
@@ -121,10 +125,20 @@ public class Monstre {
     }
 
     public void attaquer(Monstre cible, Terrain terrain, Attaque attaqueUtilisee) {
+        // on commence par calculer les dégâts, c'est la base de tout
+        double degatsAffliges;
+        if (attaqueUtilisee == null || !this.attaques.contains(attaqueUtilisee)) {
+            degatsAffliges = calculeDegat(cible, cible);
+        } else {
+            degatsAffliges = attaqueUtilisee.calculeDegatsAttaque(this, cible);
+        }
+
         // // Phase 1: effets de statut en début de tour (DoT, sorties progressives, etc.)
-        // if (this.statut != null) {
-        //     this.statut.appliquerEffets(this);
-        // }
+        if (!this.getStatut().getLabelStatut().equals("Normal")) {
+            // AffinitesUtils.appliqueCapaciteSpeciale(typeMonstre, cible);
+            StatutMonstreUtils.appliquerStatutMonstre(statut, cible, degatsAffliges);
+        }
+        StatutTerrainUtils.appliquerStatutTerrain(terrain, this);
 
         // // Phase 2: gestion des empêchements d'action (paralysie qui fait rater l'attaque)
         // if (this.statut != null && this.statut.getLabelStatut().equals("Paralyse")) {
@@ -201,21 +215,6 @@ public class Monstre {
         //     cible.getStatut().appliquerEffets(cible);
         // }
     }
-
-    // public void gestionEtats(Monstre cible, Attaque attaque, Terrain terrain) {
-    //         // là on gère nos effets de bord des états
-    //         if (attaque.getTypeAttaque().getLabelType().equals("Eau")) {
-    //             ((Eau) this.typeMonstre).innondeTerrain(terrain);
-    //         } else if (attaque.getTypeAttaque().getLabelType().equals("Foudre")) {
-    //             ((Foudre) this.typeMonstre).paralyser(cible);
-    //         } else if (attaque.getTypeAttaque().getLabelType().equals("Terre")) {
-    //             ((Terre) this.typeMonstre).fuit(this);
-    //         } else if (attaque.getTypeAttaque().getLabelType().equals("Feu")) {
-    //             ((Feu) this.typeMonstre).bruler(cible);
-    //         } else if (attaque.getTypeAttaque().getLabelType().equals("Insecte")) {
-    //             ((Insecte) this.typeMonstre).empoisonner(cible);
-    //         }
-    // }
 
     public double calculeDegat(Monstre monstreAttaquant, Monstre cible) {
         double coef_aleatoire = 0.85 + (1.0 - 0.85) * Math.random();

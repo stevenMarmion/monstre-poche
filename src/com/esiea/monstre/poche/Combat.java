@@ -18,9 +18,18 @@ public class Combat {
     private Joueur joueur1;
     private Joueur joueur2;
 
-    private Joueur joueurActuel;
-
     private Terrain terrain;
+
+
+    public void executerTour() {
+        while ((joueur1.sontMonstresMorts() || joueur2.sontMonstresMorts()) == false) {
+            Object actionJoueur1 = this.gereChoixAction(joueur1);
+            Object actionJoueur2 = this.gereChoixAction(joueur2);
+
+            this.gereOrdreExecutionActions(actionJoueur1, actionJoueur2);
+        }
+        this.finDePartie();
+    }
 
     public void selectionnerMonstre(MonstreLoader monstreLoader, Joueur joueur) {
         while (joueur.getMonstres().size() <= 3) {
@@ -77,27 +86,8 @@ public class Combat {
         }
     }
 
-    public void executerTour() {
-        while ((joueur1.sontMonstresMorts() || joueur2.sontMonstresMorts()) == false) {
-            Object actionJoueur1 = this.gereChoixAction(joueur1);
-            Object actionJoueur2 = this.gereChoixAction(joueur2);
-
-            this.gereOrdreExecutionActions(actionJoueur1, actionJoueur2);
-        }
-    }
-
-    /**
-     * Renvoie 1 si l'action est le choix d'attaque
-     * Renvoie 2 si l'action est l'utilisation d'un objet
-     * Renvoie 3 si l'action est le changement de monstre
-     * 
-     * On met un int pour gérer l'ordre d'exécution des choix, voir cahier des charges
-     * 
-     * @param joueur
-     * @return
-     */
     public Object gereChoixAction(Joueur joueur) {
-        System.out.println("Merci de choisir une action : ");
+        System.out.println("Merci de choisir une action " + joueur.getNomJoueur() + " : ");
         System.out.println("1. Attaquer");
         System.out.println("2. Utiliser un objet");
         System.out.println("3. Changer de monstre");
@@ -106,7 +96,7 @@ public class Combat {
         int choixAction = scanner.nextInt();
         scanner.close();
         while (choixAction != 1 || choixAction != 2 || choixAction != 3) {
-            System.out.println("Choix invalide, merci de choisir une action : ");
+            System.out.println("Choix invalide, merci de choisir une action " + joueur.getNomJoueur() + " : ");
             System.out.println("1. Attaquer");
             System.out.println("2. Utiliser un objet");
             System.out.println("3. Changer de monstre");
@@ -140,7 +130,7 @@ public class Combat {
     }
 
     public Attaque choixAttaque(Joueur joueur) {
-        System.out.println("Merci de choisir une attaque pour le monstre " + joueur.getMonstreActuel().getNomMonstre() + " : ");
+        System.out.println("Merci de choisir une attaque pour le monstre " + joueur.getMonstreActuel().getNomMonstre() + " de " + joueur.getNomJoueur() + " : ");
         Monstre monstreActuel = joueur.getMonstreActuel();
         for (Attaque attaque : monstreActuel.getAttaques()) {
             System.out.println("Nom de l'attaque : " + attaque.getNomAttaque() + " Puissance : " + attaque.getPuissanceAttaque());
@@ -157,7 +147,7 @@ public class Combat {
         }
 
         while (attaqueChoisie == null) {
-            System.out.println("Attaque invalide, merci de choisir une attaque pour le monstre " + joueur.getMonstreActuel().getNomMonstre() + " : ");
+            System.out.println("Attaque invalide, merci de choisir une attaque pour le monstre " + joueur.getMonstreActuel().getNomMonstre() + " de " + joueur.getNomJoueur() + " : ");
             for (Attaque attaque : monstreActuel.getAttaques()) {
                 System.out.println("Nom de l'attaque : " + attaque.getNomAttaque() + " Puissance : " + attaque.getPuissanceAttaque());
             }
@@ -240,107 +230,40 @@ public class Combat {
     }
 
     public void gereOrdreExecutionActions(Object actionJoueur1, Object actionJoueur2) {
-        Joueur joueurPrioritaire, joueurSecondaire;
-        Object actionPremierJoueur, actionSecondJoueur;
-        // on détermine l'ordre d'exécution des actions
-        
-        if (actionJoueur1 instanceof Attaque && actionJoueur2 instanceof Attaque) {
-            if (joueur1.getMonstreActuel().getVitesse() > joueur2.getMonstreActuel().getVitesse()) {
-                joueurPrioritaire = joueur1;
-                actionPremierJoueur = actionJoueur1;
-                joueurSecondaire = joueur2;
-                actionSecondJoueur = actionJoueur2;
-            } else {
-                joueurPrioritaire = joueur2;
-                actionPremierJoueur = actionJoueur2;
-                joueurSecondaire = joueur1;
-                actionSecondJoueur = actionJoueur1;
+        if (actionJoueur1 instanceof Monstre) {
+            joueur1.setMonstreActuel((Monstre) actionJoueur1);
+        }
+        if (actionJoueur2 instanceof Monstre) {
+            joueur2.setMonstreActuel((Monstre) actionJoueur2);
         }
 
-        // À compléter : exécution des actions en fonction de leur type
-            switch (actionJoueur1) {
-                case Attaque attaqueJ1:
-                    
-                    break;
-            
-                case Objet objetJ1:
-                    
-                    break;
+        if (actionJoueur1 instanceof Objet) {
+            ((Objet) actionJoueur1).utiliserObjet(joueur1.getMonstreActuel());
+        }
+        if (actionJoueur2 instanceof Objet) {
+            ((Objet) actionJoueur2).utiliserObjet(joueur2.getMonstreActuel());
+        }
 
-                case Monstre monstreJ1:
-
-                    break;
-                default:
-                    break;
+        if (actionJoueur1 instanceof Attaque && actionJoueur2 instanceof Attaque) {
+            if (joueur1.getMonstreActuel().getVitesse() > joueur2.getMonstreActuel().getVitesse()) {
+                joueur1.getMonstreActuel().attaquer(joueur2.getMonstreActuel(), terrain, (Attaque) actionJoueur1);
+                joueur2.getMonstreActuel().attaquer(joueur1.getMonstreActuel(), terrain, (Attaque) actionJoueur2);
+            } else {
+                joueur2.getMonstreActuel().attaquer(joueur1.getMonstreActuel(), terrain, (Attaque) actionJoueur2);
+                joueur1.getMonstreActuel().attaquer(joueur2.getMonstreActuel(), terrain, (Attaque) actionJoueur1);
             }
-
-            // À compléter : exécution des actions en fonction de leur type
-            switch (actionJoueur2) {
-                case Attaque attaqueJ2:
-                    
-                    break;
-                case Objet objetJ2:
-                    
-                    break;
-                case Monstre monstreJ2:
-                    
-                    break;
-                default:
-                    break;
-            }
+        } else if (actionJoueur1 instanceof Attaque) {
+            joueur1.getMonstreActuel().attaquer(joueur2.getMonstreActuel(), terrain, (Attaque) actionJoueur1);
+        } else if (actionJoueur2 instanceof Attaque) {
+            joueur2.getMonstreActuel().attaquer(joueur1.getMonstreActuel(), terrain, (Attaque) actionJoueur2);
+        }
     }
-    
-    // public void executerTour() {
-    //     Monstre monstreActuelJoueur1 = joueur1.getMonstreActuel();
-    //     Monstre monstreActuelJoueur2 = joueur2.getMonstreActuel();
-        
-    //     ResultatEffet r1 = monstreActuelJoueur1.getStatut().appliquerEffetsStatut(monstreActuelJoueur2, terrainInnonde, ContexteEffet.MomentApplication.DEBUT_TOUR);
-    //     ResultatEffet r2 = monstreActuelJoueur2.getStatut().appliquerEffetsStatut(monstreActuelJoueur1, terrainInnonde, ContexteEffet.MomentApplication.DEBUT_TOUR);
-        
-    //     // ===== PHASE 2 : ACTIONS DES JOUEURS =====
-    //     // Récupérer les actions...
-        
-    //     // ===== PHASE 3 : ATTAQUES =====
-    //     if (actionjoueur1 instanceof AttaqueAction) {
-    //         executerAttaque(monstreActuelJoueur1, monstreActuelJoueur2, attaquejoueur1, terrainInnonde);
-    //     }
-        
-    //     if (actionjoueur2 instanceof AttaqueAction) {
-    //         executerAttaque(monstreActuelJoueur2, monstreActuelJoueur1, attaquejoueur2, terrainInnonde);
-    //     }
-        
-    //     // ===== PHASE 4 : FIN DE TOUR =====
-    //     System.out.println("\n=== Fin du tour ===");
-        
-    //     r1 = monstreActuelJoueur1.appliquerEffetsStatut(monstreActuelJoueur2, terrainInnonde, 
-    //         ContexteEffet.MomentApplication.FIN_TOUR);
-    //     if (!r1.getMessage().isEmpty()) {
-    //         System.out.println(r1.getMessage());
-    //     }
-        
-    //     r2 = monstreActuelJoueur2.appliquerEffetsStatut(monstreActuelJoueur1, terrainInnonde, 
-    //         ContexteEffet.MomentApplication.FIN_TOUR);
-    //     if (!r2.getMessage().isEmpty()) {
-    //         System.out.println(r2.getMessage());
-    //     }
-        
-    //     // Décrémenter les compteurs
-    //     monstreActuelJoueur1.getStatut().decrementerNbToursAvecEffet();
-    //     monstreActuelJoueur2.getStatut().decrementerNbToursAvecEffet();
-    //     terrain.gererFinTour();
-    // }
-    
-    /**
-     * Exécute une attaque en gérant tous les effets
-     */
-    // private void executerAttaque(Monstre attaquant, Monstre cible, Attaque attaque, boolean terrainInnonde) {
-    //     // AVANT l'attaque : vérifier si elle est bloquée
-    //     ResultatEffet avant = attaquant.appliquerEffetsStatut(cible, terrainInnonde, ContexteEffet.MomentApplication.AVANT_ATTAQUE);
 
-    //     // Exécuter l'attaque normale
-    //     attaquant.attaquer(cible, terrain, attaque);
-        
-    //     // APRÈS l'attaque : appliquer effets post-attaque
-    //     ResultatEffet apres = attaquant.appliquerEffetsStatut(cible, terrainInnonde,ContexteEffet.MomentApplication.APRES_ATTAQUE);
-    // }
+    public void finDePartie() {
+        if (joueur1.sontMonstresMorts()) {
+            System.out.println("Le joueur " + joueur2.getNomJoueur() + " a gagné la partie !");
+        } else if (joueur2.sontMonstresMorts()) {
+            System.out.println("Le joueur " + joueur1.getNomJoueur() + " a gagné la partie !");
+        }
+    }
 }

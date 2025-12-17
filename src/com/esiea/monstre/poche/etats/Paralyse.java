@@ -20,7 +20,7 @@ public class Paralyse extends StatutMonstre {
         }
     }
 
-    public boolean appliquerEffets(Monstre cible, int degats) {
+    public boolean appliquerEffets(Monstre cible, double degats) {
         if (this.nbToursEffet > 0) {
             sortParalysie(cible);
             decrementerNbToursAvecEffet();
