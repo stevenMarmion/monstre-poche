@@ -17,7 +17,7 @@ public class AffinitesUtils {
                 return new Feu();
             case "eau":
                 return new Eau();
-            case "foudre":
+            case "electric":
                 return new Foudre();
             case "terre":
                 return new Terre();

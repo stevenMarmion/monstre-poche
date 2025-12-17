@@ -1,79 +1,117 @@
-    package com.esiea.monstre.poche.loader;
+package com.esiea.monstre.poche.loader;
 
-    import com.esiea.monstre.poche.actions.Attaque;
-    import com.esiea.monstre.poche.affinites.*;
-    import com.esiea.monstre.poche.affinites.utils.AffinitesUtils;
+import com.esiea.monstre.poche.actions.Attaque;
+import com.esiea.monstre.poche.affinites.Type;
+import com.esiea.monstre.poche.affinites.utils.AffinitesUtils;
 
-    /**
-     * Loader pour charger les attaques depuis le fichier attaques.txt
-     * Format attendu:
-     *
-     * Attack
-     *   Name Eclair
-     *   Type Electric
-     *   Power 40
-     *   NbUse 10
-     *   Fail 0.07
-     * EndAttack
-     */
-    public class AttaqueLoader extends ResourceLoader<Attaque> {
+import java.io.BufferedReader;
+import java.io.IOException;
 
-        private static final String SEPARATEUR = ";";
-        private static final int NB_CHAMPS_ATTENDUS = 5;
+public class AttaqueLoader extends ResourceLoader<Attaque> {
 
-        public AttaqueLoader(String cheminFichier) {
-            super(cheminFichier);
-        }
+    public AttaqueLoader(String nomFichier) {
+        super(nomFichier);
+    }
 
-        @Override
-        protected Attaque parseLigne(String ligne, int numeroLigne) throws ParseException {
-            String[] parties = ligne.split(SEPARATEUR);
+    @Override
+    protected void chargerRessources() throws ParseException {
 
-            // Vérifier le nombre de champs
-            if (parties.length != NB_CHAMPS_ATTENDUS) {
-                throw new ParseException(
-                        String.format("Nombre de champs invalide. Attendu: %d, Trouvé: %d",
-                                NB_CHAMPS_ATTENDUS, parties.length)
-                );
+        try (BufferedReader reader = ouvrirResourcesReader()) {
+
+            String ligne;
+            int numeroLigne = 0;
+
+            String nom = null;
+            Type type = null;
+            int power = -1;
+            int nbUse = -1;
+            double fail = -1;
+
+            boolean dansAttack = false;
+
+            while ((ligne = reader.readLine()) != null) {
+                numeroLigne++;
+                ligne = ligne.trim();
+
+                if (ligne.isEmpty() || ligne.startsWith("#")) continue;
+
+                switch (ligne) {
+
+                    case "Attack":
+                        if (dansAttack) {
+                            throw new ParseException("Attack imbriqué ligne " + numeroLigne);
+                        }
+                        dansAttack = true;
+                        nom = null;
+                        type = null;
+                        power = -1;
+                        nbUse = -1;
+                        fail = -1;
+                        break;
+
+                    case "EndAttack":
+                        if (!dansAttack) {
+                            throw new ParseException("EndAttack sans Attack ligne " + numeroLigne);
+                        }
+                        if (nom == null || type == null || power < 0 || nbUse < 0 || fail < 0) {
+                            throw new ParseException("Champ manquant pour l'attaque ligne " + numeroLigne);
+                        }
+
+                        ressources.add(new Attaque(nom, nbUse, power, fail, type));
+                        dansAttack = false;
+                        break;
+
+                    default:
+                        if (!dansAttack) {
+                            throw new ParseException("Ligne hors Attack ligne " + numeroLigne);
+                        }
+
+                        String[] parts = ligne.split("\\s+", 2);
+                        if (parts.length != 2) {
+                            throw new ParseException("Format invalide ligne " + numeroLigne);
+                        }
+
+                        String cle = parts[0];
+                        String valeur = parts[1];
+
+                        switch (cle) {
+                            case "Name":
+                                nom = valeur;
+                                break;
+                            case "Type":
+                                type = AffinitesUtils.getTypeFromString(valeur);
+                                break;
+                            case "Power":
+                                power = Integer.parseInt(valeur);
+                                break;
+                            case "NbUse":
+                                nbUse = Integer.parseInt(valeur);
+                                break;
+                            case "Fail":
+                                fail = Double.parseDouble(valeur);
+                                if (fail < 0.0 || fail > 1.0) {
+                                    throw new ParseException("Fail hors [0,1] ligne " + numeroLigne);
+                                }
+                                break;
+                            default:
+                                throw new ParseException("Clé inconnue '" + cle + "' ligne " + numeroLigne);
+                        }
+                }
             }
 
-            try {
-                String nomAttaque = parties[0].trim();
-                int nbUtilisations = Integer.parseInt(parties[1].trim());
-                int puissance = Integer.parseInt(parties[2].trim());
-                double probabiliteEchec = Double.parseDouble(parties[3].trim());
-                String typeStr = parties[4].trim();
-
-                // Validation des valeurs
-                if (nomAttaque.isEmpty()) {
-                    throw new ParseException("Le nom de l'attaque ne peut pas être vide");
-                }
-                if (nbUtilisations < 0) {
-                    throw new ParseException("Le nombre d'utilisations ne peut pas être négatif");
-                }
-                if (puissance < 0) {
-                    throw new ParseException("La puissance ne peut pas être négative");
-                }
-                if (probabiliteEchec < 0.0 || probabiliteEchec > 1.0) {
-                    throw new ParseException("La probabilité d'échec doit être entre 0.0 et 1.0");
-                }
-
-                Type type = AffinitesUtils.getTypeFromString(typeStr);
-
-                return new Attaque(nomAttaque, nbUtilisations, puissance, probabiliteEchec, type);
-
-            } catch (NumberFormatException e) {
-                throw new ParseException("Erreur de format numérique: " + e.getMessage(), e);
+            if (dansAttack) {
+                throw new ParseException("Fichier terminé sans EndAttack");
             }
-        }
 
-        /**
-         * Retourne une attaque par son nom
-         */
-        public Attaque getAttaqueParNom(String nom) {
-            return ressources.stream()
-                    .filter(a -> a.getNomAttaque().equalsIgnoreCase(nom))
-                    .findFirst()
-                    .orElse(null);
+        } catch (IOException | NumberFormatException e) {
+            throw new ParseException("Erreur lecture fichier", e);
         }
     }
+
+    public Attaque getAttaqueParNom(String nom) {
+        return ressources.stream()
+                .filter(a -> a.getNomAttaque().equalsIgnoreCase(nom))
+                .findFirst()
+                .orElse(null);
+    }
+}

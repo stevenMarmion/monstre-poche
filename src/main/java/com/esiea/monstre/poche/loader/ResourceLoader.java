@@ -1,91 +1,65 @@
 package com.esiea.monstre.poche.loader;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-import com.esiea.monstre.poche.actions.Attaque;
-import com.esiea.monstre.poche.entites.Monstre;
-
-/**
- * Classe abstraite définissant le contrat de base pour tous les loaders de ressources
- */
 public abstract class ResourceLoader<T> {
-    protected String cheminFichier;
+
+    protected String nomFichier;
     protected List<T> ressources;
     protected Map<String, String> erreurs;
 
-    public ResourceLoader(String cheminFichier) {
-        this.cheminFichier = cheminFichier;
+    public ResourceLoader(String nomFichier) {
+        this.nomFichier = nomFichier;
         this.ressources = new ArrayList<>();
         this.erreurs = new HashMap<>();
     }
 
     /**
-     * Charge les ressources depuis le fichier
-     * @return true si le chargement a réussi, false sinon
+     * Point d'entrée principal
      */
     public boolean charger() {
-        try (BufferedReader reader = new BufferedReader(new FileReader(cheminFichier))) {
-            String ligne;
-            int numeroLigne = 0;
+        erreurs.clear();
+        ressources.clear();
 
-            while ((ligne = reader.readLine()) != null) {
-                numeroLigne++;
-
-                if (ligne.trim().isEmpty() || ligne.trim().startsWith("#")) {
-                    continue;
-                }
-                try {
-                    T ressource = parseLigne(ligne, numeroLigne);
-                    if (ressource != null) {
-                        ressources.add(ressource);
-                    }
-                } catch (ParseException e) {
-                    erreurs.put("Ligne " + numeroLigne, e.getMessage());
-                    System.err.println("Erreur ligne " + numeroLigne + ": " + e.getMessage());
-                }
-            }
-
+        try {
+            chargerRessources();
             return erreurs.isEmpty();
-        } catch (IOException e) {
-            System.err.println("Erreur lors de la lecture du fichier " + cheminFichier + ": " + e.getMessage());
+        } catch (ParseException e) {
+            erreurs.put("Parsing", e.getMessage());
+            System.err.println("Erreur parsing : " + e.getMessage());
             return false;
         }
     }
 
-    /**
-     * Parse une ligne du fichier et retourne l'objet correspondant
-     */
-    protected abstract T parseLigne(String ligne, int numeroLigne) throws ParseException;
-
-    /**
-     * Retourne la liste des ressources chargées
-     */
     public List<T> getRessources() {
         return new ArrayList<>(ressources);
     }
 
-    /**
-     * Retourne les erreurs rencontrées lors du chargement
-     */
     public Map<String, String> getErreurs() {
         return new HashMap<>(erreurs);
     }
 
-    /**
-     * Retourne le nombre de ressources chargées avec succès
-     */
     public int getNombreRessources() {
         return ressources.size();
     }
 
+    protected BufferedReader ouvrirResourcesReader() throws IOException {
+        var stream = getClass().getClassLoader().getResourceAsStream(nomFichier);
+
+        if (stream == null) {
+            throw new IOException("Ressource introuvable dans le dossier resources du projet : " + nomFichier);
+        }
+
+        return new BufferedReader(new java.io.InputStreamReader(stream));
+    }
+
+
+    protected abstract void chargerRessources() throws ParseException;
+
     /**
-     * Exception personnalisée pour les erreurs de parsing
+     * Exception personnalisée
      */
     public static class ParseException extends Exception {
         public ParseException(String message) {
