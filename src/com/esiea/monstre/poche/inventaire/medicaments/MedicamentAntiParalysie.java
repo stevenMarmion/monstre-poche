@@ -1,6 +1,7 @@
 package src.com.esiea.monstre.poche.inventaire.medicaments;
 
 import src.com.esiea.monstre.poche.entites.Monstre;
+import src.com.esiea.monstre.poche.etats.Normal;
 
 public class MedicamentAntiParalysie extends Medicament {
 
@@ -9,5 +10,10 @@ public class MedicamentAntiParalysie extends Medicament {
     }
 
     @Override
-    public void utiliserMedicament(Monstre cible) {}
+    public void utiliserMedicament(Monstre cible) {
+        if (cible.getStatut().getLabelStatut().equals("Paralysie")) {
+            System.out.println("Utilisation de " + this.nomObjet + " sur " + cible.getNomMonstre());
+            cible.setStatut(new Normal());
+        }
+    }
 }

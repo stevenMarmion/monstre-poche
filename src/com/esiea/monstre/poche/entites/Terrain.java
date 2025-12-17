@@ -1,0 +1,25 @@
+package src.com.esiea.monstre.poche.entites;
+
+import src.com.esiea.monstre.poche.etats.StatutTerrain;
+
+public class Terrain {
+    private String nomTerrain;
+    private StatutTerrain statutTerrain;
+
+    public Terrain(String nomTerrain, StatutTerrain statut) {
+        this.nomTerrain = nomTerrain;
+        this.statutTerrain = statut;
+    }
+
+    public String getNomTerrain() {
+        return this.nomTerrain;
+    }
+
+    public void setStatutTerrain(StatutTerrain statutTerrain) {
+        this.statutTerrain = statutTerrain;
+    }
+
+    public StatutTerrain getStatutTerrain() {
+        return this.statutTerrain;
+    }
+}

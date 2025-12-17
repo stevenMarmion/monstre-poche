@@ -19,6 +19,8 @@ public class PotionDegat extends Potion {
     }
 
     @Override
-    public void utiliserPotion(Monstre cible) {}
-    
+    public void utiliserPotion(Monstre cible) {
+        System.out.println("Utilisation de " + this.nomObjet + " sur " + cible.getNomMonstre());
+        cible.setAttaque(cible.getAttaque() + this.pointsDeDegat);
+    }
 }

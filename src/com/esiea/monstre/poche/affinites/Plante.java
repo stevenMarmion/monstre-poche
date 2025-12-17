@@ -1,23 +1,18 @@
 package src.com.esiea.monstre.poche.affinites;
 
+import src.com.esiea.monstre.poche.entites.Monstre;
+import src.com.esiea.monstre.poche.etats.Normal;
+
 public class Plante extends Nature {
-    private double chanceSoigner;
+    private static final double CHANCE_SOIN = 0.2;
 
     public Plante() {
         this.labelType = "Plante";
     }
 
-    public double getChanceSoigner() {
-        return chanceSoigner;
+    public void soigner(Monstre cible) {
+        if (CHANCE_SOIN < Math.random()) {
+            cible.setStatut(new Normal()); // le monstre n'est plus brulé ou empoisoné, ou un état quelconque
+        }
     }
-
-    public void setChanceSoigner(double chanceSoigner) {
-        this.chanceSoigner = chanceSoigner;
-    }
-
-    public boolean soigner() {
-        return false;
-    }
-
-    public void supprimerEffetStatut() {}
 }

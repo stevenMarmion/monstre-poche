@@ -10,15 +10,9 @@ public class PotionVitesse  extends Potion {
         this.pointsDeVitesse = pointsDeVitesse;
     }
 
-    public int getPointsDeVitesse() {
-        return pointsDeVitesse;
-    }
-
-    public void setPointsDeVitesse(int pointsDeVitesse) {
-        this.pointsDeVitesse = pointsDeVitesse;
-    }
-
     @Override
-    public void utiliserPotion(Monstre cible) {}
-    
+    public void utiliserPotion(Monstre cible) {
+        System.out.println("Utilisation de " + this.nomObjet + " sur " + cible.getNomMonstre());
+        cible.setVitesse(cible.getVitesse() + this.pointsDeVitesse);
+    }
 }

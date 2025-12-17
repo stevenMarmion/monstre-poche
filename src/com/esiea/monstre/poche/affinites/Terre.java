@@ -16,7 +16,7 @@ public class Terre extends Type {
         boolean fuite = Math.random() < CHANCE_FUITE;
         if (fuite) {
             cible.setStatut(new SousTerre());
-            cible.setDefense(cible.getDefense() * 2); // surement problématique car grande chance que def * 2 puis def * 2 * 2, etc.
+            cible.getStatut().appliquerEffets(cible);
             return true;
         } else {
             return false;

@@ -1,7 +1,8 @@
 package src.com.esiea.monstre.poche.affinites;
 
 import src.com.esiea.monstre.poche.entites.Monstre;
-import src.com.esiea.monstre.poche.etats.Mouille;
+import src.com.esiea.monstre.poche.entites.Terrain;
+import src.com.esiea.monstre.poche.etats.Innonde;
 
 public class Eau extends Type {
     private static final int NB_TOURS_MAX_INNONDATION = 3;
@@ -22,13 +23,10 @@ public class Eau extends Type {
         return Math.random() < this.probabiliteFaireChuter;
     }
 
-    public boolean innondeTerrain(Monstre cible) {
+    public void innondeTerrain(Terrain terrain) {
         boolean innonde = Math.random() < this.probabiliteInnondation;
         if (innonde) {
-            cible.setStatut(new Mouille((int) (Math.random() * NB_TOURS_MAX_INNONDATION) + NB_TOURS_MIN_INNONDATION));
-            return true;
-        } else {
-            return false;
+            terrain.setStatutTerrain(new Innonde((int) (Math.random() * NB_TOURS_MAX_INNONDATION) + NB_TOURS_MIN_INNONDATION));
         }
     }
 }

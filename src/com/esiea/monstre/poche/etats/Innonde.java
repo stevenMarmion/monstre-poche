@@ -1,9 +1,9 @@
 package src.com.esiea.monstre.poche.etats;
 
-public class Mouille extends StatutMonstre {
+public class Innonde extends StatutTerrain {
     
-    public Mouille(int nbToursEffet) {
-        this.labelStatut = "Mouille";
+    public Innonde(int nbToursEffet) {
+        this.labelStatut = "Innonde";
         this.nbToursEffet = nbToursEffet;
         this.nbToursAvecEffet = nbToursEffet;
     }

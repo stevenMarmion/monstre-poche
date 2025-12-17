@@ -1,14 +1,24 @@
 package src.com.esiea.monstre.poche.entites;
 
+import java.util.ArrayList;
+
+import src.com.esiea.monstre.poche.inventaire.medicaments.Medicament;
+import src.com.esiea.monstre.poche.inventaire.potions.Potion;
+
 public class Joueur {
     private String nomJoueur;
     private boolean enAttenteAtion;
-    private Monstre[] monstres;
+    private ArrayList<Monstre> monstres;
     private Monstre monstreActuel;
+    private ArrayList<Potion> potions;
+    private ArrayList<Medicament> medicaments;
 
     public Joueur(String nomJoueur) {
         this.nomJoueur = nomJoueur;
         this.enAttenteAtion = false;
+        this.monstres = new ArrayList<Monstre>();
+        this.potions = new ArrayList<Potion>();
+        this.medicaments = new ArrayList<Medicament>();
     }
 
     public String getNomJoueur() {
@@ -19,12 +29,20 @@ public class Joueur {
         return enAttenteAtion;
     }
 
-    public Monstre[] getMonstres() {
+    public ArrayList<Monstre> getMonstres() {
         return monstres;
     }
 
     public Monstre getMonstreActuel() {
         return monstreActuel;
+    }
+
+    public ArrayList<Potion> getPotions() {
+        return potions;
+    }
+
+    public ArrayList<Medicament> getMedicaments() {
+        return medicaments;
     }
 
     public void setNomJoueur(String nomJoueur) {
@@ -35,7 +53,7 @@ public class Joueur {
         this.enAttenteAtion = enAttenteAtion;
     }
 
-    public void setMonstres(Monstre[] monstres) {
+    public void setMonstres(ArrayList<Monstre> monstres) {
         this.monstres = monstres;
     }
 
@@ -43,8 +61,16 @@ public class Joueur {
         this.monstreActuel = monstreActuel;
     }
 
+    public void setPotions(ArrayList<Potion> potions) {
+        this.potions = potions;
+    }
+
+    public void setMedicaments(ArrayList<Medicament> medicaments) {
+        this.medicaments = medicaments;
+    }
+
     public void ajouterMonstre(Monstre monstre) {
-        if (monstres.length >= 3) {
+        if (monstres.size() >= 3) {
             return;
         }
 
@@ -57,25 +83,35 @@ public class Joueur {
             }
             cptMonstres++;
         }
-        if (!estMonstrePresentDansListe ) {
-            monstres[cptMonstres] = monstre;
+        if (!estMonstrePresentDansListe) {
+            monstres.add(monstre);
+        } else {
+            System.out.println("Le monstre est déjà dans la liste");
+        }
+        
+        if (cptMonstres >= 3) {
+            System.out.println("La liste de monstres est pleine");
         }
     }
 
-    public void choisirAttaque() {
-        // Logique pour choisir une attaque
+    public void ajouterPotion(Potion potion) {
+        this.potions.add(potion);
     }
 
-    public void choisirObjet() {
-        // Logique pour choisir un objet
+    public void ajouterMedicament(Medicament medicament) {
+        this.medicaments.add(medicament);
     }
 
-    public void changerMonstre() {
-        // Logique pour changer de monstre
+    public void choisirMonstre(Monstre nouveauMonstre) {
+        this.monstreActuel = nouveauMonstre;
     }
 
     public boolean sontMonstresMorts() {
-        // Logique pour vérifier si tous les monstres du joueur sont morts
-        return false; // Valeur par défaut, à remplacer par la logique réelle
+        for (Monstre m : monstres) {
+            if (m.getPointsDeVie() > 0) {
+                return false;
+            }
+        }
+        return true;
     }
 }

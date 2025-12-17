@@ -10,14 +10,13 @@ public class PotionSante extends Potion {
         this.pointsDeSoin = pointsDeSoin;
     }
 
-    public int getPointsDeSoin() {
-        return pointsDeSoin;
-    }
-
-    public void setPointsDeSoin(int pointsDeSoin) {
-        this.pointsDeSoin = pointsDeSoin;
-    }
-
     @Override
-    public void utiliserPotion(Monstre cible) {}
+    public void utiliserPotion(Monstre cible) {
+        System.out.println("Utilisation de " + this.nomObjet + " sur " + cible.getNomMonstre());
+        if (cible.getPointsDeVie() + this.pointsDeSoin > cible.getPointsDeVieMax()) {
+            cible.setPointsDeVie(cible.getPointsDeVieMax());
+        } else {
+            cible.setPointsDeVie(cible.getPointsDeVie() + this.pointsDeSoin);
+        }
+    }
 }
