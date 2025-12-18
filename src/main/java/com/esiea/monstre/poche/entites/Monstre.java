@@ -158,6 +158,10 @@ public class Monstre {
             System.out.println("\n[COMBAT] " + this.nomMonstre + " attaque " + cible.getNomMonstre() + " avec " + (attaqueUtilisee != null ? attaqueUtilisee.getNomAttaque() : "ses mains nues") + ".");
             System.out.println("         Degats infliges : " + (int) degatsAffliges);
 
+            if (cible.getPointsDeVie() == 0) {
+                System.out.println("         " + cible.getNomMonstre() + " est KO !");
+            }
+
             // les effets de l'attaque sepciale du monstre si elle est pas ratee
             AffinitesUtils.appliqueCapaciteSpeciale(typeMonstre, cible, terrain);
         }

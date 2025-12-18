@@ -34,4 +34,51 @@ public class GameVisual {
     public static String formatterAttaque(Attaque attaque) {
         return String.format("%-18s | Puissance:%-3d | Type:%s", attaque.getNomAttaque(), attaque.getPuissanceAttaque(), attaque.getTypeAttaque().getLabelType());
     }
+
+    /**
+     * Affiche le menu de sélection du mode de jeu
+     * @param scanner Le scanner pour lire l'entrée utilisateur
+     * @return 1 pour jouer contre un Bot, 2 pour jouer à deux joueurs locaux
+     */
+    public static int afficherMenuModeJeu(Scanner scanner) {
+        afficherTitreSection("MONSTRE POCHE - Selection du mode de jeu");
+        
+        System.out.println();
+        System.out.println("  [1] Jouer contre un Bot");
+        System.out.println("  [2] Jouer à deux joueurs (local)");
+        System.out.println();
+        
+        String choix = demanderSaisie(scanner, "Votre choix (1 ou 2) >");
+        
+        while (!choix.equals("1") && !choix.equals("2")) {
+            afficherErreur("Choix invalide. Veuillez entrer 1 ou 2.");
+            choix = demanderSaisie(scanner, "Votre choix (1 ou 2) >");
+        }
+        
+        return Integer.parseInt(choix);
+    }
+
+    /**
+     * Affiche le menu de sélection du niveau de difficulté du Bot
+     * @param scanner Le scanner pour lire l'entrée utilisateur
+     * @return 1 pour facile, 2 pour moyen, 3 pour difficile
+     */
+    public static int afficherMenuDifficulteBot(Scanner scanner) {
+        afficherTitreSection("Selection du niveau de difficulte du Bot");
+        
+        System.out.println();
+        System.out.println("  [1] Facile");
+        System.out.println("  [2] Moyen");
+        System.out.println("  [3] Difficile");
+        System.out.println();
+        
+        String choix = demanderSaisie(scanner, "Votre choix (1, 2 ou 3) >");
+        
+        while (!choix.equals("1") && !choix.equals("2") && !choix.equals("3")) {
+            afficherErreur("Choix invalide. Veuillez entrer 1, 2 ou 3.");
+            choix = demanderSaisie(scanner, "Votre choix (1, 2 ou 3) >");
+        }
+        
+        return Integer.parseInt(choix);
+    }
 }

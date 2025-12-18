@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import com.esiea.monstre.poche.actions.Attaque;
 import com.esiea.monstre.poche.affinites.Normal;
+import com.esiea.monstre.poche.combats.Combat;
 import com.esiea.monstre.poche.entites.Joueur;
 import com.esiea.monstre.poche.entites.Monstre;
 import com.esiea.monstre.poche.entites.Terrain;

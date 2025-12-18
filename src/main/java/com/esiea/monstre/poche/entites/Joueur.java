@@ -32,6 +32,14 @@ public class Joueur {
         this.monstreActuel = monstreActuel;
     }
 
+    public void switchMonstreActuelAuto() {
+        for (Monstre monstre : this.getMonstres()) {
+            if (monstre.getPointsDeVie() > 0) {
+                this.monstreActuel = monstre;
+            }
+        }
+    }
+
     public ArrayList<Objet> getObjets() {
         return objets;
     }
