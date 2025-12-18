@@ -108,7 +108,8 @@ public class AttaqueLoader extends ResourceLoader<Attaque> {
         }
     }
 
-    public Attaque getAttaqueParNom(String nom) {
+    @Override
+    public Attaque getRessourceParNom(String nom) {
         return ressources.stream()
                 .filter(a -> a.getNomAttaque().equalsIgnoreCase(nom))
                 .findFirst()

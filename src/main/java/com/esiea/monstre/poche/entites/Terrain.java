@@ -22,4 +22,8 @@ public class Terrain {
     public StatutTerrain getStatutTerrain() {
         return this.statutTerrain;
     }
+
+    public boolean estInnonde() {
+        return this.statutTerrain.getLabelStatut().equals("Innonde");
+    }
 }

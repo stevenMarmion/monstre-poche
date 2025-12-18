@@ -1,7 +1,5 @@
 package com.esiea.monstre.poche.etats;
 
-import com.esiea.monstre.poche.entites.Monstre;
-
 public abstract class StatutMonstre {
     protected String labelStatut;
     protected int nbToursEffet;
@@ -16,6 +14,4 @@ public abstract class StatutMonstre {
     public String getLabelStatut() {
         return this.labelStatut;
     }
-
-    public abstract void appliquerEffets(Monstre cible);
 }

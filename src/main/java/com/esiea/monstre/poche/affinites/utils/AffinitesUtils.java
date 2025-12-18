@@ -1,6 +1,15 @@
 package com.esiea.monstre.poche.affinites.utils;
 
-import com.esiea.monstre.poche.affinites.*;
+import com.esiea.monstre.poche.affinites.Eau;
+import com.esiea.monstre.poche.affinites.Feu;
+import com.esiea.monstre.poche.affinites.Foudre;
+import com.esiea.monstre.poche.affinites.Insecte;
+import com.esiea.monstre.poche.affinites.Nature;
+import com.esiea.monstre.poche.affinites.Plante;
+import com.esiea.monstre.poche.affinites.Terre;
+import com.esiea.monstre.poche.affinites.Type;
+import com.esiea.monstre.poche.entites.Monstre;
+import com.esiea.monstre.poche.entites.Terrain;
 
 /**
  * Classe utilitaire proposant des méthodes pour gérer les types et les comparaisons
@@ -17,7 +26,7 @@ public class AffinitesUtils {
                 return new Feu();
             case "eau":
                 return new Eau();
-            case "electric":
+            case "foudre":
                 return new Foudre();
             case "terre":
                 return new Terre();
@@ -34,6 +43,51 @@ public class AffinitesUtils {
                 System.out.println("Type '%s' non reconnu par le parser. Type Normal appliqué par défaut.");
                 //TODO type normal qui va etre créé par steven
                 return new Nature();
+        }
+    }
+
+
+    public static void appliqueCapaciteSpeciale(Type statut, Monstre cible, Terrain terrain) {
+        switch (statut.getLabelType().toLowerCase()) {
+            case "feu":
+                ((Feu) statut).appliqueCapaciteSpeciale(cible);
+                break;
+            case "eau":
+                ((Eau) statut).appliqueCapaciteSpeciale(terrain);
+                break;
+            case "foudre":
+                ((Foudre) statut).appliqueCapaciteSpeciale(cible);
+                break;
+            case "terre":
+                ((Terre) statut).appliqueCapaciteSpeciale(cible);
+                break;
+            case "plante":
+                ((Plante) statut).appliqueCapaciteSpeciale(cible);
+                break;
+            case "insecte":
+                ((Insecte) statut).appliqueCapaciteSpeciale(cible);
+                break;
+            case "nature":
+                if (terrain.getStatutTerrain().getLabelStatut().equals("Innonde")) {
+                    ((Nature) statut).appliqueCapaciteSpeciale(cible);
+                }
+                break;
+            case "normal":
+                break;
+            default:
+                break;
+        }
+    }
+
+    public static void appliqueCapaciteSpecialeNature(Type statut, Monstre cible, Terrain terrain) {
+        switch (statut.getLabelType().toLowerCase()) {
+            case "nature":
+                if (terrain.getStatutTerrain().getLabelStatut().equals("Innonde")) {
+                    ((Nature) statut).appliqueCapaciteSpeciale(cible);
+                }
+                break;
+            default:
+                break;
         }
     }
 }

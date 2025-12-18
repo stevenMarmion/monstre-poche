@@ -1,7 +1,7 @@
-package src.com.esiea.monstre.poche;
+package com.esiea.monstre.poche;
 
-// import src.com.esiea.monstre.poche.actions.Attaque;
-import src.com.esiea.monstre.poche.loader.AttaqueLoader;
+// import com.esiea.monstre.poche.actions.Attaque;
+import com.esiea.monstre.poche.loader.AttaqueLoader;
 
 public class MonstrePoche {
     public static void main(String[] args) {

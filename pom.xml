@@ -65,7 +65,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.esiea.monstre.poche.Combat</mainClass>
+                            <mainClass>com.esiea.monstre.poche.MonstrePoche</mainClass>
                             <addClasspath>true</addClasspath>
                         </manifest>
                     </archive>
@@ -80,7 +80,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.esiea.monstre.poche.Combat</mainClass>
+                            <mainClass>com.esiea.monstre.poche.MonstrePoche</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
@@ -104,7 +104,7 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.1.0</version>
                 <configuration>
-                    <mainClass>com.esiea.monstre.poche.Combat</mainClass>
+                    <mainClass>com.esiea.monstre.poche.MonstrePoche</mainClass>
                 </configuration>
             </plugin>
         </plugins>

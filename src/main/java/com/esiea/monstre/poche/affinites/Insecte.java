@@ -11,11 +11,13 @@ public class Insecte extends Nature {
         this.labelType = "Insecte";
     }
 
-    public void empoisonner(Monstre cible) {
+    @Override
+    public void appliqueCapaciteSpeciale(Monstre cible) {
         if ((nbTourAttaque % NB_TOUR_MAX_ATTAQUE_EMPOISONNEMENT) == 0) {
             nbTourAttaque++;
             cible.setStatut(new Empoisonne());   
         }
+        super.appliqueCapaciteSpeciale(cible);
     }
     
 }

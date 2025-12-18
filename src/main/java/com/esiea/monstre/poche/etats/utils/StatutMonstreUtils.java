@@ -1,11 +1,11 @@
-package src.com.esiea.monstre.poche.etats.utils;
+package com.esiea.monstre.poche.etats.utils;
 
-import src.com.esiea.monstre.poche.entites.Monstre;
-import src.com.esiea.monstre.poche.etats.Brule;
-import src.com.esiea.monstre.poche.etats.Empoisonne;
-import src.com.esiea.monstre.poche.etats.Paralyse;
-import src.com.esiea.monstre.poche.etats.SousTerre;
-import src.com.esiea.monstre.poche.etats.StatutMonstre;
+import com.esiea.monstre.poche.entites.Monstre;
+import com.esiea.monstre.poche.etats.Brule;
+import com.esiea.monstre.poche.etats.Empoisonne;
+import com.esiea.monstre.poche.etats.Paralyse;
+import com.esiea.monstre.poche.etats.SousTerre;
+import com.esiea.monstre.poche.etats.StatutMonstre;
 
 public class StatutMonstreUtils {
     

@@ -2,31 +2,22 @@ package com.esiea.monstre.poche.entites;
 
 import java.util.ArrayList;
 
-import com.esiea.monstre.poche.inventaire.medicaments.Medicament;
-import com.esiea.monstre.poche.inventaire.potions.Potion;
+import com.esiea.monstre.poche.inventaire.Objet;
 
 public class Joueur {
     private String nomJoueur;
-    private boolean enAttenteAtion;
     private ArrayList<Monstre> monstres;
     private Monstre monstreActuel;
-    private ArrayList<Potion> potions;
-    private ArrayList<Medicament> medicaments;
+    private ArrayList<Objet> objets;
 
     public Joueur(String nomJoueur) {
         this.nomJoueur = nomJoueur;
-        this.enAttenteAtion = false;
         this.monstres = new ArrayList<Monstre>();
-        this.potions = new ArrayList<Potion>();
-        this.medicaments = new ArrayList<Medicament>();
+        this.objets = new ArrayList<Objet>();
     }
 
     public String getNomJoueur() {
         return nomJoueur;
-    }
-
-    public boolean isEnAttenteAtion() {
-        return enAttenteAtion;
     }
 
     public ArrayList<Monstre> getMonstres() {
@@ -37,36 +28,12 @@ public class Joueur {
         return monstreActuel;
     }
 
-    public ArrayList<Potion> getPotions() {
-        return potions;
-    }
-
-    public ArrayList<Medicament> getMedicaments() {
-        return medicaments;
-    }
-
-    public void setNomJoueur(String nomJoueur) {
-        this.nomJoueur = nomJoueur;
-    }
-
-    public void setEnAttenteAtion(boolean enAttenteAtion) {
-        this.enAttenteAtion = enAttenteAtion;
-    }
-
-    public void setMonstres(ArrayList<Monstre> monstres) {
-        this.monstres = monstres;
-    }
-
     public void setMonstreActuel(Monstre monstreActuel) {
         this.monstreActuel = monstreActuel;
     }
 
-    public void setPotions(ArrayList<Potion> potions) {
-        this.potions = potions;
-    }
-
-    public void setMedicaments(ArrayList<Medicament> medicaments) {
-        this.medicaments = medicaments;
+    public ArrayList<Objet> getObjets() {
+        return objets;
     }
 
     public void ajouterMonstre(Monstre monstre) {
@@ -94,12 +61,12 @@ public class Joueur {
         }
     }
 
-    public void ajouterPotion(Potion potion) {
-        this.potions.add(potion);
-    }
-
-    public void ajouterMedicament(Medicament medicament) {
-        this.medicaments.add(medicament);
+    public void ajouterObjet(Objet objet) {
+        if (this.objets.size() <= 5) {
+            if (!this.objets.contains(objet)) {
+                this.objets.add(objet);
+            }
+        }
     }
 
     public void choisirMonstre(Monstre nouveauMonstre) {

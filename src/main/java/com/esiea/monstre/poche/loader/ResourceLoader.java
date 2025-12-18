@@ -55,6 +55,7 @@ public abstract class ResourceLoader<T> {
         return new BufferedReader(new java.io.InputStreamReader(stream));
     }
 
+    public abstract T getRessourceParNom(String nom);
 
     protected abstract void chargerRessources() throws ParseException;
 

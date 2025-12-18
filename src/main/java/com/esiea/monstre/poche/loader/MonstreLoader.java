@@ -155,4 +155,14 @@ public class MonstreLoader extends ResourceLoader<Monstre> {
     private int valeurAleatoire(int min, int max) {
         return min + random.nextInt(max - min + 1);
     }
+
+    @Override
+    public Monstre getRessourceParNom(String nom){
+        for (Monstre monstre: this.ressources){
+            if (monstre.getNomMonstre().equals(nom)){
+                return monstre;
+            }
+        }
+        return null;
+    }
 }

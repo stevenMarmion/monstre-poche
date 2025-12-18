@@ -1,9 +1,9 @@
-package src.com.esiea.monstre.poche.etats.utils;
+package com.esiea.monstre.poche.etats.utils;
 
-import src.com.esiea.monstre.poche.entites.Monstre;
-import src.com.esiea.monstre.poche.entites.Terrain;
-import src.com.esiea.monstre.poche.etats.Asseche;
-import src.com.esiea.monstre.poche.etats.Innonde;
+import com.esiea.monstre.poche.entites.Monstre;
+import com.esiea.monstre.poche.entites.Terrain;
+import com.esiea.monstre.poche.etats.Asseche;
+import com.esiea.monstre.poche.etats.Innonde;
 
 public class StatutTerrainUtils {
     

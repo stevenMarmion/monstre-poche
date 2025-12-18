@@ -1,6 +1,6 @@
-package src.com.esiea.monstre.poche.affinites;
+package com.esiea.monstre.poche.affinites;
 
-import src.com.esiea.monstre.poche.entites.Monstre;
+import com.esiea.monstre.poche.entites.Monstre;
 
 public class Normal extends Type {
     

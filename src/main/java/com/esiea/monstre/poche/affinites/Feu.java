@@ -13,7 +13,8 @@ public class Feu extends Type {
         this.chanceBrulure = Math.random(); // notre VAR, c'est juste un random entre 0 et 1
     }
 
-    public void bruler(Monstre cible) {
+    // @Override
+    public void appliqueCapaciteSpeciale(Monstre cible) {
         if (Math.random() < this.chanceBrulure) {
             cible.setStatut(new Brule());
         }
