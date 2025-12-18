@@ -12,7 +12,8 @@ public class Foudre extends Type {
         this.faibleContre = new Terre();
     }
 
-    public void paralyser(Monstre cible) {
+    // @Override
+    public void appliqueCapaciteSpeciale(Monstre cible) {
         if (Math.random() < CHANCE_PARALYSIE) {
             cible.setStatut(new Paralyse());
         }

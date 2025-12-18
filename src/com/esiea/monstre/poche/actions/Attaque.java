@@ -1,6 +1,7 @@
 package src.com.esiea.monstre.poche.actions;
 
 import src.com.esiea.monstre.poche.affinites.Type;
+import src.com.esiea.monstre.poche.entites.Monstre;
 
 public class Attaque {
     private String nomAttaque;
@@ -55,5 +56,18 @@ public class Attaque {
 
     public void setTypeAttaque(Type typeAttaque) {
         this.typeAttaque = typeAttaque;
+    }
+
+    public double calculeDegatsAttaque(Monstre monstreAttaquant, Monstre cible) {
+        int numerateur = 11 * monstreAttaquant.getAttaque() * this.getPuissanceAttaque();
+        int denominateur = 25 * cible.getDefense();
+        double coeff = 0.85 + (1.0 - 0.85) * Math.random();
+        double avantage = 1;
+        if (this.getTypeAttaque().estFaibleContre().getLabelType().equals(cible.getTypeMonstre().getLabelType())) {
+            avantage = 0.5;
+        } else if (this.getTypeAttaque().estFortContre().getLabelType().equals(cible.getTypeMonstre().getLabelType())) {
+            avantage = 2;
+        }
+        return ((numerateur/denominateur) + 2) * avantage * coeff;
     }
 }

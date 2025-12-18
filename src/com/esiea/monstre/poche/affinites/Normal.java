@@ -1,0 +1,15 @@
+package src.com.esiea.monstre.poche.affinites;
+
+import src.com.esiea.monstre.poche.entites.Monstre;
+
+public class Normal extends Type {
+    
+    public Normal() {
+        this.labelType = "Normal";
+    }
+
+    // @Override
+    public void appliqueCapaciteSpeciale(Monstre cible) {
+        // Pas de capacité spéciale pour le type Normal
+    }
+}

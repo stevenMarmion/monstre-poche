@@ -9,12 +9,11 @@ public class Paralyse extends StatutMonstre {
         this.labelStatut = "Paralyse";
     }
 
-    public boolean rateAttaque(Monstre cible) {
+    public void rateAttaque(Monstre cible) {
         if (Math.random() < CHANCE_RATER_ATTAQUE) {
-            System.out.println(cible.getNomMonstre() + " est paralysé et rate son attaque !");
-            return true;
+            cible.setRateAttaque(true);
         } else {
-            return false;
+            cible.setRateAttaque(false);
         }
     }
 
@@ -25,14 +24,13 @@ public class Paralyse extends StatutMonstre {
         }
     }
 
-    @Override
-    public void appliquerEffets(Monstre cible) {
+    public void appliquerEffets(Monstre cible, double degats) {
         if (this.nbToursEffet > 0) {
             sortParalysie(cible);
+            decrementerNbToursAvecEffet();
             if (cible.getStatut().getLabelStatut().equals("Paralyse")) {
-                rateAttaque(cible); //  A GERER PARCE QUE DU COUP COMMENT ON REMONTE L'INFO QUE L'ATTAQUE A RATE ???
+                rateAttaque(cible);
             }
-            this.decrementerNbToursAvecEffet();
         }
     }
 }

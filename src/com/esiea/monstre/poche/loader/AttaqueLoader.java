@@ -70,7 +70,8 @@
         /**
          * Retourne une attaque par son nom
          */
-        public Attaque getAttaqueParNom(String nom) {
+        @Override
+        public Attaque getRessourceParNom(String nom) {
             return ressources.stream()
                     .filter(a -> a.getNomAttaque().equalsIgnoreCase(nom))
                     .findFirst()

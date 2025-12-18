@@ -10,7 +10,7 @@ public class MedicamentAntiBrulure extends Medicament {
     }
 
     @Override
-    public void utiliserMedicament(Monstre cible) {
+    public void utiliserObjet(Monstre cible) {
         if (cible.getStatut().getLabelStatut().equals("Brulure")) {
             System.out.println("Utilisation de " + this.nomObjet + " sur " + cible.getNomMonstre());
             cible.setStatut(new Normal());
