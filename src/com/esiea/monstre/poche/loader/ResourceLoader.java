@@ -8,8 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import src.com.esiea.monstre.poche.actions.Attaque;
-import src.com.esiea.monstre.poche.entites.Monstre;
+// import src.com.esiea.monstre.poche.actions.Attaque;
+// import src.com.esiea.monstre.poche.entites.Monstre;
 
 /**
  * Classe abstraite définissant le contrat de base pour tous les loaders de ressources

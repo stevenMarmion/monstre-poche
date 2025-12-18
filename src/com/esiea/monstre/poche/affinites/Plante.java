@@ -10,10 +10,11 @@ public class Plante extends Nature {
         this.labelType = "Plante";
     }
 
-    @Override
+    // @Override
     public void appliqueCapaciteSpeciale(Monstre cible) {
         if (CHANCE_SOIN < Math.random()) {
             cible.setStatut(new Normal());
         }
+        super.appliqueCapaciteSpeciale(cible);
     }
 }

@@ -17,6 +17,7 @@ public class Insecte extends Nature {
             nbTourAttaque++;
             cible.setStatut(new Empoisonne());   
         }
+        super.appliqueCapaciteSpeciale(cible);
     }
     
 }

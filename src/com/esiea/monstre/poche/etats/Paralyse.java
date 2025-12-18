@@ -9,8 +9,12 @@ public class Paralyse extends StatutMonstre {
         this.labelStatut = "Paralyse";
     }
 
-    public boolean rateAttaque(Monstre cible) {
-        return (Math.random() < CHANCE_RATER_ATTAQUE);
+    public void rateAttaque(Monstre cible) {
+        if (Math.random() < CHANCE_RATER_ATTAQUE) {
+            cible.setRateAttaque(true);
+        } else {
+            cible.setRateAttaque(false);
+        }
     }
 
     public void sortParalysie(Monstre cible) {
@@ -20,15 +24,13 @@ public class Paralyse extends StatutMonstre {
         }
     }
 
-    public boolean appliquerEffets(Monstre cible, double degats) {
+    public void appliquerEffets(Monstre cible, double degats) {
         if (this.nbToursEffet > 0) {
             sortParalysie(cible);
             decrementerNbToursAvecEffet();
             if (cible.getStatut().getLabelStatut().equals("Paralyse")) {
-                return rateAttaque(cible);
-            } 
-            return false;
+                rateAttaque(cible);
+            }
         }
-        return false;
     }
 }

@@ -9,6 +9,7 @@ import src.com.esiea.monstre.poche.affinites.Plante;
 import src.com.esiea.monstre.poche.affinites.Terre;
 import src.com.esiea.monstre.poche.affinites.Type;
 import src.com.esiea.monstre.poche.entites.Monstre;
+import src.com.esiea.monstre.poche.entites.Terrain;
 
 /**
  * Classe utilitaire proposant des méthodes pour gérer les types et les comparaisons
@@ -46,13 +47,13 @@ public class AffinitesUtils {
     }
 
 
-    public static void appliqueCapaciteSpeciale(Type statut, Monstre cible) {
+    public static void appliqueCapaciteSpeciale(Type statut, Monstre cible, Terrain terrain) {
         switch (statut.getLabelType().toLowerCase()) {
             case "feu":
                 ((Feu) statut).appliqueCapaciteSpeciale(cible);
                 break;
             case "eau":
-                ((Eau) statut).appliqueCapaciteSpeciale(cible);
+                ((Eau) statut).appliqueCapaciteSpeciale(terrain);
                 break;
             case "foudre":
                 ((Foudre) statut).appliqueCapaciteSpeciale(cible);
@@ -67,9 +68,23 @@ public class AffinitesUtils {
                 ((Insecte) statut).appliqueCapaciteSpeciale(cible);
                 break;
             case "nature":
-                ((Nature) statut).appliqueCapaciteSpeciale(cible);
+                if (terrain.getStatutTerrain().getLabelStatut().equals("Innonde")) {
+                    ((Nature) statut).appliqueCapaciteSpeciale(cible);
+                }
                 break;
             case "normal":
+                break;
+            default:
+                break;
+        }
+    }
+
+    public static void appliqueCapaciteSpecialeNature(Type statut, Monstre cible, Terrain terrain) {
+        switch (statut.getLabelType().toLowerCase()) {
+            case "nature":
+                if (terrain.getStatutTerrain().getLabelStatut().equals("Innonde")) {
+                    ((Nature) statut).appliqueCapaciteSpeciale(cible);
+                }
                 break;
             default:
                 break;

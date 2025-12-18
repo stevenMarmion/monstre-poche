@@ -8,7 +8,7 @@ public class Normal extends Type {
         this.labelType = "Normal";
     }
 
-    @Override
+    // @Override
     public void appliqueCapaciteSpeciale(Monstre cible) {
         // Pas de capacité spéciale pour le type Normal
     }
