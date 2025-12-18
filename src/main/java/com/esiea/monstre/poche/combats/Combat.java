@@ -1,4 +1,4 @@
-package com.esiea.monstre.poche;
+package com.esiea.monstre.poche.combats;
 
 import java.util.Scanner;
 
@@ -17,8 +17,8 @@ import com.esiea.monstre.poche.visual.GameVisual;
 // import com.esiea.monstre.poche.loader.PotionLoader;
 
 public class Combat {
-    private Joueur joueur1;
-    private Joueur joueur2;
+    public Joueur joueur1;
+    public Joueur joueur2;
 
     private Terrain terrain;
     private final Scanner scanner = new Scanner(System.in);
@@ -62,20 +62,28 @@ public class Combat {
         }
 
         while (joueur.getMonstres().size() < 3) {
-            String monstreChoisi = GameVisual.demanderSaisie(this.scanner, "Choix " + (joueur.getMonstres().size() + 1) + "/3 >");
-            Monstre monstreCharge = monstreLoader.getRessourceParNom(monstreChoisi);
+            String choixInput = GameVisual.demanderSaisie(this.scanner, "Choix " + (joueur.getMonstres().size() + 1) + "/3 >");
+            
+            try {
+                int indexChoisi = Integer.parseInt(choixInput);
+                
+                if (indexChoisi < 1 || indexChoisi > monstreLoader.getRessources().size()) {
+                    GameVisual.afficherErreur("Index invalide. Veuillez choisir un nombre entre 1 et " + monstreLoader.getRessources().size());
+                    continue;
+                }
+                
+                Monstre monstreCharge = monstreLoader.getRessources().get(indexChoisi - 1);
+                
+                if (joueur.getMonstres().contains(monstreCharge)) {
+                    GameVisual.afficherErreur("Ce monstre a deja ete selectionne.");
+                    continue;
+                }
 
-            if (monstreCharge == null) {
-                GameVisual.afficherErreur("Monstre introuvable. Merci de saisir un nom valide.");
-                continue;
+                joueur.ajouterMonstre(monstreCharge);
+                System.out.println("  [OK] Monstre ajoute : " + monstreCharge.getNomMonstre());
+            } catch (NumberFormatException e) {
+                GameVisual.afficherErreur("Saisie invalide. Veuillez entrer un numero.");
             }
-            if (joueur.getMonstres().contains(monstreCharge)) {
-                GameVisual.afficherErreur("Ce monstre a deja ete selectionne.");
-                continue;
-            }
-
-            joueur.ajouterMonstre(monstreCharge);
-            System.out.println("  [OK] Monstre ajoute : " + monstreCharge.getNomMonstre());
         }
         joueur.setMonstreActuel(joueur.getMonstres().get(0));
         System.out.println("Monstre actif initial : " + joueur.getMonstreActuel().getNomMonstre());
@@ -85,29 +93,44 @@ public class Combat {
         GameVisual.afficherTitreSection("Selection des attaques - " + joueur.getNomJoueur());
         for (Monstre monstre : joueur.getMonstres()) {
             GameVisual.afficherSousTitre("Monstre : " + monstre.getNomMonstre());
-            int index = 1;
+            
+            // Créer une liste des attaques compatibles
+            java.util.ArrayList<Attaque> attaquesCompatibles = new java.util.ArrayList<>();
             for (Attaque attaque : attaqueLoader.getRessources()) {
                 if (monstre.getTypeMonstre().getLabelType().equals(attaque.getTypeAttaque().getLabelType())) {
-                    System.out.println(String.format("[%d] %s", index++, GameVisual.formatterAttaque(attaque)));
+                    attaquesCompatibles.add(attaque);
                 }
+            }
+            
+            // Afficher avec index
+            int index = 1;
+            for (Attaque attaque : attaquesCompatibles) {
+                System.out.println(String.format("[%d] %s", index++, GameVisual.formatterAttaque(attaque)));
             }
 
             while (monstre.getAttaques().size() < 4) {
-                String nomAttaque = GameVisual.demanderSaisie(this.scanner, "Choix " + (monstre.getAttaques().size() + 1) + "/4 >");
-                Attaque attaqueChargee = attaqueLoader.getRessourceParNom(nomAttaque);
+                String choixInput = GameVisual.demanderSaisie(this.scanner, "Choix " + (monstre.getAttaques().size() + 1) + "/4 >");
+                
+                try {
+                    int indexChoisi = Integer.parseInt(choixInput);
+                    
+                    if (indexChoisi < 1 || indexChoisi > attaquesCompatibles.size()) {
+                        GameVisual.afficherErreur("Index invalide. Veuillez choisir un nombre entre 1 et " + attaquesCompatibles.size());
+                        continue;
+                    }
+                    
+                    Attaque attaqueChargee = attaquesCompatibles.get(indexChoisi - 1);
 
-                if (attaqueChargee == null || !monstre.getTypeMonstre().getLabelType().equals(attaqueChargee.getTypeAttaque().getLabelType())) {
-                    GameVisual.afficherErreur("Attaque introuvable ou non compatible avec le type du monstre.");
-                    continue;
+                    if (monstre.getAttaques().contains(attaqueChargee)) {
+                        GameVisual.afficherErreur("Attaque deja selectionnee pour ce monstre.");
+                        continue;
+                    }
+
+                    monstre.ajouterAttaque(attaqueChargee);
+                    System.out.println("  [OK] Attaque ajoutee pour " + joueur.getNomJoueur() + " : " + attaqueChargee.getNomAttaque() + " (" + monstre.getNomMonstre() + ")");
+                } catch (NumberFormatException e) {
+                    GameVisual.afficherErreur("Saisie invalide. Veuillez entrer un numero.");
                 }
-
-                if (monstre.getAttaques().contains(attaqueChargee)) {
-                    GameVisual.afficherErreur("Attaque deja selectionnee pour ce monstre.");
-                    continue;
-                }
-
-                monstre.ajouterAttaque(attaqueChargee);
-                System.out.println("  [OK] Attaque ajoutee pour " + joueur.getNomJoueur() + " : " + attaqueChargee.getNomAttaque() + " (" + monstre.getNomMonstre() + ")");
             }
         }
     }
@@ -185,21 +208,21 @@ public class Combat {
             System.out.println(String.format("[%d] %s", index++, GameVisual.formatterAttaque(attaque)));
         }
 
-        String nomAttaqueChoisie = GameVisual.demanderSaisie(this.scanner, "Attaque choisie >");
         Attaque attaqueChoisie = null;
-        for (Attaque attaque : monstreActuel.getAttaques()) {
-            if (attaque.getNomAttaque().equalsIgnoreCase(nomAttaqueChoisie)) {
-                attaqueChoisie = attaque;
-            }
-        }
-
         while (attaqueChoisie == null) {
-            GameVisual.afficherErreur("Attaque invalide. Merci de saisir l'intitule exact d'une attaque disponible.");
-            nomAttaqueChoisie = GameVisual.demanderSaisie(this.scanner, "Attaque choisie >");
-            for (Attaque attaque : monstreActuel.getAttaques()) {
-                if (attaque.getNomAttaque().equalsIgnoreCase(nomAttaqueChoisie)) {
-                    attaqueChoisie = attaque;
+            String choixInput = GameVisual.demanderSaisie(this.scanner, "Attaque choisie >");
+            
+            try {
+                int indexChoisi = Integer.parseInt(choixInput);
+                
+                if (indexChoisi < 1 || indexChoisi > monstreActuel.getAttaques().size()) {
+                    GameVisual.afficherErreur("Index invalide. Veuillez choisir un nombre entre 1 et " + monstreActuel.getAttaques().size());
+                    continue;
                 }
+                
+                attaqueChoisie = monstreActuel.getAttaques().get(indexChoisi - 1);
+            } catch (NumberFormatException e) {
+                GameVisual.afficherErreur("Saisie invalide. Veuillez entrer un numero.");
             }
         }
         return attaqueChoisie;
@@ -239,21 +262,21 @@ public class Combat {
             System.out.println(String.format("[%d] %s", index++, GameVisual.formatterMonstre(monstre)));
         }
 
-        String nomMonstreChoisi = GameVisual.demanderSaisie(this.scanner, "Monstre envoye >");
         Monstre monstreChoisi = null;
-        for (Monstre monstre : joueur.getMonstres()) {
-            if (monstre.getNomMonstre().equalsIgnoreCase(nomMonstreChoisi)) {
-                monstreChoisi = monstre;
-            }
-        }
-
         while (monstreChoisi == null) {
-            GameVisual.afficherErreur("Monstre introuvable. Merci de saisir un nom de monstre disponible.");
-            nomMonstreChoisi = GameVisual.demanderSaisie(this.scanner, "Monstre envoye >");
-            for (Monstre monstre : joueur.getMonstres()) {
-                if (monstre.getNomMonstre().equalsIgnoreCase(nomMonstreChoisi)) {
-                    monstreChoisi = monstre;
+            String choixInput = GameVisual.demanderSaisie(this.scanner, "Monstre envoye >");
+            
+            try {
+                int indexChoisi = Integer.parseInt(choixInput);
+                
+                if (indexChoisi < 1 || indexChoisi > joueur.getMonstres().size()) {
+                    GameVisual.afficherErreur("Index invalide. Veuillez choisir un nombre entre 1 et " + joueur.getMonstres().size());
+                    continue;
                 }
+                
+                monstreChoisi = joueur.getMonstres().get(indexChoisi - 1);
+            } catch (NumberFormatException e) {
+                GameVisual.afficherErreur("Saisie invalide. Veuillez entrer un numero.");
             }
         }
         return monstreChoisi;
@@ -278,9 +301,21 @@ public class Combat {
             if (joueur1.getMonstreActuel().getVitesse() > joueur2.getMonstreActuel().getVitesse()) {
                 joueur1.getMonstreActuel().attaquer(joueur2.getMonstreActuel(), terrain, (Attaque) actionJoueur1);
                 joueur2.getMonstreActuel().attaquer(joueur1.getMonstreActuel(), terrain, (Attaque) actionJoueur2);
+
+                if (joueur1.getMonstreActuel().getPointsDeVie() == 0) {
+                    joueur1.switchMonstreActuelAuto();
+                } else if (joueur2.getMonstreActuel().getPointsDeVie() == 0) {
+                    joueur2.switchMonstreActuelAuto();
+                }
             } else {
                 joueur2.getMonstreActuel().attaquer(joueur1.getMonstreActuel(), terrain, (Attaque) actionJoueur2);
                 joueur1.getMonstreActuel().attaquer(joueur2.getMonstreActuel(), terrain, (Attaque) actionJoueur1);
+
+                if (joueur1.getMonstreActuel().getPointsDeVie() == 0) {
+                    joueur1.switchMonstreActuelAuto();
+                } else if (joueur2.getMonstreActuel().getPointsDeVie() == 0) {
+                    joueur2.switchMonstreActuelAuto();
+                }
             }
         } else if (actionJoueur1 instanceof Attaque) {
             joueur1.getMonstreActuel().attaquer(joueur2.getMonstreActuel(), terrain, (Attaque) actionJoueur1);
