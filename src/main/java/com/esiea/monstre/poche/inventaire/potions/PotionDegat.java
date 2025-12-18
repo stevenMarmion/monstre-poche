@@ -10,14 +10,6 @@ public class PotionDegat extends Potion {
         this.pointsDeDegat = pointsDeDegat;
     }
 
-    public int getPointsDeDegat() {
-        return pointsDeDegat;
-    }
-
-    public void setPointsDeDegat(int pointsDeDegat) {
-        this.pointsDeDegat = pointsDeDegat;
-    }
-
     @Override
     public void utiliserObjet(Monstre cible) {
         System.out.println("Utilisation de " + this.nomObjet + " sur " + cible.getNomMonstre());

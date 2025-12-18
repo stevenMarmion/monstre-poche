@@ -2,6 +2,7 @@ package com.esiea.monstre.poche.loader;
 
 // import com.esiea.monstre.poche.actions.Attaque;
 import com.esiea.monstre.poche.affinites.Type;
+
 import com.esiea.monstre.poche.affinites.utils.AffinitesUtils;
 import com.esiea.monstre.poche.entites.Monstre;
 

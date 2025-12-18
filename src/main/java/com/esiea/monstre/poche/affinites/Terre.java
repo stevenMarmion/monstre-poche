@@ -12,7 +12,6 @@ public class Terre extends Type {
         this.faibleContre = "Nature";
     }
 
-    // @Override
     public void appliqueCapaciteSpeciale(Monstre cible) {
         boolean fuite = Math.random() < CHANCE_FUITE;
         if (fuite) {

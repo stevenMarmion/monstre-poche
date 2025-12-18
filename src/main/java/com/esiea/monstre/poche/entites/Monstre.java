@@ -2,6 +2,7 @@ package com.esiea.monstre.poche.entites;
 
 import com.esiea.monstre.poche.actions.Attaque;
 import com.esiea.monstre.poche.affinites.Type;
+
 import com.esiea.monstre.poche.affinites.utils.AffinitesUtils;
 import com.esiea.monstre.poche.etats.Normal;
 import com.esiea.monstre.poche.etats.StatutMonstre;
@@ -179,5 +180,18 @@ public class Monstre {
                 ", defense=" + defense +
                 ", vitesse=" + vitesse +
                 ')';
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+
+        Monstre monstre = (Monstre) obj;
+        return nomMonstre.equals(monstre.nomMonstre) && pointsDeVie == monstre.pointsDeVie && attaque == monstre.attaque && defense == monstre.defense && vitesse == monstre.vitesse;
     }
 }

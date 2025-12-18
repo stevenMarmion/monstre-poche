@@ -1,5 +1,6 @@
 package com.esiea.monstre.poche.etats.utils;
 
+
 import com.esiea.monstre.poche.entites.Monstre;
 import com.esiea.monstre.poche.etats.Brule;
 import com.esiea.monstre.poche.etats.Empoisonne;
@@ -24,6 +25,7 @@ public class StatutMonstreUtils {
                 ((SousTerre) statutMonstre).appliquerEffets(cible);
                 break;
             default:
+                // System.err.println(new TypeIconnuException("Statut inconnu: " + statutMonstre.getLabelStatut()));
                 break;
         }
     }

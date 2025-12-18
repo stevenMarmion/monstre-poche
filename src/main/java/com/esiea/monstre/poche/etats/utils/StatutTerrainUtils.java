@@ -19,6 +19,7 @@ public class StatutTerrainUtils {
                 ((Asseche) terrain.getStatutTerrain()).appliquerEffets(terrain);
                 break;
             default:
+                // System.err.println(new TypeIconnuException("Statut de terrain inconnu: " + terrain.getStatutTerrain().getLabelStatut()));
                 break;
         }
     }

@@ -12,7 +12,6 @@ public class Plante extends Nature {
         this.faibleContre = "Feu";
     }
 
-    // @Override
     public void appliqueCapaciteSpeciale(Monstre cible) {
         if (CHANCE_SOIN < Math.random()) {
             cible.setStatut(new Normal());

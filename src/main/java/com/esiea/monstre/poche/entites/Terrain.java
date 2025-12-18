@@ -26,4 +26,22 @@ public class Terrain {
     public boolean estInnonde() {
         return this.statutTerrain.getLabelStatut().equals("Innonde");
     }
+
+    @Override
+    public String toString() {
+        return String.format("Terrain: %s | Statut: %s", this.nomTerrain, this.statutTerrain.getLabelStatut());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+
+        Terrain terrain = (Terrain) obj;
+        return nomTerrain.equals(terrain.nomTerrain) && statutTerrain == terrain.statutTerrain;
+    }
 }

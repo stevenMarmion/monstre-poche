@@ -38,16 +38,20 @@ public class AffinitesUtils {
             case "nature":
                 return new Nature();
             case "normal":
-            //TODO type normal qui va etre créé par steven
                 return new Normal();
             default:
-                System.out.println("Type '%s' non reconnu par le parser. Type Normal appliqué par défaut.");
-                //TODO type normal qui va etre créé par steven
+                // System.err.println(new TypeIconnuException(String.format("Type '%s' non reconnu par le parser. Type Normal appliqué par défaut.", typeStr)));
                 return new Normal();
         }
     }
 
-
+    /**
+     * Applique la capacité spéciale d'un type à un monstre cible en fonction du type
+     * 
+     * @param statut le type dont la capacité spéciale doit être appliquée
+     * @param cible le monstre cible
+     * @param terrain le terrain actuel
+     */
     public static void appliqueCapaciteSpeciale(Type statut, Monstre cible, Terrain terrain) {
         switch (statut.getLabelType().toLowerCase()) {
             case "feu":
@@ -76,10 +80,18 @@ public class AffinitesUtils {
             case "normal":
                 break;
             default:
+                // System.err.println(new TypeIconnuException("Type inconnu: " + statut.getLabelType()));
                 break;
         }
     }
 
+    /**
+     * Applique la capacité spéciale du type Nature si le terrain est Inondé
+     * 
+     * @param statut le type dont la capacité spéciale doit être appliquée
+     * @param cible le monstre cible
+     * @param terrain le terrain actuel
+     */
     public static void appliqueCapaciteSpecialeNature(Type statut, Monstre cible, Terrain terrain) {
         switch (statut.getLabelType().toLowerCase()) {
             case "nature":
@@ -88,6 +100,7 @@ public class AffinitesUtils {
                 }
                 break;
             default:
+                // System.err.println(new TypeIconnuException("Type inconnu: " + statut.getLabelType()));
                 break;
         }
     }

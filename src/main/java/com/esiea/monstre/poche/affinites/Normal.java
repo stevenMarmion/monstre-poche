@@ -10,7 +10,6 @@ public class Normal extends Type {
         this.faibleContre = "Nature";
     }
 
-    // @Override
     public void appliqueCapaciteSpeciale(Monstre cible) {
         // Pas de capacité spéciale pour le type Normal
     }
