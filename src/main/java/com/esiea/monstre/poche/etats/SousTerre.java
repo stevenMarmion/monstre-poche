@@ -14,7 +14,8 @@ public class SousTerre extends StatutMonstre {
 
     public void appliquerEffets(Monstre cible) {
         if (this.nbToursEffet > 0) {
-            if (!cible.getStatut().getLabelStatut().equals("SousTerre")) {
+            // on double la défense du monstre la première fois qu'il entre sous terre
+            if (this.nbToursAvecEffet == nbToursEffet) {
                 cible.setDefense(cible.getDefense() * 2);
                 System.out.println(cible.getNomMonstre() + " est maintenant sous terre, sa défense double !");
             }
