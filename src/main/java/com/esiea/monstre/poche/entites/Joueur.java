@@ -29,7 +29,7 @@ public class Joueur {
     }
 
     public void setMonstreActuel(Monstre monstreActuel) {
-        System.out.println("Le joueur " + this.nomJoueur + " change de monstre actuel pour " + monstreActuel.getNomMonstre());
+        System.out.println("[CHANGEMENT] " + this.nomJoueur + " envoie " + monstreActuel.getNomMonstre() + " au combat.");
         this.monstreActuel = monstreActuel;
     }
 
@@ -54,11 +54,11 @@ public class Joueur {
         if (!estMonstrePresentDansListe) {
             monstres.add(monstre);
         } else {
-            System.out.println("Le monstre est déjà dans la liste");
+            System.out.println("[INFO] Monstre deja present dans la liste.");
         }
         
         if (cptMonstres >= 3) {
-            System.out.println("La liste de monstres est pleine");
+            System.out.println("[INFO] La liste de monstres est pleine.");
         }
     }
 

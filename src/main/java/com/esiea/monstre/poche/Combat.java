@@ -20,6 +20,8 @@ public class Combat {
     private Joueur joueur2;
 
     private Terrain terrain;
+    private static final String SECTION_DIVIDER = "----------------------------------------";
+    private final Scanner scanner = new Scanner(System.in);
 
     public Combat(Joueur joueur1, Joueur joueur2, Terrain terrain) {
         this.joueur1 = joueur1;
@@ -52,37 +54,61 @@ public class Combat {
     }
 
     public void selectionnerMonstre(MonstreLoader monstreLoader, Joueur joueur) {
-        System.out.println("");
+        afficherTitreSection("Selection des monstres - " + joueur.getNomJoueur());
+        afficherSousTitre("Monstres disponibles");
+        int index = 1;
         for (Monstre monstre : monstreLoader.getRessources()) {
-            System.out.println(monstre);
+            System.out.println(String.format("[%d] %s", index++, formatterMonstre(monstre)));
         }
-        System.out.println(joueur.getNomJoueur() + ", merci de choisir 3 monstres :");
-        Scanner scanner = new Scanner(System.in);
+
         while (joueur.getMonstres().size() < 3) {
-            String monstreChoisi = scanner.next();
-            System.out.println("Monstre ajouté : " + monstreChoisi);
-            joueur.getMonstres().add(monstreLoader.getRessourceParNom(monstreChoisi));
+            String monstreChoisi = demanderSaisie("Choix " + (joueur.getMonstres().size() + 1) + "/3 >");
+            Monstre monstreCharge = monstreLoader.getRessourceParNom(monstreChoisi);
+
+            if (monstreCharge == null) {
+                afficherErreur("Monstre introuvable. Merci de saisir un nom valide.");
+                continue;
+            }
+            if (joueur.getMonstres().contains(monstreCharge)) {
+                afficherErreur("Ce monstre a deja ete selectionne.");
+                continue;
+            }
+
+            joueur.getMonstres().add(monstreCharge);
+            System.out.println("  [OK] Monstre ajoute : " + monstreCharge.getNomMonstre());
         }
         joueur.setMonstreActuel(joueur.getMonstres().get(0));
-        // scanner.close();
+        System.out.println("Monstre actif initial : " + joueur.getMonstreActuel().getNomMonstre());
     }
 
     public void selectionnerAttaque(AttaqueLoader attaqueLoader, Joueur joueur) {
-        System.out.println("");
+        afficherTitreSection("Selection des attaques - " + joueur.getNomJoueur());
         for (Monstre monstre : joueur.getMonstres()) {
-            System.out.println(joueur.getNomJoueur() + ", choisissez les attaques pour le monstre '" + monstre.getNomMonstre() + "' :");
+            afficherSousTitre("Monstre : " + monstre.getNomMonstre());
+            int index = 1;
             for (Attaque attaque : attaqueLoader.getRessources()) {
                 if (monstre.getTypeMonstre().getLabelType().equals(attaque.getTypeAttaque().getLabelType())) {
-                    System.out.println(attaque);
+                    System.out.println(String.format("[%d] %s", index++, formatterAttaque(attaque)));
                 }
             }
-            Scanner scanner = new Scanner(System.in);
+
             while (monstre.getAttaques().size() < 4) {
-                String nomAttaque = scanner.next();
-                System.out.println("Attaque ajoutée pour " + joueur.getNomJoueur() + ": " + nomAttaque + " monstre: " + monstre.getNomMonstre());
-                monstre.ajouterAttaque(attaqueLoader.getRessourceParNom(nomAttaque));
+                String nomAttaque = demanderSaisie("Choix " + (monstre.getAttaques().size() + 1) + "/4 >");
+                Attaque attaqueChargee = attaqueLoader.getRessourceParNom(nomAttaque);
+
+                if (attaqueChargee == null || !monstre.getTypeMonstre().getLabelType().equals(attaqueChargee.getTypeAttaque().getLabelType())) {
+                    afficherErreur("Attaque introuvable ou non compatible avec le type du monstre.");
+                    continue;
+                }
+
+                if (monstre.getAttaques().contains(attaqueChargee)) {
+                    afficherErreur("Attaque deja selectionnee pour ce monstre.");
+                    continue;
+                }
+
+                monstre.ajouterAttaque(attaqueChargee);
+                System.out.println("  [OK] Attaque ajoutee pour " + joueur.getNomJoueur() + " : " + attaqueChargee.getNomAttaque() + " (" + monstre.getNomMonstre() + ")");
             }
-            // scanner.close();
         }
     }
 
@@ -113,22 +139,18 @@ public class Combat {
     }*/
 
     public Object gereChoixAction(Joueur joueur) {
-        System.out.println("Merci de choisir une action " + joueur.getNomJoueur() + " : ");
-        System.out.println("1. Attaquer");
-        System.out.println("2. Utiliser un objet");
-        System.out.println("3. Changer de monstre");
+        afficherTitreSection("Tour de " + joueur.getNomJoueur());
+        Monstre actif = joueur.getMonstreActuel();
+        System.out.println("Monstre actif : " + actif.getNomMonstre() + " | PV " + (int) actif.getPointsDeVie() + "/" + (int) actif.getPointsDeVieMax() + " | ATK " + actif.getAttaque() + " | DEF " + actif.getDefense() + " | VIT " + actif.getVitesse());
+        System.out.println("Actions disponibles :");
+        System.out.println("  1) Attaquer");
+        System.out.println("  2) Utiliser un objet");
+        System.out.println("  3) Changer de monstre");
 
-        Scanner scanner = new Scanner(System.in);
-        String choixAction = scanner.next();
-        // scanner.close();
+        String choixAction = demanderSaisie("Votre choix >");
         while (!choixAction.equals("1") && !choixAction.equals("2") && !choixAction.equals("3")) {
-            System.out.println("Choix invalide, merci de choisir une action " + joueur.getNomJoueur() + " : ");
-            System.out.println("1. Attaquer");
-            System.out.println("2. Utiliser un objet");
-            System.out.println("3. Changer de monstre");
-            scanner = new Scanner(System.in);
-            choixAction = scanner.next();
-            // scanner.close();
+            afficherErreur("Saisie invalide. Merci de choisir 1, 2 ou 3.");
+            choixAction = demanderSaisie("Votre choix >");
         }
 
         Object actionEffectuee = null;
@@ -156,15 +178,14 @@ public class Combat {
     }
 
     public Attaque choixAttaque(Joueur joueur) {
-        System.out.println("Merci de choisir une attaque pour le monstre " + joueur.getMonstreActuel().getNomMonstre() + " de " + joueur.getNomJoueur() + " : ");
         Monstre monstreActuel = joueur.getMonstreActuel();
+        afficherTitreSection("Attaques de " + monstreActuel.getNomMonstre());
+        int index = 1;
         for (Attaque attaque : monstreActuel.getAttaques()) {
-            System.out.println("Nom de l'attaque : " + attaque.getNomAttaque() + " Puissance : " + attaque.getPuissanceAttaque());
+            System.out.println(String.format("[%d] %s", index++, formatterAttaque(attaque)));
         }
 
-        Scanner scanner = new Scanner(System.in);
-        String nomAttaqueChoisie = scanner.next();
-        // scanner.close();
+        String nomAttaqueChoisie = demanderSaisie("Attaque choisie >");
         Attaque attaqueChoisie = null;
         for (Attaque attaque : monstreActuel.getAttaques()) {
             if (attaque.getNomAttaque().equalsIgnoreCase(nomAttaqueChoisie)) {
@@ -173,13 +194,8 @@ public class Combat {
         }
 
         while (attaqueChoisie == null) {
-            System.out.println("Attaque invalide, merci de choisir une attaque pour le monstre " + joueur.getMonstreActuel().getNomMonstre() + " de " + joueur.getNomJoueur() + " : ");
-            for (Attaque attaque : monstreActuel.getAttaques()) {
-                System.out.println("Nom de l'attaque : " + attaque.getNomAttaque() + " Puissance : " + attaque.getPuissanceAttaque());
-            }
-            scanner = new Scanner(System.in);
-            nomAttaqueChoisie = scanner.next();
-            // scanner.close();
+            afficherErreur("Attaque invalide. Merci de saisir l'intitule exact d'une attaque disponible.");
+            nomAttaqueChoisie = demanderSaisie("Attaque choisie >");
             for (Attaque attaque : monstreActuel.getAttaques()) {
                 if (attaque.getNomAttaque().equalsIgnoreCase(nomAttaqueChoisie)) {
                     attaqueChoisie = attaque;
@@ -190,14 +206,13 @@ public class Combat {
     }
 
     public Objet utiliseObjet(Joueur joueur) {
-        System.out.println("Merci de choisir un objet à utiliser : ");
+        afficherTitreSection("Objets de " + joueur.getNomJoueur());
+        int index = 1;
         for (Objet objet : joueur.getObjets()) {
-            System.out.println("Nom de l'objet : " + objet.getNomObjet());
+            System.out.println(String.format("[%d] %s", index++, objet.getNomObjet()));
         }
 
-        Scanner scanner = new Scanner(System.in);
-        String nomObjetChoisi = scanner.next();
-        // scanner.close();
+        String nomObjetChoisi = demanderSaisie("Objet choisi >");
         Objet objetChoisi = null;
         for (Objet objet : joueur.getObjets()) {
             if (objet.getNomObjet().equalsIgnoreCase(nomObjetChoisi)) {
@@ -206,13 +221,8 @@ public class Combat {
         }
 
         while (objetChoisi == null) {
-            System.out.println("Objet invalide, merci de choisir un objet à utiliser : ");
-            for (Objet objet : joueur.getObjets()) {
-                System.out.println("Nom de l'objet : " + objet.getNomObjet());
-            }
-            scanner = new Scanner(System.in);
-            nomObjetChoisi = scanner.next();
-            // scanner.close();
+            afficherErreur("Objet introuvable. Merci de saisir le nom exact d'un objet disponible.");
+            nomObjetChoisi = demanderSaisie("Objet choisi >");
             for (Objet objet : joueur.getObjets()) {
                 if (objet.getNomObjet().equalsIgnoreCase(nomObjetChoisi)) {
                     objetChoisi = objet;
@@ -223,14 +233,13 @@ public class Combat {
     }
 
     public Monstre changeMonstre(Joueur joueur) {
-        System.out.println("Merci de choisir un monstre à envoyer au combat : ");
+        afficherTitreSection("Changement de monstre - " + joueur.getNomJoueur());
+        int index = 1;
         for (Monstre monstre : joueur.getMonstres()) {
-            System.out.println("Nom du monstre : " + monstre.getNomMonstre());
+            System.out.println(String.format("[%d] %s", index++, formatterMonstre(monstre)));
         }
 
-        Scanner scanner = new Scanner(System.in);
-        String nomMonstreChoisi = scanner.next();
-        // scanner.close();
+        String nomMonstreChoisi = demanderSaisie("Monstre envoye >");
         Monstre monstreChoisi = null;
         for (Monstre monstre : joueur.getMonstres()) {
             if (monstre.getNomMonstre().equalsIgnoreCase(nomMonstreChoisi)) {
@@ -239,13 +248,8 @@ public class Combat {
         }
 
         while (monstreChoisi == null) {
-            System.out.println("Monstre invalide, merci de choisir un monstre à envoyer au combat : ");
-            for (Monstre monstre : joueur.getMonstres()) {
-                System.out.println("Nom du monstre : " + monstre.getNomMonstre());
-            }
-            scanner = new Scanner(System.in);
-            nomMonstreChoisi = scanner.next();
-            // scanner.close();
+            afficherErreur("Monstre introuvable. Merci de saisir un nom de monstre disponible.");
+            nomMonstreChoisi = demanderSaisie("Monstre envoye >");
             for (Monstre monstre : joueur.getMonstres()) {
                 if (monstre.getNomMonstre().equalsIgnoreCase(nomMonstreChoisi)) {
                     monstreChoisi = monstre;
@@ -291,5 +295,33 @@ public class Combat {
         } else if (joueur2.sontMonstresMorts()) {
             System.out.println("Le joueur " + joueur1.getNomJoueur() + " a gagné la partie !");
         }
+    }
+
+    private void afficherTitreSection(String titre) {
+        System.out.println("\n" + SECTION_DIVIDER);
+        System.out.println(" " + titre);
+        System.out.println(SECTION_DIVIDER);
+    }
+
+    private void afficherSousTitre(String sousTitre) {
+        System.out.println("  > " + sousTitre);
+    }
+
+    private void afficherErreur(String message) {
+        System.out.println("  [!] " + message);
+    }
+
+    private String demanderSaisie(String invite) {
+        System.out.print(invite + " ");
+        return scanner.nextLine().trim();
+    }
+
+    private String formatterMonstre(Monstre monstre) {
+        return String.format("%-15s | PV:%-4.0f/%-4.0f | ATK:%-3d | DEF:%-3d | VIT:%-3d | Type:%s",
+                monstre.getNomMonstre(), monstre.getPointsDeVie(), monstre.getPointsDeVieMax(), monstre.getAttaque(), monstre.getDefense(), monstre.getVitesse(), monstre.getTypeMonstre().getLabelType());
+    }
+
+    private String formatterAttaque(Attaque attaque) {
+        return String.format("%-18s | Puissance:%-3d | Type:%s", attaque.getNomAttaque(), attaque.getPuissanceAttaque(), attaque.getTypeAttaque().getLabelType());
     }
 }

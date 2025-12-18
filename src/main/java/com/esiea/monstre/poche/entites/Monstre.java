@@ -132,7 +132,7 @@ public class Monstre {
         if (!this.attaques.contains(attaque) && this.attaques.size() < 4) {
             this.attaques.add(attaque);
         } else {
-            System.out.println("Impossible d'ajouter l'attaque " + attaque.getNomAttaque() + " à " + this.nomMonstre + ". Déjà présente ou limite atteinte.");
+            System.out.println("[INFO] Attaque non ajoutee : " + attaque.getNomAttaque() + " deja presente ou limite atteinte pour " + this.nomMonstre + ".");
         }
     }
 
@@ -154,13 +154,14 @@ public class Monstre {
         // notre attaque principal, le process principal
         if (!this.isRateAttaque()) {
             cible.setPointsDeVie(cible.getPointsDeVie() - (int) degatsAffliges);
-            System.out.println(this.nomMonstre + " inflige " + (int) degatsAffliges + " points de dégâts à " + cible.getNomMonstre() + " avec " + (attaqueUtilisee != null ? attaqueUtilisee.getNomAttaque() : "ses mains nues") + ".");
+            System.out.println("\n[COMBAT] " + this.nomMonstre + " attaque " + cible.getNomMonstre() + " avec " + (attaqueUtilisee != null ? attaqueUtilisee.getNomAttaque() : "ses mains nues") + ".");
+            System.out.println("         Degats infliges : " + (int) degatsAffliges);
 
-            // les effets de l'attaque sépciale du monstre si elle est pas ratée
+            // les effets de l'attaque sepciale du monstre si elle est pas ratee
             AffinitesUtils.appliqueCapaciteSpeciale(typeMonstre, cible, terrain);
         }
 
-        System.out.println(cible.getNomMonstre() + " a maintenant " + cible.getPointsDeVie() + " points de vie.");
+        System.out.println("         PV restants pour " + cible.getNomMonstre() + " : " + (int) cible.getPointsDeVie());
     }
 
     public double calculeDegat(Monstre monstreAttaquant, Monstre cible) {
