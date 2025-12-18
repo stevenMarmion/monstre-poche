@@ -91,6 +91,6 @@ public class Joueur {
         }
         
         Joueur other = (Joueur) obj;
-        return (this.nomJoueur.equals(other.getNomJoueur()) && this.monstres == other.getMonstres() && this.monstreActuel == other.getMonstreActuel() && this.objets == other.getObjets());
+        return (this.nomJoueur.equals(other.getNomJoueur()) && this.monstres.equals(other.getMonstres()) && this.objets.equals(other.getObjets()));
     }
 }

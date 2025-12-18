@@ -141,7 +141,7 @@ public class Monstre {
         // on commence par calculer les dégâts, c'est la base de tout
         double degatsAffliges;
         if (attaqueUtilisee == null || !this.attaques.contains(attaqueUtilisee)) {
-            degatsAffliges = calculeDegat(cible, cible);
+            degatsAffliges = calculeDegat(this, cible);
         } else {
             degatsAffliges = attaqueUtilisee.calculeDegatsAttaque(this, cible);
         }
