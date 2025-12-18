@@ -8,14 +8,15 @@ public class Foudre extends Type {
 
     public Foudre() {
         this.labelType = "Foudre";
-        this.fortContre = new Eau();
-        this.faibleContre = new Terre();
+        this.fortContre = "Eau";
+        this.faibleContre = "Terre";
     }
 
     // @Override
     public void appliqueCapaciteSpeciale(Monstre cible) {
         if (Math.random() < CHANCE_PARALYSIE) {
             cible.setStatut(new Paralyse());
+            System.out.println(cible.getNomMonstre() + " est paralysé !");
         }
     }
 }

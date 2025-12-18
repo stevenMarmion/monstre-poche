@@ -5,6 +5,7 @@ import com.esiea.monstre.poche.affinites.Feu;
 import com.esiea.monstre.poche.affinites.Foudre;
 import com.esiea.monstre.poche.affinites.Insecte;
 import com.esiea.monstre.poche.affinites.Nature;
+import com.esiea.monstre.poche.affinites.Normal;
 import com.esiea.monstre.poche.affinites.Plante;
 import com.esiea.monstre.poche.affinites.Terre;
 import com.esiea.monstre.poche.affinites.Type;
@@ -38,11 +39,11 @@ public class AffinitesUtils {
                 return new Nature();
             case "normal":
             //TODO type normal qui va etre créé par steven
-                return new Nature();
+                return new Normal();
             default:
                 System.out.println("Type '%s' non reconnu par le parser. Type Normal appliqué par défaut.");
                 //TODO type normal qui va etre créé par steven
-                return new Nature();
+                return new Normal();
         }
     }
 

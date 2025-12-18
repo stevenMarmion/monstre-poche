@@ -131,6 +131,8 @@ public class Monstre {
     public void ajouterAttaque(Attaque attaque) {
         if (!this.attaques.contains(attaque) && this.attaques.size() < 4) {
             this.attaques.add(attaque);
+        } else {
+            System.out.println("Impossible d'ajouter l'attaque " + attaque.getNomAttaque() + " à " + this.nomMonstre + ". Déjà présente ou limite atteinte.");
         }
     }
 
@@ -144,23 +146,37 @@ public class Monstre {
         }
 
         // ensuite on applique nos effest avant attaque si le pokémon est paralysé ou autre
-        StatutMonstreUtils.appliquerStatutMonstre(statut, this, degatsAffliges);
-        StatutTerrainUtils.appliquerStatutTerrain(terrain, this, degatsAffliges);
+        StatutMonstreUtils.appliquerStatutMonstre(statut, this, (int) degatsAffliges);
+        StatutTerrainUtils.appliquerStatutTerrain(terrain, this, (int) degatsAffliges);
 
         AffinitesUtils.appliqueCapaciteSpecialeNature(typeMonstre, cible, terrain);
 
         // notre attaque principal, le process principal
         if (!this.isRateAttaque()) {
-            cible.setPointsDeVie(cible.getPointsDeVie() - degatsAffliges);
+            cible.setPointsDeVie(cible.getPointsDeVie() - (int) degatsAffliges);
+            System.out.println(this.nomMonstre + " inflige " + (int) degatsAffliges + " points de dégâts à " + cible.getNomMonstre() + " avec " + (attaqueUtilisee != null ? attaqueUtilisee.getNomAttaque() : "ses mains nues") + ".");
 
             // les effets de l'attaque sépciale du monstre si elle est pas ratée
             AffinitesUtils.appliqueCapaciteSpeciale(typeMonstre, cible, terrain);
         }
+
+        System.out.println(cible.getNomMonstre() + " a maintenant " + cible.getPointsDeVie() + " points de vie.");
     }
 
     public double calculeDegat(Monstre monstreAttaquant, Monstre cible) {
         double coef_aleatoire = 0.85 + (1.0 - 0.85) * Math.random();
         double degats = (20 * (monstreAttaquant.getAttaque() / cible.getDefense()) * coef_aleatoire);
         return degats;
+    }
+
+    @Override
+    public String toString() {
+        return "Monstre (" +
+                "nomMonstre='" + nomMonstre + '\'' +
+                ", pointsDeVie=" + pointsDeVie +
+                ", attaque=" + attaque +
+                ", defense=" + defense +
+                ", vitesse=" + vitesse +
+                ')';
     }
 }

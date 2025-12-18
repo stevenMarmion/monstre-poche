@@ -12,8 +12,8 @@ public class Eau extends Type {
 
     public Eau() {
         this.labelType = "Eau";
-        this.fortContre = new Feu();
-        this.faibleContre = new Foudre();
+        this.fortContre = "Feu";
+        this.faibleContre = "Foudre";
         this.probabiliteInnondation = 0.4; // A DEFINIR, PAS DANS LE CDC
         // this.probabiliteFaireChuter = 0.3; //  A DEFINIR, PAS DANS LE CDC
     }
@@ -22,6 +22,7 @@ public class Eau extends Type {
         boolean innonde = Math.random() < this.probabiliteInnondation;
         if (innonde) {
             terrain.setStatutTerrain(new Innonde((int) (Math.random() * NB_TOURS_MAX_INNONDATION) + NB_TOURS_MIN_INNONDATION));
+            System.out.println(terrain.getNomTerrain() + " est innondé !");
         }
     }
 }

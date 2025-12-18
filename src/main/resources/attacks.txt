@@ -1,9 +1,30 @@
 Attack
 Name Eclair
-Type Electric
+Type Foudre
 Power 40
 NbUse 10
 Fail 0.07
+EndAttack
+Attack
+Name Fulguro
+Type Foudre
+Power 50
+NbUse 8
+Fail 0.05
+EndAttack
+Attack
+Name Mega_Foudroyant
+Type Foudre
+Power 60
+NbUse 5
+Fail 0.10
+EndAttack
+Attack
+Name Tempête-Électrique
+Type Foudre
+Power 70
+NbUse 3
+Fail 0.15
 EndAttack
 Attack
 Name Charge
@@ -11,4 +32,165 @@ Type Normal
 Power 35
 NbUse 15
 Fail 0.03
+EndAttack
+Attack
+Name Plaquage
+Type Normal
+Power 30
+NbUse 20
+Fail 0.02
+EndAttack
+Attack
+Name Coup_de_Poing
+Type Normal
+Power 55
+NbUse 6
+Fail 0.08
+EndAttack
+Attack
+Name Morsure-Ténébreuse
+Type Normal
+Power 50
+NbUse 8
+Fail 0.08
+EndAttack
+Attack
+Name Flammèche
+Type Feu
+Power 40
+NbUse 10
+Fail 0.08
+EndAttack
+Attack
+Name Dracochoc
+Type Feu
+Power 60
+NbUse 6
+Fail 0.12
+EndAttack
+Attack
+Name Flammes-Vives
+Type Feu
+Power 70
+NbUse 5
+Fail 0.10
+EndAttack
+Attack
+Name Incendie
+Type Feu
+Power 80
+NbUse 4
+Fail 0.15
+EndAttack
+Attack
+Name Tornade
+Type Plante
+Power 45
+NbUse 8
+Fail 0.10
+EndAttack
+Attack
+Name Feuille-Tranchante
+Type Plante
+Power 50
+NbUse 6
+Fail 0.08
+EndAttack
+Attack
+Name Vigne-Fouettée
+Type Plante
+Power 55
+NbUse 5
+Fail 0.12
+EndAttack
+Attack
+Name Tempête-Florale
+Type Plante
+Power 60
+NbUse 3
+Fail 0.15
+EndAttack
+Attack
+Name Hydrojet
+Type Eau
+Power 40
+NbUse 10
+Fail 0.07
+EndAttack
+Attack
+Name Laser-Glace
+Type Eau
+Power 50
+NbUse 8
+Fail 0.10
+EndAttack
+Attack
+Name Cascade
+Type Eau
+Power 55
+NbUse 6
+Fail 0.09
+EndAttack
+Attack
+Name Pluie-Acide
+Type Eau
+Power 60
+NbUse 4
+Fail 0.12
+EndAttack
+Attack
+Name Tremblement
+Type Terre
+Power 50
+NbUse 5
+Fail 0.12
+EndAttack
+Attack
+Name Séisme
+Type Terre
+Power 60
+NbUse 4
+Fail 0.15
+EndAttack
+Attack
+Name Boule-de-Terre
+Type Terre
+Power 55
+NbUse 6
+Fail 0.10
+EndAttack
+Attack
+Name Éboulement
+Type Terre
+Power 65
+NbUse 3
+Fail 0.18
+EndAttack
+Attack
+Name Poudre-Toxique
+Type Insecte
+Power 25
+NbUse 12
+Fail 0.15
+EndAttack
+Attack
+Name Piqûre
+Type Insecte
+Power 40
+NbUse 10
+Fail 0.06
+EndAttack
+Attack
+Name Venin
+Type Insecte
+Power 30
+NbUse 8
+Fail 0.12
+EndAttack
+Attack
+Name Morsure
+Type Insecte
+Power 35
+NbUse 6
+Fail 0.10
 EndAttack

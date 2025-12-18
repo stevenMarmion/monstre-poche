@@ -10,6 +10,10 @@ public class Nature extends Type {
         double recuperation = cible.getPointsDeVie() * COEF_VINGTIEME;
         if ((cible.getPointsDeVie() + recuperation) > cible.getPointsDeVieMax()) {
             cible.setPointsDeVie(cible.getPointsDeVie() + recuperation);
+            System.out.println(cible.getNomMonstre() + " récupère jusqu'à ses points de vie max !");
+        } else {
+            cible.setPointsDeVie(cible.getPointsDeVie() + recuperation);
+            System.out.println(cible.getNomMonstre() + " récupère " + recuperation + " points de vie.");
         }
     }
 }

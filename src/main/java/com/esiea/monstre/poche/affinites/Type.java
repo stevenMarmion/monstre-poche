@@ -2,18 +2,18 @@ package com.esiea.monstre.poche.affinites;
 
 public abstract class Type {
     protected String labelType;
-    protected Type faibleContre;
-    protected Type fortContre;
+    protected String faibleContre;
+    protected String fortContre;
 
     public String getLabelType() {
         return this.labelType;
     }
     
-    public Type estFortContre() {
+    public String estFortContre() {
         return this.fortContre;
     }
 
-    public Type estFaibleContre() {
+    public String estFaibleContre() {
         return this.faibleContre;
     }
 }

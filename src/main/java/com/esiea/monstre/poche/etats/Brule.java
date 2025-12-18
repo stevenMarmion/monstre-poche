@@ -14,6 +14,7 @@ public class Brule extends StatutMonstre {
             degatsBrule = 0;
         } else {
             cible.setPointsDeVie(cible.getPointsDeVie() - degatsBrule);
+            System.out.println(cible.getNomMonstre() + " subit " + degatsBrule + " points de dégâts de brûlure.");
         }
     }
 }

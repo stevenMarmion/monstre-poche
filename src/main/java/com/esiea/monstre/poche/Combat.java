@@ -7,8 +7,8 @@ import com.esiea.monstre.poche.entites.Joueur;
 import com.esiea.monstre.poche.entites.Monstre;
 import com.esiea.monstre.poche.entites.Terrain;
 import com.esiea.monstre.poche.inventaire.Objet;
-import com.esiea.monstre.poche.inventaire.medicaments.Medicament;
-import com.esiea.monstre.poche.inventaire.potions.Potion;
+// import com.esiea.monstre.poche.inventaire.medicaments.Medicament;
+// import com.esiea.monstre.poche.inventaire.potions.Potion;
 import com.esiea.monstre.poche.loader.AttaqueLoader;
 // import com.esiea.monstre.poche.loader.MedicamentLoader;
 import com.esiea.monstre.poche.loader.MonstreLoader;
@@ -21,6 +21,12 @@ public class Combat {
 
     private Terrain terrain;
 
+    public Combat(Joueur joueur1, Joueur joueur2, Terrain terrain) {
+        this.joueur1 = joueur1;
+        this.joueur2 = joueur2;
+        this.terrain = terrain;
+    }
+
 
     public void executerTour() {
         while ((joueur1.sontMonstresMorts() || joueur2.sontMonstresMorts()) == false) {
@@ -32,33 +38,51 @@ public class Combat {
         this.finDePartie();
     }
 
+    public void lancer(MonstreLoader monstreLoader, AttaqueLoader attaqueLoader /*, PotionLoader potionLoader, MedicamentLoader medicamentLoader*/) {
+        this.selectionnerMonstre(monstreLoader, joueur1);
+        this.selectionnerMonstre(monstreLoader, joueur2);
+
+        this.selectionnerAttaque(attaqueLoader, joueur1);
+        this.selectionnerAttaque(attaqueLoader, joueur2);
+
+        /*this.selectionnerObjet(potionLoader, medicamentLoader, joueur1);
+        this.selectionnerObjet(potionLoader, medicamentLoader, joueur2);*/
+
+        this.executerTour();
+    }
+
     public void selectionnerMonstre(MonstreLoader monstreLoader, Joueur joueur) {
-        while (joueur.getMonstres().size() <= 3) {
-            System.out.println("Merci de choisir un monstre :");
-            for (Monstre monstre : monstreLoader.getRessources()) {
-                System.out.println("Nom du monstre : " + monstre.getNomMonstre() + "Type monstre : " + monstre.getTypeMonstre());
-            }
-            Scanner scanner = new Scanner(System.in);
-            String monstreChoisi = scanner.nextLine();
-            scanner.close();
+        System.out.println("");
+        for (Monstre monstre : monstreLoader.getRessources()) {
+            System.out.println(monstre);
+        }
+        System.out.println(joueur.getNomJoueur() + ", merci de choisir 3 monstres :");
+        Scanner scanner = new Scanner(System.in);
+        while (joueur.getMonstres().size() < 3) {
+            String monstreChoisi = scanner.next();
+            System.out.println("Monstre ajouté : " + monstreChoisi);
             joueur.getMonstres().add(monstreLoader.getRessourceParNom(monstreChoisi));
         }
+        joueur.setMonstreActuel(joueur.getMonstres().get(0));
+        // scanner.close();
     }
 
     public void selectionnerAttaque(AttaqueLoader attaqueLoader, Joueur joueur) {
+        System.out.println("");
         for (Monstre monstre : joueur.getMonstres()) {
-            System.out.println("Choisissez les attaques pour le monstre " + monstre.getNomMonstre() + " :");
-            while (monstre.getAttaques().size() <= 4) {
-                for (Attaque attaque : attaqueLoader.getRessources()) {
-                    if (monstre.getTypeMonstre().getLabelType().equals(attaque.getTypeAttaque().getLabelType())) {
-                        System.out.println("Nom de l'attaque : " + attaque.getNomAttaque() + " Type d'attaque : " + attaque.getTypeAttaque().getLabelType() + " Puissance : " + attaque.getPuissanceAttaque());
-                    }
+            System.out.println(joueur.getNomJoueur() + ", choisissez les attaques pour le monstre '" + monstre.getNomMonstre() + "' :");
+            for (Attaque attaque : attaqueLoader.getRessources()) {
+                if (monstre.getTypeMonstre().getLabelType().equals(attaque.getTypeAttaque().getLabelType())) {
+                    System.out.println(attaque);
                 }
-                Scanner scanner = new Scanner(System.in);
-                String nomAttaque = scanner.nextLine();
-                scanner.close();
+            }
+            Scanner scanner = new Scanner(System.in);
+            while (monstre.getAttaques().size() < 4) {
+                String nomAttaque = scanner.next();
+                System.out.println("Attaque ajoutée pour " + joueur.getNomJoueur() + ": " + nomAttaque + " monstre: " + monstre.getNomMonstre());
                 monstre.ajouterAttaque(attaqueLoader.getRessourceParNom(nomAttaque));
             }
+            // scanner.close();
         }
     }
 
@@ -74,7 +98,7 @@ public class Combat {
 
         while (joueur.getObjets().size() <= 5) {
             Scanner scanner = new Scanner(System.in);
-            String objetChoisi = scanner.nextLine();
+            String objetChoisi = scanner.next();
             scanner.close();
             // on va faire ça en attendant de trouver une meilleure solution
             Potion potionTrouve = potionLoader.getRessourceParNom(objetChoisi);
@@ -95,31 +119,31 @@ public class Combat {
         System.out.println("3. Changer de monstre");
 
         Scanner scanner = new Scanner(System.in);
-        int choixAction = scanner.nextInt();
-        scanner.close();
-        while (choixAction != 1 || choixAction != 2 || choixAction != 3) {
+        String choixAction = scanner.next();
+        // scanner.close();
+        while (!choixAction.equals("1") && !choixAction.equals("2") && !choixAction.equals("3")) {
             System.out.println("Choix invalide, merci de choisir une action " + joueur.getNomJoueur() + " : ");
             System.out.println("1. Attaquer");
             System.out.println("2. Utiliser un objet");
             System.out.println("3. Changer de monstre");
             scanner = new Scanner(System.in);
-            choixAction = scanner.nextInt();
-            scanner.close();
+            choixAction = scanner.next();
+            // scanner.close();
         }
 
         Object actionEffectuee = null;
         switch (choixAction) {
-            case 1:
+            case "1":
                 Attaque attaqueChoisie = this.choixAttaque(joueur);
                 actionEffectuee = attaqueChoisie;
                 // joueur.getMonstreActuel().attaquer(joueur2.getMonstreActuel(), terrain, attaqueChoisie);
                 break;
-            case 2:
+            case "2":
                 Objet objetChoisi = this.utiliseObjet(joueur);
                 actionEffectuee = objetChoisi;
                 // objetChoisi.utiliserObjet(joueur.getMonstreActuel());
                 break;
-            case 3:
+            case "3":
                 Monstre monstreChoisi = this.changeMonstre(joueur);
                 actionEffectuee = monstreChoisi;
                 // joueur.setMonstreActuel(monstreChoisi);
@@ -139,8 +163,8 @@ public class Combat {
         }
 
         Scanner scanner = new Scanner(System.in);
-        String nomAttaqueChoisie = scanner.nextLine();
-        scanner.close();
+        String nomAttaqueChoisie = scanner.next();
+        // scanner.close();
         Attaque attaqueChoisie = null;
         for (Attaque attaque : monstreActuel.getAttaques()) {
             if (attaque.getNomAttaque().equalsIgnoreCase(nomAttaqueChoisie)) {
@@ -154,8 +178,8 @@ public class Combat {
                 System.out.println("Nom de l'attaque : " + attaque.getNomAttaque() + " Puissance : " + attaque.getPuissanceAttaque());
             }
             scanner = new Scanner(System.in);
-            nomAttaqueChoisie = scanner.nextLine();
-            scanner.close();
+            nomAttaqueChoisie = scanner.next();
+            // scanner.close();
             for (Attaque attaque : monstreActuel.getAttaques()) {
                 if (attaque.getNomAttaque().equalsIgnoreCase(nomAttaqueChoisie)) {
                     attaqueChoisie = attaque;
@@ -172,8 +196,8 @@ public class Combat {
         }
 
         Scanner scanner = new Scanner(System.in);
-        String nomObjetChoisi = scanner.nextLine();
-        scanner.close();
+        String nomObjetChoisi = scanner.next();
+        // scanner.close();
         Objet objetChoisi = null;
         for (Objet objet : joueur.getObjets()) {
             if (objet.getNomObjet().equalsIgnoreCase(nomObjetChoisi)) {
@@ -187,8 +211,8 @@ public class Combat {
                 System.out.println("Nom de l'objet : " + objet.getNomObjet());
             }
             scanner = new Scanner(System.in);
-            nomObjetChoisi = scanner.nextLine();
-            scanner.close();
+            nomObjetChoisi = scanner.next();
+            // scanner.close();
             for (Objet objet : joueur.getObjets()) {
                 if (objet.getNomObjet().equalsIgnoreCase(nomObjetChoisi)) {
                     objetChoisi = objet;
@@ -205,8 +229,8 @@ public class Combat {
         }
 
         Scanner scanner = new Scanner(System.in);
-        String nomMonstreChoisi = scanner.nextLine();
-        scanner.close();
+        String nomMonstreChoisi = scanner.next();
+        // scanner.close();
         Monstre monstreChoisi = null;
         for (Monstre monstre : joueur.getMonstres()) {
             if (monstre.getNomMonstre().equalsIgnoreCase(nomMonstreChoisi)) {
@@ -220,8 +244,8 @@ public class Combat {
                 System.out.println("Nom du monstre : " + monstre.getNomMonstre());
             }
             scanner = new Scanner(System.in);
-            nomMonstreChoisi = scanner.nextLine();
-            scanner.close();
+            nomMonstreChoisi = scanner.next();
+            // scanner.close();
             for (Monstre monstre : joueur.getMonstres()) {
                 if (monstre.getNomMonstre().equalsIgnoreCase(nomMonstreChoisi)) {
                     monstreChoisi = monstre;

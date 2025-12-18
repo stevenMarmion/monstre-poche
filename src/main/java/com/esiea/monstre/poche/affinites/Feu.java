@@ -8,8 +8,8 @@ public class Feu extends Type {
 
     public Feu() {
         this.labelType = "Feu";
-        this.fortContre = new Nature();
-        this.faibleContre = new Eau();
+        this.fortContre = "Nature";
+        this.faibleContre = "Eau";
         this.chanceBrulure = Math.random(); // notre VAR, c'est juste un random entre 0 et 1
     }
 
@@ -17,6 +17,7 @@ public class Feu extends Type {
     public void appliqueCapaciteSpeciale(Monstre cible) {
         if (Math.random() < this.chanceBrulure) {
             cible.setStatut(new Brule());
+            System.out.println(cible.getNomMonstre() + " est brûlé !");
         }
     }
 }

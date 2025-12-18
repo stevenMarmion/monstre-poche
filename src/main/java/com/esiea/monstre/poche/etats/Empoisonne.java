@@ -14,6 +14,7 @@ public class Empoisonne extends StatutMonstre {
             degatsPoison = 0;
         } else {
             cible.setPointsDeVie(cible.getPointsDeVie() - degatsPoison);
+            System.out.println(cible.getNomMonstre() + " subit " + degatsPoison + " points de dégâts de poison.");
         }
     }
 }

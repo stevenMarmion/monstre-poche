@@ -1,6 +1,6 @@
 Monster
 Name Pikachu
-Type Electric
+Type Foudre
 HP 110 141
 Speed 110 141
 Attack 75 106
@@ -9,11 +9,36 @@ Paralysis 0.2
 EndMonster
 Monster
 Name Cerapuca
-Type Water
+Type Eau
 HP 119 150
 Attack 68 99
 Speed 63 94
 Defense 85 116
 Flood 0.25
 Fall 0.35
+EndMonster
+Monster
+Name Flamby
+Type Feu
+HP 100 130
+Attack 90 120
+Speed 80 110
+Defense 70 100
+EndMonster
+Monster
+Name Voltix
+Type Foudre
+HP 105 135
+Attack 85 115
+Speed 95 125
+Defense 65 95
+Paralysis 0.25
+EndMonster
+Monster
+Name Leafling
+Type Plante
+HP 95 125
+Attack 75 105
+Speed 70 100
+Defense 80 110
 EndMonster

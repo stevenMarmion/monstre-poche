@@ -8,8 +8,8 @@ public class Terre extends Type {
 
     public Terre() {
         this.labelType = "Terre";
-        this.fortContre = new Foudre();
-        this.faibleContre = new Nature();
+        this.fortContre = "Foudre";
+        this.faibleContre = "Nature";
     }
 
     // @Override
@@ -17,6 +17,7 @@ public class Terre extends Type {
         boolean fuite = Math.random() < CHANCE_FUITE;
         if (fuite) {
             cible.setStatut(new SousTerre());
+            System.out.println(cible.getNomMonstre() + " s'enfuit sous terre !");
             ((SousTerre) cible.getStatut()).appliquerEffets(cible);
         }
     }

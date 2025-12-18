@@ -9,6 +9,8 @@ public class Insecte extends Nature {
 
     public Insecte() {
         this.labelType = "Insecte";
+        this.fortContre = "Plante";
+        this.faibleContre = "Feu";
     }
 
     @Override
@@ -16,6 +18,7 @@ public class Insecte extends Nature {
         if ((nbTourAttaque % NB_TOUR_MAX_ATTAQUE_EMPOISONNEMENT) == 0) {
             nbTourAttaque++;
             cible.setStatut(new Empoisonne());   
+            System.out.println(cible.getNomMonstre() + " est empoisonné !");
         }
         super.appliqueCapaciteSpeciale(cible);
     }

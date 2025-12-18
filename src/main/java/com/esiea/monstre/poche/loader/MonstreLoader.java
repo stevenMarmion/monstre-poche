@@ -1,12 +1,12 @@
 package com.esiea.monstre.poche.loader;
 
-import com.esiea.monstre.poche.actions.Attaque;
+// import com.esiea.monstre.poche.actions.Attaque;
 import com.esiea.monstre.poche.affinites.Type;
 import com.esiea.monstre.poche.affinites.utils.AffinitesUtils;
 import com.esiea.monstre.poche.entites.Monstre;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
+// import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;

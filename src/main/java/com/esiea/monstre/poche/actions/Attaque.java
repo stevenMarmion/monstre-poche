@@ -63,11 +63,20 @@ public class Attaque {
         int denominateur = 25 * cible.getDefense();
         double coeff = 0.85 + (1.0 - 0.85) * Math.random();
         double avantage = 1;
-        if (this.getTypeAttaque().estFaibleContre().getLabelType().equals(cible.getTypeMonstre().getLabelType())) {
+        if (this.getTypeAttaque().estFaibleContre().equals(cible.getTypeMonstre().getLabelType())) {
             avantage = 0.5;
-        } else if (this.getTypeAttaque().estFortContre().getLabelType().equals(cible.getTypeMonstre().getLabelType())) {
+        } else if (this.getTypeAttaque().estFortContre().equals(cible.getTypeMonstre().getLabelType())) {
             avantage = 2;
         }
         return ((numerateur/denominateur) + 2) * avantage * coeff;
+    }
+
+    @Override
+    public String toString() {
+        return "Attaque (" +
+                "nomAttaque='" + nomAttaque + '\'' +
+                ", nbUtilisations=" + nbUtilisations +
+                ", puissanceAttaque=" + puissanceAttaque +
+                ')';
     }
 }

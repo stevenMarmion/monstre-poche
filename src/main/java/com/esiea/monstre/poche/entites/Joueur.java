@@ -29,6 +29,7 @@ public class Joueur {
     }
 
     public void setMonstreActuel(Monstre monstreActuel) {
+        System.out.println("Le joueur " + this.nomJoueur + " change de monstre actuel pour " + monstreActuel.getNomMonstre());
         this.monstreActuel = monstreActuel;
     }
 

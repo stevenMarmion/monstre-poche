@@ -12,6 +12,7 @@ public class Paralyse extends StatutMonstre {
     public void rateAttaque(Monstre cible) {
         if (Math.random() < CHANCE_RATER_ATTAQUE) {
             cible.setRateAttaque(true);
+            System.out.println(cible.getNomMonstre() + " est paralysé et rate son attaque !");
         } else {
             cible.setRateAttaque(false);
         }
@@ -21,6 +22,7 @@ public class Paralyse extends StatutMonstre {
         boolean chanceSortie = Math.random() < (this.nbToursAvecEffet / this.nbToursEffet);
         if (chanceSortie) {
             cible.setStatut(new Normal());
+            System.out.println(cible.getNomMonstre() + " n'est plus paralysé !");
         }
     }
 
