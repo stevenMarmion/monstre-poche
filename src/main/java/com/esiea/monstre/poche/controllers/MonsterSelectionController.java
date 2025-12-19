@@ -1,5 +1,6 @@
 package com.esiea.monstre.poche.controllers;
 
+import com.esiea.monstre.poche.models.entites.Joueur;
 import com.esiea.monstre.poche.models.entites.Monstre;
 import com.esiea.monstre.poche.views.MonsterSelectionView;
 
@@ -12,15 +13,17 @@ public class MonsterSelectionController {
     
     private MonsterSelectionView view;
     private NavigationCallback navigationCallback;
-    private String playerName;
+    private Joueur joueur1;
+    private Joueur joueur2;
     private List<Monstre> selectedMonsters;
     private boolean isPlayer1;
     
     public MonsterSelectionController(MonsterSelectionView view, NavigationCallback navigationCallback, 
-                                     String playerName, boolean isPlayer1) {
+                                     Joueur joueur1, Joueur joueur2, boolean isPlayer1) {
         this.view = view;
         this.navigationCallback = navigationCallback;
-        this.playerName = playerName;
+        this.joueur1 = joueur1;
+        this.joueur2 = joueur2;
         this.isPlayer1 = isPlayer1;
         initializeEventHandlers();
     }
@@ -45,10 +48,10 @@ public class MonsterSelectionController {
      */
     private void handleValidateSelection() {
         selectedMonsters = view.getSelectedMonsters();
-        System.out.println(playerName + " a sélectionné " + selectedMonsters.size() + " monstres");
+        System.out.println((isPlayer1 ? joueur1.getNomJoueur() : joueur2.getNomJoueur()) + " a sélectionné " + selectedMonsters.size() + " monstres");
         
         // Passer à la sélection des attaques
-        navigationCallback.showAttackSelection(playerName, selectedMonsters, isPlayer1);
+        navigationCallback.showAttackSelection(joueur1, joueur2, isPlayer1);
     }
     
     public List<Monstre> getSelectedMonsters() {

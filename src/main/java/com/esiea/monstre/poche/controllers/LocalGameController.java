@@ -1,5 +1,6 @@
 package com.esiea.monstre.poche.controllers;
 
+import com.esiea.monstre.poche.models.entites.Joueur;
 import com.esiea.monstre.poche.views.LocalGameView;
 
 /**
@@ -43,8 +44,11 @@ public class LocalGameController {
             // TODO: Afficher un message d'erreur à l'utilisateur
             return;
         }
+
+        Joueur joueur1 = new Joueur(player1Name);
+        Joueur joueur2 = new Joueur(player2Name);
         
         System.out.println("Démarrage du jeu local - Joueur 1: " + player1Name + ", Joueur 2: " + player2Name);
-        navigationCallback.showMonsterSelection(player1Name, true);
+        navigationCallback.showMonsterSelection(joueur1, joueur2, true);
     }
 }

@@ -46,13 +46,13 @@ public class MainMenuView extends VBox {
         buttonBox.setAlignment(Pos.CENTER);
         
         // Bouton "Jouer en local (à deux)"
-        btnLocalGame = createMenuButton("🎮 Jouer en local (à deux)");
+        btnLocalGame = createMenuButton("Jouer en local (à deux)");
         
         // Bouton "Jouer contre un bot"
-        btnBotGame = createMenuButton("🤖 Jouer contre un bot");
+        btnBotGame = createMenuButton("Jouer contre un bot");
         
         // Bouton "Jouer en ligne"
-        btnOnlineGame = createMenuButton("🌐 Jouer en ligne");
+        btnOnlineGame = createMenuButton("Jouer en ligne");
         
         // Ajout des boutons au conteneur
         buttonBox.getChildren().addAll(btnLocalGame, btnBotGame, btnOnlineGame);

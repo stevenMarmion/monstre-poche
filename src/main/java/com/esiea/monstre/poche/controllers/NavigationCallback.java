@@ -1,7 +1,6 @@
 package com.esiea.monstre.poche.controllers;
 
-import com.esiea.monstre.poche.models.entites.Monstre;
-import java.util.List;
+import com.esiea.monstre.poche.models.entites.Joueur;
 
 /**
  * Interface pour les callbacks de navigation.
@@ -11,6 +10,7 @@ public interface NavigationCallback {
     void showLocalGameSetup();
     void showBotGameSetup();
     void showOnlineGameSetup();
-    void showMonsterSelection(String playerName, boolean isPlayer1);
-    void showAttackSelection(String playerName, List<Monstre> monsters, boolean isPlayer1);
+    void showMonsterSelection(Joueur joueur1, Joueur joueur2, boolean isPlayer1);
+    void showAttackSelection(Joueur joueur1, Joueur joueur2, boolean isPlayer1);
+    void showBattle(Joueur joueur1, Joueur joueur2);
 }

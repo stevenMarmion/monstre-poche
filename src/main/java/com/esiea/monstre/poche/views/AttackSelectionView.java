@@ -45,7 +45,7 @@ public class AttackSelectionView extends VBox {
         // Filtrer les attaques par type du monstre
         List<Attaque> filteredAttacks = new ArrayList<>();
         for (Attaque attaque : availableAttacks) {
-            if (attaque.getTypeAttaque().equals(monstre.getTypeMonstre())) {
+            if (attaque.getTypeAttaque().getLabelType().equals(monstre.getTypeMonstre().getLabelType())) {
                 filteredAttacks.add(attaque);
             }
         }

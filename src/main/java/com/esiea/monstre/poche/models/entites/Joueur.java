@@ -2,6 +2,8 @@ package com.esiea.monstre.poche.models.entites;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
+
 import com.esiea.monstre.poche.models.inventaire.Objet;
 
 public class Joueur implements Serializable {
@@ -34,10 +36,15 @@ public class Joueur implements Serializable {
         this.monstreActuel = monstreActuel;
     }
 
+    public void setMonstres(List<Monstre> monstres) {
+        this.monstres = new ArrayList<>(monstres);
+    }
+
     public void switchMonstreActuelAuto() {
         for (Monstre monstre : this.getMonstres()) {
             if (monstre.getPointsDeVie() > 0) {
-                this.monstreActuel = monstre;
+                setMonstreActuel(monstre);
+                break;
             }
         }
     }

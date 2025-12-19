@@ -1,6 +1,7 @@
 package com.esiea.monstre.poche.views;
 
 import com.esiea.monstre.poche.models.entites.Attaque;
+import com.esiea.monstre.poche.models.entites.Joueur;
 import com.esiea.monstre.poche.models.entites.Monstre;
 import com.esiea.monstre.poche.models.loader.AttaqueLoader;
 import com.esiea.monstre.poche.models.loader.MonstreLoader;
@@ -30,11 +31,8 @@ public class MonstrePocheUI extends Application implements NavigationCallback {
     // Variables pour le flux du jeu local
     private String player1Name;
     private String player2Name;
-    private List<Monstre> player1Monsters;
-    private List<Monstre> player2Monsters;
     private int currentMonsterIndex;
     private String currentPlayerName;
-    private boolean isCurrentlyPlayer1;
 
     @Override
     public void start(Stage stage) {
@@ -90,59 +88,62 @@ public class MonstrePocheUI extends Application implements NavigationCallback {
     }
     
     @Override
-    public void showMonsterSelection(String playerName, boolean isPlayer1) {
+    public void showMonsterSelection(Joueur joueur1, Joueur joueur2, boolean isPlayer1) {
         if (isPlayer1) {
-            player1Name = playerName;
-            isCurrentlyPlayer1 = true;
+            player1Name = joueur1.getNomJoueur();
+            currentPlayerName = player1Name;
         } else {
-            player2Name = playerName;
-            isCurrentlyPlayer1 = false;
+            player2Name = joueur2.getNomJoueur();
+            currentPlayerName = player2Name;
         }
         
-        currentPlayerName = playerName;
         List<Monstre> availableMonsters = monstreLoader.getRessources();
         
-        MonsterSelectionView monsterSelectionView = new MonsterSelectionView(playerName, availableMonsters);
-        new MonsterSelectionController(monsterSelectionView, this, playerName, isPlayer1);
+        MonsterSelectionView monsterSelectionView = new MonsterSelectionView(currentPlayerName, availableMonsters);
+        new MonsterSelectionController(monsterSelectionView, this, joueur1, joueur2, isPlayer1);
         
         // Gestionnaire du bouton valider
         monsterSelectionView.getBtnValidate().setOnAction(e -> {
             List<Monstre> selectedMonsters = monsterSelectionView.getSelectedMonsters();
             
             if (isPlayer1) {
-                player1Monsters = new ArrayList<>(selectedMonsters);
+                joueur1.setMonstres(selectedMonsters);
+                joueur1.setMonstreActuel(selectedMonsters.get(0));
             } else {
-                player2Monsters = new ArrayList<>(selectedMonsters);
+                joueur2.setMonstres(selectedMonsters);
+                joueur2.setMonstreActuel(selectedMonsters.get(0));
             }
             
             currentMonsterIndex = 0;
-            showAttackSelection(playerName, selectedMonsters, isPlayer1);
+            showAttackSelection(joueur1, joueur2, isPlayer1);
         });
         
         scene.setRoot(monsterSelectionView);
     }
     
     @Override
-    public void showAttackSelection(String playerName, List<Monstre> monsters, boolean isPlayer1) {
-        if (currentMonsterIndex >= monsters.size()) {
+    public void showAttackSelection(Joueur joueur1, Joueur joueur2, boolean isPlayer1) {
+        Joueur activePlayer = isPlayer1 ? joueur1 : joueur2;
+
+        if (currentMonsterIndex >= activePlayer.getMonstres().size()) {
             // Tous les monstres ont leurs attaques
             if (isPlayer1) {
                 // Passer à la sélection des monstres du joueur 2
                 System.out.println("Attaques sélectionnées pour " + player1Name + ", au tour de " + player2Name);
-                showMonsterSelection(player2Name, false);
+                // Ne pas inverser l'ordre des joueurs: isPlayer1=false cible joueur2
+                showMonsterSelection(joueur1, joueur2, false);
             } else {
                 // Les deux joueurs ont terminé
                 System.out.println("Sélection terminée pour les deux joueurs ! Le jeu peut commencer.");
-                // TODO: Lancer le combat local
-                showMainMenu();
+                showBattle(joueur1, joueur2);
             }
             return;
         }
-        
-        Monstre currentMonstre = monsters.get(currentMonsterIndex);
+
+        Monstre currentMonstre = activePlayer.getMonstres().get(currentMonsterIndex);
         List<Attaque> availableAttacks = attaqueLoader.getRessources();
         
-        AttackSelectionView attackSelectionView = new AttackSelectionView(playerName, currentMonstre, availableAttacks);
+        AttackSelectionView attackSelectionView = new AttackSelectionView(currentPlayerName, currentMonstre, availableAttacks);
         
         // Gestionnaire du bouton retour
         attackSelectionView.getBtnBackToMenu().setOnAction(e -> showMainMenu());
@@ -152,14 +153,27 @@ public class MonstrePocheUI extends Application implements NavigationCallback {
             List<Attaque> selectedAttacks = attackSelectionView.getSelectedAttacks();
             currentMonstre.setAttaques(new ArrayList<>(selectedAttacks));
             
-            System.out.println(playerName + " a sélectionné " + selectedAttacks.size() + 
+            System.out.println(currentPlayerName + " a sélectionné " + selectedAttacks.size() + 
                              " attaques pour " + currentMonstre.getNomMonstre());
             
             currentMonsterIndex++;
-            showAttackSelection(playerName, monsters, isPlayer1);
+            showAttackSelection(joueur1, joueur2, isPlayer1);
         });
         
         scene.setRoot(attackSelectionView);
+    }
+    
+    @Override
+    public void showBattle(Joueur joueur1, Joueur joueur2) {
+        // Créer la vue de combat avec les premiers monstres
+        BattleView battleView = new BattleView(joueur1, joueur2);
+        
+        // Créer le contrôleur de combat
+        new BattleController(battleView, this);
+        
+        System.out.println("Combat lancé entre " + player1Name + " et " + player2Name);
+        
+        scene.setRoot(battleView);
     }
 
     public static void main(String[] args) {
