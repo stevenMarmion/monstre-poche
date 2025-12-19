@@ -9,9 +9,11 @@ import com.esiea.monstre.poche.etats.StatutMonstre;
 import com.esiea.monstre.poche.etats.utils.StatutMonstreUtils;
 import com.esiea.monstre.poche.etats.utils.StatutTerrainUtils;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Monstre {
+public class Monstre implements Serializable {
+    protected static final long serialVersionUID = 1L;
     // private static final int COEFF_MULTIPLICATEUR_DEGATS_MAINS_NUES = 20;
     // private static final int POINTS_DE_VIE_MINIMAL = 0;
     // private static final int COEF_DOUBLE_DEGATS = 2;

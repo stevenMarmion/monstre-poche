@@ -31,8 +31,8 @@ public class CombatBot extends Combat {
     @Override
     public void lancer(MonstreLoader monstreLoader, AttaqueLoader attaqueLoader) {
         // Le joueur humain sélectionne ses monstres et attaques
-        this.selectionnerMonstre(monstreLoader, super.joueur1);
-        this.selectionnerAttaque(attaqueLoader, super.joueur1);
+        this.selectionnerMonstre(monstreLoader, joueur1);
+        this.selectionnerAttaque(attaqueLoader, joueur1);
 
         // Le Bot charge automatiquement (déjà fait dans MonstrePoche, mais par sécurité)
         if (bot.getMonstres().isEmpty()) {
@@ -53,15 +53,15 @@ public class CombatBot extends Combat {
      */
     @Override
     public void executerTour() {
-        while (!super.joueur1.sontMonstresMorts() && !super.joueur2.sontMonstresMorts()) {
+        while (!joueur1.sontMonstresMorts() && !joueur2.sontMonstresMorts()) {
             // Le joueur humain choisit son action
-            Object actionJoueur = this.gereChoixAction(super.joueur1);
+            Object actionJoueur = this.gereChoixAction(joueur1);
 
             // Le Bot choisit automatiquement son action
             Object actionBot = this.gereChoixActionBot();
 
             // Exécuter les actions
-            this.gereOrdreExecutionActions(actionJoueur, actionBot);
+            Combat.gereOrdreExecutionActions(actionJoueur, actionBot);
         }
         this.finDePartie();
     }
@@ -73,7 +73,7 @@ public class CombatBot extends Combat {
         GameVisual.afficherTitreSection("Tour du Bot " + bot.getNomJoueur());
 
         Monstre monstreActifBot = bot.getMonstreActuel();
-        Monstre monstreActifJoueur = super.joueur1.getMonstreActuel();
+        Monstre monstreActifJoueur = joueur1.getMonstreActuel();
 
         if (monstreActifBot == null || monstreActifBot.getPointsDeVie() <= 0) {
             bot.changerMonstreAutomatiquement();
@@ -146,9 +146,9 @@ public class CombatBot extends Combat {
     @Override
     public void finDePartie() {
         GameVisual.afficherTitreSection("FIN DU COMBAT");
-        if (super.joueur1.sontMonstresMorts()) {
+        if (joueur1.sontMonstresMorts()) {
             System.out.println("Vous avez perdu ! Le Bot " + bot.getNomJoueur() + " a remporte la victoire !");
-        } else if (super.joueur2.sontMonstresMorts()) {
+        } else if (joueur2.sontMonstresMorts()) {
             System.out.println("Felicitations ! Vous avez remporte la victoire contre le Bot " + bot.getNomJoueur() + " !");
         }
     }

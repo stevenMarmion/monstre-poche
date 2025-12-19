@@ -5,11 +5,11 @@ import java.util.Scanner;
 import com.esiea.monstre.poche.bot.Bot;
 import com.esiea.monstre.poche.combats.Combat;
 import com.esiea.monstre.poche.combats.CombatBot;
+import com.esiea.monstre.poche.online.OnlineClient;
+import com.esiea.monstre.poche.online.OnlineServer;
 import com.esiea.monstre.poche.entites.Joueur;
-// import com.esiea.monstre.poche.entites.Monstre;
 import com.esiea.monstre.poche.entites.Terrain;
 import com.esiea.monstre.poche.etats.Asseche;
-// import com.esiea.monstre.poche.actions.Attaque;
 import com.esiea.monstre.poche.loader.AttaqueLoader;
 import com.esiea.monstre.poche.loader.MonstreLoader;
 import com.esiea.monstre.poche.visual.GameVisual;
@@ -24,27 +24,45 @@ public class MonstrePoche {
         Scanner scanner = new Scanner(System.in);
         int modeJeu = GameVisual.afficherMenuModeJeu(scanner);
 
-        String nomJoueur1 = GameVisual.demanderSaisie(scanner, "Entrez le nom du Joueur 1 >");
-        Joueur joueur1 = new Joueur(nomJoueur1);
-        Terrain terrain = new Terrain("Terrain de combat", new Asseche());
-
         if (modeJeu == 1) {
+            String nomJoueur1 = GameVisual.demanderSaisie(scanner, "Entrez votre nom de joueur >");
+            Joueur joueur1 = new Joueur(nomJoueur1);
+            Terrain terrain = new Terrain("Terrain par défaut", new Asseche());
+
             int difficulteBout = GameVisual.afficherMenuDifficulteBot(scanner);
             Bot bot = new Bot("Monstre poche - Bot", difficulteBout);
-            
+
             bot.chargerMonstresAutomatiquement(monstreLoader);
             bot.chargerAttaquesAutomatiquement(attaqueLoader);
             
             CombatBot combatBot = new CombatBot(joueur1, bot, terrain);
             combatBot.lancer(monstreLoader, attaqueLoader);
-        } else {
+        } else if (modeJeu == 2) {
+            String nomJoueur1 = GameVisual.demanderSaisie(scanner, "Entrez le nom du Joueur 1 >");
+            Joueur joueur1 = new Joueur(nomJoueur1);
             String nomJoueur2 = GameVisual.demanderSaisie(scanner, "Entrez le nom du Joueur 2 >");
             Joueur joueur2 = new Joueur(nomJoueur2);
+            Terrain terrain = new Terrain("Terrain par défaut", new Asseche());
             
             Combat combat = new Combat(joueur1, joueur2, terrain);
             combat.lancer(monstreLoader, attaqueLoader);
+        } else if (modeJeu == 3) {
+            int choixEnLigne = GameVisual.afficherMenuJeuEnLigne(scanner);
+
+            if (choixEnLigne == 1) {
+                int port = GameVisual.demanderPortServeur(scanner);
+                OnlineServer server = new OnlineServer(port, scanner);
+                server.lancer(monstreLoader, attaqueLoader);
+            } else {
+                String[] config = GameVisual.demanderConfigurationServeur(scanner);
+                String adresse = config[0];
+                int port = Integer.parseInt(config[1]);
+                OnlineClient client = new OnlineClient(adresse, port);
+                client.lancer();
+            }
         }
         
         scanner.close();
     }
 }
+

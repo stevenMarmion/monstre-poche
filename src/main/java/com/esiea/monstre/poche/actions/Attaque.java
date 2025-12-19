@@ -2,8 +2,10 @@ package com.esiea.monstre.poche.actions;
 
 import com.esiea.monstre.poche.affinites.Type;
 import com.esiea.monstre.poche.entites.Monstre;
+import java.io.Serializable;
 
-public class Attaque {
+public class Attaque implements Serializable {
+    protected static final long serialVersionUID = 1L;
     private String nomAttaque;
     private int nbUtilisations;
     private int puissanceAttaque;
