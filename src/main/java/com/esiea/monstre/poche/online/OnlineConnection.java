@@ -24,6 +24,7 @@ public class OnlineConnection implements Closeable {
 
     public void sendInfo(String message) {
         out.println("INFO|" + message);
+        out.flush();
     }
 
     public void sendEnd(String message) {
@@ -32,6 +33,7 @@ public class OnlineConnection implements Closeable {
 
     public String ask(String prompt) throws IOException {
         out.println("ASK|" + prompt);
+        out.flush();
         return waitForAnswer();
     }
 

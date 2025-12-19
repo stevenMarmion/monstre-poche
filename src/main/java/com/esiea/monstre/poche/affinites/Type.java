@@ -3,7 +3,7 @@ package com.esiea.monstre.poche.affinites;
 import java.io.Serializable;
 
 public abstract class Type implements Serializable {
-    private static final long serialVersionUID = 1L;
+    protected static final long serialVersionUID = 1L;
     protected String labelType;
     protected String faibleContre;
     protected String fortContre;

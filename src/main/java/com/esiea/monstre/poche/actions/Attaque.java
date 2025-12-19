@@ -5,7 +5,7 @@ import com.esiea.monstre.poche.entites.Monstre;
 import java.io.Serializable;
 
 public class Attaque implements Serializable {
-    private static final long serialVersionUID = 1L;
+    protected static final long serialVersionUID = 1L;
     private String nomAttaque;
     private int nbUtilisations;
     private int puissanceAttaque;
