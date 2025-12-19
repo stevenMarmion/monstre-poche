@@ -2,17 +2,17 @@ package com.esiea.monstre.poche;
 
 import java.util.Scanner;
 
-import com.esiea.monstre.poche.bot.Bot;
-import com.esiea.monstre.poche.combats.Combat;
-import com.esiea.monstre.poche.combats.CombatBot;
-import com.esiea.monstre.poche.online.OnlineClient;
-import com.esiea.monstre.poche.online.OnlineServer;
-import com.esiea.monstre.poche.entites.Joueur;
-import com.esiea.monstre.poche.entites.Terrain;
-import com.esiea.monstre.poche.etats.Asseche;
-import com.esiea.monstre.poche.loader.AttaqueLoader;
-import com.esiea.monstre.poche.loader.MonstreLoader;
-import com.esiea.monstre.poche.visual.GameVisual;
+import com.esiea.monstre.poche.models.combats.Combat;
+import com.esiea.monstre.poche.models.combats.CombatBot;
+import com.esiea.monstre.poche.models.online.OnlineClient;
+import com.esiea.monstre.poche.models.online.OnlineServer;
+import com.esiea.monstre.poche.models.entites.Joueur;
+import com.esiea.monstre.poche.models.visual.GameVisual;
+import com.esiea.monstre.poche.models.entites.Bot;
+import com.esiea.monstre.poche.models.entites.Terrain;
+import com.esiea.monstre.poche.models.etats.Asseche;
+import com.esiea.monstre.poche.models.loader.AttaqueLoader;
+import com.esiea.monstre.poche.models.loader.MonstreLoader;
 
 public class MonstrePoche {
     public static void main(String[] args) {
