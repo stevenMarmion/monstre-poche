@@ -24,9 +24,9 @@ public class Combat {
     private final Scanner scanner = new Scanner(System.in);
 
     public Combat(Joueur joueur1, Joueur joueur2, Terrain terrain) {
-        this.joueur1 = joueur1;
-        this.joueur2 = joueur2;
-        this.terrain = terrain;
+        Combat.joueur1 = joueur1;
+        Combat.joueur2 = joueur2;
+        Combat.terrain = terrain;
     }
     
     public void lancer(MonstreLoader monstreLoader, AttaqueLoader attaqueLoader /*, PotionLoader potionLoader, MedicamentLoader medicamentLoader*/) {

@@ -1,6 +1,9 @@
 package com.esiea.monstre.poche.etats;
 
-public abstract class StatutTerrain {
+import java.io.Serializable;
+
+public abstract class StatutTerrain implements Serializable {
+    private static final long serialVersionUID = 1L;
     protected String labelStatut;
     protected int nbToursEffet;
     protected int nbToursAvecEffet;

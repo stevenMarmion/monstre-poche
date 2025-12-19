@@ -1,9 +1,11 @@
 package com.esiea.monstre.poche.entites;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import com.esiea.monstre.poche.inventaire.Objet;
 
-public class Joueur {
+public class Joueur implements Serializable {
+    private static final long serialVersionUID = 1L;
     private String nomJoueur;
     private ArrayList<Monstre> monstres;
     private Monstre monstreActuel;

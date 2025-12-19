@@ -1,8 +1,10 @@
 package com.esiea.monstre.poche.entites;
 
 import com.esiea.monstre.poche.etats.StatutTerrain;
+import java.io.Serializable;
 
-public class Terrain {
+public class Terrain implements Serializable {
+    private static final long serialVersionUID = 1L;
     private String nomTerrain;
     private StatutTerrain statutTerrain;
 

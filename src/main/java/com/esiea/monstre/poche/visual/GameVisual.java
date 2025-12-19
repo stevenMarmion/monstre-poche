@@ -35,6 +35,23 @@ public class GameVisual {
         return String.format("%-18s | Puissance:%-3d | Type:%s", attaque.getNomAttaque(), attaque.getPuissanceAttaque(), attaque.getTypeAttaque().getLabelType());
     }
 
+    public static String formatterTitre(String titre) {
+        return "\n" + SECTION_DIVIDER + "\n " + titre + "\n" + SECTION_DIVIDER;
+    }
+
+    public static String afficherSousTitrePourTous(String sousTitre) {
+        System.out.println("  > " + sousTitre);
+        return "  > " + sousTitre;
+    }
+
+    public static String formatterErreur(String message) {
+        return "  [!] " + message;
+    }
+
+    public static String formatterSousTitre(String sousTitre) {
+        return "  > " + sousTitre;
+    }
+
     /**
      * Affiche le menu de sélection du mode de jeu
      * @param scanner Le scanner pour lire l'entrée utilisateur
