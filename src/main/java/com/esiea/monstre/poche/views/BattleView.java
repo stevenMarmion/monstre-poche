@@ -8,6 +8,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
@@ -69,66 +70,83 @@ public class BattleView extends BorderPane {
      */
     private void initializeView() {
         this.setStyle("-fx-background-color: black;");
-        this.setPadding(new Insets(10));
+        this.setPadding(new Insets(0));
+        
+        // Conteneur scrollable principal
+        VBox mainContent = new VBox(15);
+        mainContent.setAlignment(Pos.TOP_CENTER);
+        mainContent.setPadding(new Insets(15));
+        mainContent.setStyle("-fx-background-color: black;");
         
         // Plateau de combat rétro avec fond image
-        StackPane battlefield = createBattlefield();
-        this.setCenter(battlefield);
+        BorderPane battlefield = createBattlefield();
+        mainContent.getChildren().add(battlefield);
         
         // Conteneur inférieur pour les actions + log
         VBox actionContainer = createActionContainer();
-        this.setBottom(actionContainer);
+        mainContent.getChildren().add(actionContainer);
+        
+        // ScrollPane pour la scrollabilité verticale
+        ScrollPane scrollPane = new ScrollPane(mainContent);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setStyle("-fx-background-color: black; -fx-control-inner-background: black;");
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        
+        this.setCenter(scrollPane);
     }
     
     /**
      * Crée l'affichage des deux Pokémon.
      */
-    private StackPane createBattlefield() {
-        StackPane stack = new StackPane();
-        stack.setPadding(new Insets(10));
-        stack.setStyle("-fx-background-color: #1b1b1b; -fx-border-color: #d2c29d; -fx-border-width: 6px; -fx-border-radius: 8px; -fx-background-radius: 8px;");
+    private BorderPane createBattlefield() {
+        BorderPane battlefield = new BorderPane();
+        battlefield.setPadding(new Insets(10));
+        battlefield.setStyle("-fx-background-color: #1b1b1b; -fx-border-color: #d2c29d; -fx-border-width: 6px; -fx-border-radius: 8px; -fx-background-radius: 8px;");
         
+        // CENTRE : fond du terrain + sprites en ligne, sans chevauchement
+        StackPane centerContent = new StackPane();
+        centerContent.setPrefSize(900, 450);
+        
+        // Fond du terrain (plan arrière)
         Image bgImage = new Image(getClass().getResource("/images/exemple_terrain.jpg").toExternalForm(), 900, 0, true, true);
         ImageView bgView = new ImageView(bgImage);
         bgView.setPreserveRatio(true);
         bgView.setFitWidth(900);
-        bgView.setViewOrder(10); // fond tout au fond
-        stack.getChildren().add(bgView);
+        centerContent.getChildren().add(bgView);
         
-        // Sprites placeholders (positions inspirées d'un combat rétro)
+        // Sprites en ligne horizontale sans chevauchement (plan avant)
+        HBox spriteRow = new HBox();
+        spriteRow.setAlignment(Pos.CENTER);
+        spriteRow.setPadding(new Insets(40, 80, 60, 80));
+        spriteRow.setSpacing(300);
+        
         Label spritePlayer = new Label("◼");
         spritePlayer.setFont(Font.font("Monospaced", FontWeight.EXTRA_BOLD, 72));
         spritePlayer.setStyle("-fx-text-fill: #4b4b4b;");
-
+        
         Label spriteEnemy = new Label("◆");
         spriteEnemy.setFont(Font.font("Monospaced", FontWeight.EXTRA_BOLD, 64));
         spriteEnemy.setStyle("-fx-text-fill: #d9d9d9;");
-
-        // Ligne dédiée aux sprites : joueur à gauche, ennemi à droite, sans chevauchement
-        HBox spriteRow = new HBox();
-        spriteRow.setAlignment(Pos.CENTER);
-        spriteRow.setPadding(new Insets(60, 80, 80, 80));
-        spriteRow.setSpacing(260);
-        spriteRow.setViewOrder(5); // au-dessus du fond, sous les HUD
-
-        javafx.scene.layout.Region spacer = new javafx.scene.layout.Region();
-        javafx.scene.layout.HBox.setHgrow(spacer, javafx.scene.layout.Priority.ALWAYS);
-
-        spriteRow.getChildren().addAll(spritePlayer, spacer, spriteEnemy);
         
-        // HUDs repositionnés façon GBA/retro
+        spriteRow.getChildren().addAll(spritePlayer, spriteEnemy);
+        centerContent.getChildren().add(spriteRow);
+        
+        battlefield.setCenter(centerContent);
+        
+        // TOP : HUD du joueur 2 (ennemi en haut à gauche)
         player2Container = createPlayerPokemonBox(joueur2, true);
-        StackPane.setAlignment(player2Container, Pos.TOP_LEFT);
-        StackPane.setMargin(player2Container, new Insets(30, 0, 0, 30));
-        player2Container.setViewOrder(0); // HUDs au-dessus des sprites
-
+        BorderPane.setAlignment(player2Container, Pos.TOP_LEFT);
+        BorderPane.setMargin(player2Container, new Insets(15, 0, 0, 15));
+        battlefield.setTop(player2Container);
+        
+        // BOTTOM : HUD du joueur 1 (joueur en bas à droite)
         player1Container = createPlayerPokemonBox(joueur1, false);
-        StackPane.setAlignment(player1Container, Pos.BOTTOM_RIGHT);
-        StackPane.setMargin(player1Container, new Insets(0, 30, 30, 0));
-        player1Container.setViewOrder(0);
-
-        stack.getChildren().addAll(spriteRow, player2Container, player1Container);
-        return stack;
+        BorderPane.setAlignment(player1Container, Pos.BOTTOM_RIGHT);
+        BorderPane.setMargin(player1Container, new Insets(0, 15, 15, 0));
+        battlefield.setBottom(player1Container);
+        
+        return battlefield;
     }
     
     /**

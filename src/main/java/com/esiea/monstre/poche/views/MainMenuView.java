@@ -30,6 +30,7 @@ public class MainMenuView extends VBox {
         this.setAlignment(Pos.CENTER);
         this.setPadding(new Insets(60));
         this.getStyleClass().add("main-container");
+        this.setFillWidth(true);
         
         // Titre principal - Logo Pokémon style
         Label title = new Label("MONSTRE POCHE");
@@ -44,6 +45,7 @@ public class MainMenuView extends VBox {
         // Conteneur pour les boutons
         VBox buttonBox = new VBox(25);
         buttonBox.setAlignment(Pos.CENTER);
+        buttonBox.setFillWidth(true);
         
         // Bouton "Jouer en local (à deux)"
         btnLocalGame = createMenuButton("Jouer en local (à deux)");

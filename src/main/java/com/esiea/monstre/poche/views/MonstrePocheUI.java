@@ -49,7 +49,8 @@ public class MonstrePocheUI extends Application implements NavigationCallback {
         
         // Configuration de la fenêtre
         primaryStage.setTitle("Monstre Poche");
-        primaryStage.setResizable(false);
+        primaryStage.setResizable(true);
+        primaryStage.setMaximized(true);
         primaryStage.show();
     }
     
@@ -58,7 +59,7 @@ public class MonstrePocheUI extends Application implements NavigationCallback {
         MainMenuView mainMenuView = new MainMenuView();
         new MainMenuController(mainMenuView, this);
         
-        scene = new Scene(mainMenuView, 1000, 700);
+        scene = new Scene(mainMenuView, 1280, 720);
         scene.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
         primaryStage.setScene(scene);
     }

@@ -5,10 +5,7 @@ import com.esiea.monstre.poche.models.entites.Monstre;
 import com.esiea.monstre.poche.models.entites.Terrain;
 import com.esiea.monstre.poche.models.etats.Asseche;
 import com.esiea.monstre.poche.views.BattleView;
-// import javafx.scene.control.ChoiceDialog; // no longer using dialog for attacks
-
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Controller pour la gestion du système de combat.
