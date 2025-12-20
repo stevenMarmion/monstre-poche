@@ -1,7 +1,9 @@
 package com.esiea.monstre.poche.controllers;
 
 import com.esiea.monstre.poche.models.combats.Combat;
+import com.esiea.monstre.poche.models.combats.CombatBot;
 import com.esiea.monstre.poche.models.entites.Attaque;
+import com.esiea.monstre.poche.models.entites.Bot;
 import com.esiea.monstre.poche.models.entites.Monstre;
 import com.esiea.monstre.poche.views.BattleView;
 import java.util.List;
@@ -14,15 +16,24 @@ public class BattleController {
     private BattleView view;
     private NavigationCallback navigationCallback;
     private Combat combat;
-
-    private boolean isPlayer1Turn;
+    
+    // Stockage des choix des deux joueurs
+    private Object player1Action = null;
+    private Object player2Action = null;
+    private boolean player1Ready = false;
+    private boolean player2Ready = false;
     
     public BattleController(BattleView view, NavigationCallback navigationCallback) {
         this.view = view;
         this.navigationCallback = navigationCallback;
-        this.combat = new Combat(view.getJoueur1(), view.getJoueur2());
+        if (view.getJoueur2() instanceof Bot) {
+            this.combat = new CombatBot(view.getJoueur1(), (Bot) view.getJoueur2());
+        } else {
+            this.combat = new Combat(view.getJoueur1(), view.getJoueur2());
+        }
         initializeEventHandlers();
-        isPlayer1Turn = view.getJoueur1().getMonstreActuel().getVitesse() >= view.getJoueur2().getMonstreActuel().getVitesse();
+        view.setTurn(true); // Toujours joueur 1 qui choisit en premier
+        view.updateBattleLog("À " + view.getJoueur1().getNomJoueur() + " de choisir son action !");
     }
     
     /**
@@ -33,40 +44,56 @@ public class BattleController {
         view.getBtnSwitch().setOnAction(e -> handleSwitchAction());
         view.getBtnItem().setOnAction(e -> handleItemAction());
     }
+
+    /**
+     * Déclenche le choix automatique du Bot et exécute le tour.
+     */
+    private void handleBotTurn() {
+        Bot bot = (Bot) view.getJoueur2();
+        Attaque attaqueBot = bot.choisirActionAutomatiquement(view.getJoueur1().getMonstreActuel());
+        player2Action = attaqueBot;
+        player2Ready = true;
+        view.updateBattleLog(view.getJoueur2().getNomJoueur() + " (Bot) a choisi son action !");
+        executeTurnActions();
+    }
     
     /**
      * Gère l'action Attaquer.
      */
     private void handleAttackAction() {
-        if (isPlayer1Turn) {
+        if (!player1Ready) {
+            // Joueur 1 choisit son attaque
             List<Attaque> attaques = view.getJoueur1().getMonstreActuel().getAttaques();
             if (attaques == null || attaques.isEmpty()) {
                 view.updateBattleLog(view.getJoueur1().getNomJoueur() + " n'a pas d'attaques disponibles.");
                 return;
             }
             view.displayAttackChoices(attaques, attaque -> {
-                view.updateBattleLog(view.getJoueur1().getNomJoueur() + " choisit: " + attaque.getNomAttaque());
-                view.getJoueur1().getMonstreActuel().attaquer(view.getJoueur2().getMonstreActuel(), Combat.terrain, attaque);
-                autoSwitchIfFainted();
-                view.updatePokemonDisplay();
-                checkBattleEnd();
-                isPlayer1Turn = false;
-                view.setTurn(isPlayer1Turn);
+                player1Action = attaque;
+                player1Ready = true;
+                view.updateBattleLog(view.getJoueur1().getNomJoueur() + " a choisi : " + attaque.getNomAttaque());
+                
+                // Si mode Bot, déclencher le tour du Bot automatiquement
+                if (view.getJoueur2() instanceof Bot) {
+                    handleBotTurn();
+                } else {
+                    // Sinon, attendre le choix du joueur 2
+                    view.setTurn(false);
+                    view.updateBattleLog("À " + view.getJoueur2().getNomJoueur() + " de choisir son action !");
+                }
             });
-        } else {
+        } else if (!player2Ready) {
+            // Joueur 2 choisit son attaque
             List<Attaque> attaques = view.getJoueur2().getMonstreActuel().getAttaques();
             if (attaques == null || attaques.isEmpty()) {
                 view.updateBattleLog(view.getJoueur2().getNomJoueur() + " n'a pas d'attaques disponibles.");
                 return;
             }
             view.displayAttackChoices(attaques, attaque -> {
-                view.updateBattleLog(view.getJoueur2().getNomJoueur() + " choisit: " + attaque.getNomAttaque());
-                view.getJoueur2().getMonstreActuel().attaquer(view.getJoueur1().getMonstreActuel(), Combat.terrain, attaque);
-                autoSwitchIfFainted();
-                view.updatePokemonDisplay();
-                checkBattleEnd();
-                isPlayer1Turn = true;
-                view.setTurn(isPlayer1Turn);
+                player2Action = attaque;
+                player2Ready = true;
+                view.updateBattleLog(view.getJoueur2().getNomJoueur() + " a choisi : " + attaque.getNomAttaque());
+                executeTurnActions();
             });
         }
     }
@@ -75,75 +102,78 @@ public class BattleController {
      * Gère l'action Changer: affiche les monstres disponibles et applique le changement.
      */
     private void handleSwitchAction() {
-        if (isPlayer1Turn) {
+        if (!player1Ready) {
+            // Joueur 1 choisit son changement
             List<Monstre> candidates = view.getJoueur1().getMonstres();
             Monstre current = view.getJoueur1().getMonstreActuel();
             List<Monstre> available = candidates.stream()
                     .filter(m -> m.getPointsDeVie() > 0 && m != current)
                     .toList();
             view.displayMonsterChoices(available, selected -> {
-                view.getJoueur1().setMonstreActuel(selected);
-                view.updateBattleLog(view.getJoueur1().getNomJoueur() + " envoie " + selected.getNomMonstre() + " !");
-                view.updatePokemonDisplay();
-                isPlayer1Turn = false;
-                view.setTurn(isPlayer1Turn);
+                player1Action = selected;
+                player1Ready = true;
+                view.updateBattleLog(view.getJoueur1().getNomJoueur() + " choisit d'envoyer " + selected.getNomMonstre() + " !");
+                
+                // Si mode Bot, déclencher le tour du Bot automatiquement
+                if (view.getJoueur2() instanceof Bot) {
+                    handleBotTurn();
+                } else {
+                    // Sinon, attendre le choix du joueur 2
+                    view.setTurn(false);
+                    view.updateBattleLog("À " + view.getJoueur2().getNomJoueur() + " de choisir son action !");
+                }
             });
-        } else {
+        } else if (!player2Ready) {
+            // Joueur 2 choisit son changement
             List<Monstre> candidates = view.getJoueur2().getMonstres();
             Monstre current = view.getJoueur2().getMonstreActuel();
             List<Monstre> available = candidates.stream()
                     .filter(m -> m.getPointsDeVie() > 0 && m != current)
                     .toList();
             view.displayMonsterChoices(available, selected -> {
-                view.getJoueur2().setMonstreActuel(selected);
-                view.updateBattleLog(view.getJoueur2().getNomJoueur() + " envoie " + selected.getNomMonstre() + " !");
-                view.updatePokemonDisplay();
-                isPlayer1Turn = true;
-                view.setTurn(isPlayer1Turn);
+                player2Action = selected;
+                player2Ready = true;
+                view.updateBattleLog(view.getJoueur2().getNomJoueur() + " choisit d'envoyer " + selected.getNomMonstre() + " !");
+                executeTurnActions();
             });
         }
     }
-
+    
     /**
-     * Auto switch au premier monstre vivant si le courant est K.O.
+     * Exécute les actions des deux joueurs dans l'ordre de vitesse.
      */
-    private void autoSwitchIfFainted() {
-        if (view.getJoueur1().getMonstreActuel().getPointsDeVie() <= 0) {
-            Monstre next = findFirstAlive(view.getJoueur1().getMonstres());
-            if (next != null) {
-                view.getJoueur1().setMonstreActuel(next);
-                view.updateBattleLog(view.getJoueur1().getNomJoueur() + " envoie " + next.getNomMonstre() + " !");
-            }
+    private void executeTurnActions() {
+        if (!player1Ready || !player2Ready) {
+            return; // Attendre que les deux joueurs soient prêts
         }
-        if (view.getJoueur2().getMonstreActuel().getPointsDeVie() <= 0) {
-            Monstre next = findFirstAlive(view.getJoueur2().getMonstres());
-            if (next != null) {
-                view.getJoueur2().setMonstreActuel(next);
-                view.updateBattleLog(view.getJoueur2().getNomJoueur() + " envoie " + next.getNomMonstre() + " !");
-            }
-        }
+        
+        view.updateBattleLog("Exécution des actions...");
+        
+        // Utiliser la logique de Combat.gereOrdreExecutionActions
+        Combat.gereOrdreExecutionActions(player1Action, player2Action);
+        
+        // Mise à jour de l'affichage
+        view.updatePokemonDisplay();
+        
+        // Vérifier fin de combat
+        checkBattleEnd();
+        
+        // Réinitialiser pour le prochain tour
+        player1Action = null;
+        player2Action = null;
+        player1Ready = false;
+        player2Ready = false;
+        
+        view.setTurn(true);
+        view.updateBattleLog("À " + view.getJoueur1().getNomJoueur() + " de choisir son action !");
     }
-
-    private Monstre findFirstAlive(List<Monstre> list) {
-        for (Monstre m : list) {
-            if (m.getPointsDeVie() > 0) return m;
-        }
-        return null;
-    }
-    
-    
     
     /**
      * Gère l'action Objet.
      */
     private void handleItemAction() {
-        if (isPlayer1Turn) {
-            view.updateBattleLog(view.getJoueur1().getNomJoueur() + " utilise un objet !");
-            // TODO 
-        } else {
-            view.updateBattleLog(view.getJoueur2().getNomJoueur() + " utilise un objet !");
-            // TODO
-        }
+        view.updateBattleLog("Fonctionnalité Objet non implémentée.");
+        // TODO: implémenter la logique des objets
     }
     
     /**
@@ -163,15 +193,6 @@ public class BattleController {
             view.updateBattleLog(view.getJoueur1().getNomJoueur() + " a remporté le combat !");
             navigationCallback.showMainMenu();
         }
-    }
-    
-    // Getters
-    public boolean isPlayer1Turn() {
-        return isPlayer1Turn;
-    }
-    
-    public void setPlayer1Turn(boolean player1Turn) {
-        isPlayer1Turn = player1Turn;
     }
 
     public Combat getCombat() {

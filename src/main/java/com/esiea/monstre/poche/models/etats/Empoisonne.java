@@ -1,5 +1,6 @@
 package com.esiea.monstre.poche.models.etats;
 
+import com.esiea.monstre.poche.models.combats.CombatLogger;
 import com.esiea.monstre.poche.models.entites.Monstre;
 
 public class Empoisonne extends StatutMonstre {
@@ -14,7 +15,7 @@ public class Empoisonne extends StatutMonstre {
             degatsPoison = 0;
         } else {
             cible.setPointsDeVie(cible.getPointsDeVie() - degatsPoison);
-            System.out.println(cible.getNomMonstre() + " subit " + degatsPoison + " points de dégâts de poison.");
+            CombatLogger.log(cible.getNomMonstre() + " est empoisonné ! Subit " + (int)degatsPoison + " dégâts de poison.");
         }
     }
 }

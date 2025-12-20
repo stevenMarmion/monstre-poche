@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import com.esiea.monstre.poche.models.affinites.Type;
 import com.esiea.monstre.poche.models.loader.AttaqueLoader;
 import com.esiea.monstre.poche.models.loader.MonstreLoader;
 
@@ -198,8 +199,7 @@ public class Bot extends Joueur {
     /**
      * Calcule le multiplicateur de dégâts basé sur les types
      */
-    private double calculerMultiplicateurType(com.esiea.monstre.poche.models.affinites.Type typeAttaque,
-            com.esiea.monstre.poche.models.affinites.Type typeDefense) {
+    private double calculerMultiplicateurType(Type typeAttaque, Type typeDefense) {
         // Cette méthode peut être améliorée avec une vraie logique d'affinités
         // Pour l'instant, retour basé sur le label du type
         if (typeAttaque.getLabelType().equals(typeDefense.getLabelType())) {

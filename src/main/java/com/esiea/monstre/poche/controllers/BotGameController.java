@@ -1,5 +1,8 @@
 package com.esiea.monstre.poche.controllers;
 
+import com.esiea.monstre.poche.models.AppTerminal;
+import com.esiea.monstre.poche.models.entites.Bot;
+import com.esiea.monstre.poche.models.entites.Joueur;
 import com.esiea.monstre.poche.views.BotGameView;
 
 /**
@@ -41,8 +44,14 @@ public class BotGameController {
             System.out.println("Erreur : Le nom du joueur doit être rempli");
             return;
         }
-        
-        System.out.println("Démarrage du jeu contre le bot - Joueur: " + playerName);
-        // TODO: Implémenter la logique pour lancer le jeu contre le bot
+
+        Joueur joueur = new Joueur(playerName);
+
+        Bot bot = new Bot("Bot");
+        bot.chargerMonstresAutomatiquement(AppTerminal.monstreLoader);
+        bot.chargerAttaquesAutomatiquement(AppTerminal.attaqueLoader);
+
+        System.out.println("Démarrage du jeu local - Joueur 1: " + playerName + ", Robot: " + bot.getNomJoueur());
+        navigationCallback.showMonsterSelectionBotGame(joueur, bot);
     }
 }

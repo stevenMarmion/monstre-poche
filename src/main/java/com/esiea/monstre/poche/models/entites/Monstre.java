@@ -3,6 +3,7 @@ package com.esiea.monstre.poche.models.entites;
 import com.esiea.monstre.poche.models.affinites.Type;
 
 import com.esiea.monstre.poche.models.affinites.utils.AffinitesUtils;
+import com.esiea.monstre.poche.models.combats.CombatLogger;
 import com.esiea.monstre.poche.models.etats.Normal;
 import com.esiea.monstre.poche.models.etats.StatutMonstre;
 import com.esiea.monstre.poche.models.etats.utils.StatutMonstreUtils;
@@ -147,7 +148,12 @@ public class Monstre implements Serializable {
             degatsAffliges = attaqueUtilisee.calculeDegatsAttaque(this, cible);
         }
 
-        // ensuite on applique nos effest avant attaque si le pokémon est paralysé ou autre
+        // Log avant attaque
+        CombatLogger.log("═══════════════════════════════════════");
+        CombatLogger.log(this.nomMonstre + " utilise " + 
+            (attaqueUtilisee != null ? attaqueUtilisee.getNomAttaque() : "ses mains nues") + " !");
+        
+        // ensuite on applique nos effets avant attaque si le pokémon est paralysé ou autre
         StatutMonstreUtils.appliquerStatutMonstre(statut, this, (int) degatsAffliges);
         StatutTerrainUtils.appliquerStatutTerrain(terrain, this, (int) degatsAffliges);
 
@@ -155,19 +161,23 @@ public class Monstre implements Serializable {
 
         // notre attaque principal, le process principal
         if (!this.isRateAttaque()) {
+            double pvAvant = cible.getPointsDeVie();
             cible.setPointsDeVie(cible.getPointsDeVie() - (int) degatsAffliges);
-            System.out.println("\n[COMBAT] " + this.nomMonstre + " attaque " + cible.getNomMonstre() + " avec " + (attaqueUtilisee != null ? attaqueUtilisee.getNomAttaque() : "ses mains nues") + ".");
-            System.out.println("         Degats infliges : " + (int) degatsAffliges);
+            
+            CombatLogger.log(cible.getNomMonstre() + " subit " + (int) degatsAffliges + " points de dégâts !");
+            CombatLogger.log((int)pvAvant + " → " + (int)cible.getPointsDeVie() + " / " + (int)cible.getPointsDeVieMax());
 
             if (cible.getPointsDeVie() == 0) {
-                System.out.println("         " + cible.getNomMonstre() + " est KO !");
+                CombatLogger.log(cible.getNomMonstre() + " est K.O. !");
             }
 
-            // les effets de l'attaque sepciale du monstre si elle est pas ratee
+            // les effets de l'attaque spéciale du monstre si elle est pas ratée
             AffinitesUtils.appliqueCapaciteSpeciale(typeMonstre, cible, terrain);
+        } else {
+            CombatLogger.log(this.nomMonstre + " a raté son attaque !");
         }
-
-        System.out.println("         PV restants pour " + cible.getNomMonstre() + " : " + (int) cible.getPointsDeVie());
+        
+        CombatLogger.log("═══════════════════════════════════════");
     }
 
     public double calculeDegat(Monstre monstreAttaquant, Monstre cible) {

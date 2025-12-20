@@ -1,5 +1,6 @@
 package com.esiea.monstre.poche.controllers;
 
+import com.esiea.monstre.poche.models.entites.Bot;
 import com.esiea.monstre.poche.models.entites.Joueur;
 
 /**
@@ -12,5 +13,8 @@ public interface NavigationCallback {
     void showOnlineGameSetup();
     void showMonsterSelection(Joueur joueur1, Joueur joueur2, boolean isPlayer1);
     void showAttackSelection(Joueur joueur1, Joueur joueur2, boolean isPlayer1);
+    void showMonsterSelectionBotGame(Joueur joueur1, Joueur bot);
+    void showAttackSelectionBotGame(Joueur joueur1, Joueur bot);
     void showBattle(Joueur joueur1, Joueur joueur2);
+    void showBattleBot(Joueur joueur1, Bot bot);
 }

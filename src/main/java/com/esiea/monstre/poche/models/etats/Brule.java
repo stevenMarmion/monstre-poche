@@ -1,5 +1,6 @@
 package com.esiea.monstre.poche.models.etats;
 
+import com.esiea.monstre.poche.models.combats.CombatLogger;
 import com.esiea.monstre.poche.models.entites.Monstre;
 
 public class Brule extends StatutMonstre {
@@ -14,7 +15,7 @@ public class Brule extends StatutMonstre {
             degatsBrule = 0;
         } else {
             cible.setPointsDeVie(cible.getPointsDeVie() - degatsBrule);
-            System.out.println(cible.getNomMonstre() + " subit " + degatsBrule + " points de dégâts de brûlure.");
+            CombatLogger.log(cible.getNomMonstre() + " est brûlé ! Subit " + (int)degatsBrule + " dégâts de brûlure.");
         }
     }
 }
