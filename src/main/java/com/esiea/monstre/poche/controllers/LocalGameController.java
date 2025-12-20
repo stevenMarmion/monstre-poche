@@ -41,7 +41,6 @@ public class LocalGameController {
         
         if (player1Name.isEmpty() || player2Name.isEmpty()) {
             System.out.println("Erreur : Les deux noms doivent être remplis");
-            // TODO: Afficher un message d'erreur à l'utilisateur
             return;
         }
 

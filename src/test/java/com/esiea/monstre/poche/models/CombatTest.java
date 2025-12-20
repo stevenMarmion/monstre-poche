@@ -10,15 +10,12 @@ import com.esiea.monstre.poche.models.affinites.Normal;
 import com.esiea.monstre.poche.models.combats.Combat;
 import com.esiea.monstre.poche.models.entites.Attaque;
 import com.esiea.monstre.poche.models.entites.Monstre;
-import com.esiea.monstre.poche.models.entites.Terrain;
-import com.esiea.monstre.poche.models.etats.Asseche;
 import com.esiea.monstre.poche.models.entites.Joueur;
 
 class CombatTest {
     private Combat combat;
     private Joueur joueur1;
     private Joueur joueur2;
-    private Terrain terrain;
     private Monstre monstre1;
     private Monstre monstre2;
 
@@ -26,8 +23,7 @@ class CombatTest {
     void setUp() {
         joueur1 = new Joueur("Steven");
         joueur2 = new Joueur("Kylian");
-        terrain = new Terrain("Terrain de combat", new Asseche());
-        combat = new Combat(joueur1, joueur2, terrain);
+        combat = new Combat(joueur1, joueur2);
         
         monstre1 = new Monstre("Pikachu", 100, 50, 40, 90, new ArrayList<Attaque>(), new Normal());
         monstre2 = new Monstre("Bulbizarre", 120, 45, 50, 45, new ArrayList<Attaque>(), new Normal());

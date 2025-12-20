@@ -6,8 +6,6 @@ import java.net.Socket;
 import java.util.Scanner;
 
 import com.esiea.monstre.poche.models.combats.CombatEnLigne;
-import com.esiea.monstre.poche.models.entites.Terrain;
-import com.esiea.monstre.poche.models.etats.Asseche;
 import com.esiea.monstre.poche.models.loader.AttaqueLoader;
 import com.esiea.monstre.poche.models.loader.MonstreLoader;
 import com.esiea.monstre.poche.models.entites.Joueur;
@@ -37,9 +35,8 @@ public class OnlineServer {
 
                 Joueur joueurLocal = new Joueur(nomJoueurLocal);
                 Joueur joueurDistant = new Joueur(nomJoueurDistant);
-                Terrain terrain = new Terrain("Terrain en ligne", new Asseche());
 
-                CombatEnLigne combat = new CombatEnLigne(joueurLocal, joueurDistant, terrain, connection);
+                CombatEnLigne combat = new CombatEnLigne(joueurLocal, joueurDistant, connection);
                 combat.lancer(monstreLoader, attaqueLoader);
             }
         } catch (IOException e) {

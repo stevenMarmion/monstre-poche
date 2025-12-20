@@ -1,10 +1,9 @@
 package com.esiea.monstre.poche.views;
 
+import com.esiea.monstre.poche.models.AppTerminal;
 import com.esiea.monstre.poche.models.entites.Attaque;
 import com.esiea.monstre.poche.models.entites.Joueur;
 import com.esiea.monstre.poche.models.entites.Monstre;
-import com.esiea.monstre.poche.models.loader.AttaqueLoader;
-import com.esiea.monstre.poche.models.loader.MonstreLoader;
 import com.esiea.monstre.poche.controllers.*;
 
 import javafx.application.Application;
@@ -24,25 +23,14 @@ public class MonstrePocheUI extends Application implements NavigationCallback {
     private Stage primaryStage;
     private Scene scene;
     
-    // Loaders pour les monstres et attaques
-    private MonstreLoader monstreLoader;
-    private AttaqueLoader attaqueLoader;
-    
-    // Variables pour le flux du jeu local
-    private String player1Name;
-    private String player2Name;
     private int currentMonsterIndex;
     private String currentPlayerName;
 
     @Override
     public void start(Stage stage) {
         this.primaryStage = stage;
-        
-        // Initialisation des loaders
-        monstreLoader = new MonstreLoader("monsters.txt");
-        attaqueLoader = new AttaqueLoader("attacks.txt");
-        monstreLoader.charger();
-        attaqueLoader.charger();
+
+        AppTerminal.chargeLoaders();
         
         // Affichage du menu principal
         showMainMenu();
@@ -91,14 +79,12 @@ public class MonstrePocheUI extends Application implements NavigationCallback {
     @Override
     public void showMonsterSelection(Joueur joueur1, Joueur joueur2, boolean isPlayer1) {
         if (isPlayer1) {
-            player1Name = joueur1.getNomJoueur();
-            currentPlayerName = player1Name;
+            currentPlayerName = joueur1.getNomJoueur();
         } else {
-            player2Name = joueur2.getNomJoueur();
-            currentPlayerName = player2Name;
+            currentPlayerName = joueur2.getNomJoueur();
         }
         
-        List<Monstre> availableMonsters = monstreLoader.getRessources();
+        List<Monstre> availableMonsters = AppTerminal.monstreLoader.getRessources();
         
         MonsterSelectionView monsterSelectionView = new MonsterSelectionView(currentPlayerName, availableMonsters);
         new MonsterSelectionController(monsterSelectionView, this, joueur1, joueur2, isPlayer1);
@@ -127,14 +113,10 @@ public class MonstrePocheUI extends Application implements NavigationCallback {
         Joueur activePlayer = isPlayer1 ? joueur1 : joueur2;
 
         if (currentMonsterIndex >= activePlayer.getMonstres().size()) {
-            // Tous les monstres ont leurs attaques
             if (isPlayer1) {
-                // Passer à la sélection des monstres du joueur 2
-                System.out.println("Attaques sélectionnées pour " + player1Name + ", au tour de " + player2Name);
-                // Ne pas inverser l'ordre des joueurs: isPlayer1=false cible joueur2
+                System.out.println("Attaques sélectionnées pour " + joueur1.getNomJoueur() + ", au tour de " + joueur2.getNomJoueur());
                 showMonsterSelection(joueur1, joueur2, false);
             } else {
-                // Les deux joueurs ont terminé
                 System.out.println("Sélection terminée pour les deux joueurs ! Le jeu peut commencer.");
                 showBattle(joueur1, joueur2);
             }
@@ -142,7 +124,7 @@ public class MonstrePocheUI extends Application implements NavigationCallback {
         }
 
         Monstre currentMonstre = activePlayer.getMonstres().get(currentMonsterIndex);
-        List<Attaque> availableAttacks = attaqueLoader.getRessources();
+        List<Attaque> availableAttacks = AppTerminal.attaqueLoader.getRessources();
         
         AttackSelectionView attackSelectionView = new AttackSelectionView(currentPlayerName, currentMonstre, availableAttacks);
         
@@ -154,8 +136,7 @@ public class MonstrePocheUI extends Application implements NavigationCallback {
             List<Attaque> selectedAttacks = attackSelectionView.getSelectedAttacks();
             currentMonstre.setAttaques(new ArrayList<>(selectedAttacks));
             
-            System.out.println(currentPlayerName + " a sélectionné " + selectedAttacks.size() + 
-                             " attaques pour " + currentMonstre.getNomMonstre());
+            System.out.println(currentPlayerName + " a sélectionné " + selectedAttacks.size() + " attaques pour " + currentMonstre.getNomMonstre());
             
             currentMonsterIndex++;
             showAttackSelection(joueur1, joueur2, isPlayer1);
@@ -166,14 +147,8 @@ public class MonstrePocheUI extends Application implements NavigationCallback {
     
     @Override
     public void showBattle(Joueur joueur1, Joueur joueur2) {
-        // Créer la vue de combat avec les premiers monstres
         BattleView battleView = new BattleView(joueur1, joueur2);
-        
-        // Créer le contrôleur de combat
         new BattleController(battleView, this);
-        
-        System.out.println("Combat lancé entre " + player1Name + " et " + player2Name);
-        
         scene.setRoot(battleView);
     }
 

@@ -18,8 +18,8 @@ import com.esiea.monstre.poche.models.visual.GameVisual;
 public class CombatEnLigne extends Combat {
     private final OnlineConnection connection;
 
-    public CombatEnLigne(Joueur joueurLocal, Joueur joueurDistant, Terrain terrain, OnlineConnection connection) {
-        super(joueurLocal, joueurDistant, terrain);
+    public CombatEnLigne(Joueur joueurLocal, Joueur joueurDistant, OnlineConnection connection) {
+        super(joueurLocal, joueurDistant);
         this.connection = connection;
     }
 

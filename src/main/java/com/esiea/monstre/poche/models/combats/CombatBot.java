@@ -5,7 +5,6 @@ import java.util.Scanner;
 import com.esiea.monstre.poche.models.entites.Attaque;
 import com.esiea.monstre.poche.models.entites.Bot;
 import com.esiea.monstre.poche.models.entites.Monstre;
-import com.esiea.monstre.poche.models.entites.Terrain;
 import com.esiea.monstre.poche.models.inventaire.Objet;
 import com.esiea.monstre.poche.models.loader.AttaqueLoader;
 import com.esiea.monstre.poche.models.loader.MonstreLoader;
@@ -20,8 +19,8 @@ public class CombatBot extends Combat {
     private Bot bot;
     private final Scanner scanner = new Scanner(System.in);
 
-    public CombatBot(Joueur joueur, Bot bot, Terrain terrain) {
-        super(joueur, bot, terrain);
+    public CombatBot(Joueur joueur, Bot bot) {
+        super(joueur, bot);
         this.bot = bot;
     }
 
@@ -33,12 +32,6 @@ public class CombatBot extends Combat {
         // Le joueur humain sélectionne ses monstres et attaques
         this.selectionnerMonstre(monstreLoader, joueur1);
         this.selectionnerAttaque(attaqueLoader, joueur1);
-
-        // Le Bot charge automatiquement (déjà fait dans MonstrePoche, mais par sécurité)
-        if (bot.getMonstres().isEmpty()) {
-            bot.chargerMonstresAutomatiquement(monstreLoader);
-            bot.chargerAttaquesAutomatiquement(attaqueLoader);
-        }
 
         GameVisual.afficherTitreSection("COMBAT LANCE !");
         System.out.println("Le Bot " + bot.getNomJoueur() + " est pret au combat.");
@@ -54,13 +47,8 @@ public class CombatBot extends Combat {
     @Override
     public void executerTour() {
         while (!joueur1.sontMonstresMorts() && !joueur2.sontMonstresMorts()) {
-            // Le joueur humain choisit son action
             Object actionJoueur = this.gereChoixAction(joueur1);
-
-            // Le Bot choisit automatiquement son action
             Object actionBot = this.gereChoixActionBot();
-
-            // Exécuter les actions
             Combat.gereOrdreExecutionActions(actionJoueur, actionBot);
         }
         this.finDePartie();

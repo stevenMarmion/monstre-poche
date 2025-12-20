@@ -171,4 +171,25 @@ public class GameVisual {
         
         return new String[]{adresse, String.valueOf(port)};
     }
+
+    /**
+     * Permet de demander au joueur s'il souhaite le jeu par interface ou par terminal
+     */
+    public static int afficherDemandeInterfaceTerminal(Scanner scanner) {
+        afficherTitreSection("Monstre Poche - mode de jeu");
+        
+        System.out.println();
+        System.out.println("  [1] Jouer par interface");
+        System.out.println("  [2] Jouer par terminal");
+        System.out.println();
+        
+        String choix = demanderSaisie(scanner, "Votre choix (1 ou 2) >");
+        
+        while (!choix.equals("1") && !choix.equals("2")) {
+            afficherErreur("Choix invalide. Veuillez entrer 1 ou 2.");
+            choix = demanderSaisie(scanner, "Votre choix (1 ou 2) >");
+        }
+        
+        return Integer.parseInt(choix);
+    }
 }

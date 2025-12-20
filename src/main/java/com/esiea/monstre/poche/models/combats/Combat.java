@@ -6,6 +6,7 @@ import java.util.Scanner;
 import com.esiea.monstre.poche.models.entites.Attaque;
 import com.esiea.monstre.poche.models.entites.Monstre;
 import com.esiea.monstre.poche.models.entites.Terrain;
+import com.esiea.monstre.poche.models.etats.Asseche;
 import com.esiea.monstre.poche.models.inventaire.Objet;
 // import com.esiea.monstre.poche.models.inventaire.medicaments.Medicament;
 // import com.esiea.monstre.poche.models.inventaire.potions.Potion;
@@ -24,10 +25,10 @@ public class Combat {
     public static Terrain terrain;
     private final Scanner scanner = new Scanner(System.in);
 
-    public Combat(Joueur joueur1, Joueur joueur2, Terrain terrain) {
+    public Combat(Joueur joueur1, Joueur joueur2) {
         Combat.joueur1 = joueur1;
         Combat.joueur2 = joueur2;
-        Combat.terrain = terrain;
+        Combat.terrain = new Terrain("Arène de jeu", new Asseche());
     }
     
     public void lancer(MonstreLoader monstreLoader, AttaqueLoader attaqueLoader /*, PotionLoader potionLoader, MedicamentLoader medicamentLoader*/) {
