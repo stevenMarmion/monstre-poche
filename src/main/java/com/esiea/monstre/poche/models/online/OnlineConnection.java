@@ -29,6 +29,7 @@ public class OnlineConnection implements Closeable {
 
     public void sendEnd(String message) {
         out.println("END|" + message);
+        out.flush();
     }
 
     public String ask(String prompt) throws IOException {
@@ -49,6 +50,7 @@ public class OnlineConnection implements Closeable {
 
     public void sendRaw(String message) {
         out.println(message);
+        out.flush();
     }
 
     public String readRaw() throws IOException {

@@ -325,7 +325,17 @@ public class BattleView extends BorderPane {
      * Met à jour le message du combat.
      */
     public void updateBattleLog(String message) {
-        lblBattleLog.setText(message);
+        if (message == null || message.isEmpty()) return;
+        String existing = lblBattleLog.getText();
+        if (existing == null || existing.isEmpty()) {
+            lblBattleLog.setText(message);
+        } else {
+            lblBattleLog.setText(existing + "\n" + message);
+        }
+    }
+
+    public void clearBattleLog() {
+        lblBattleLog.setText("");
     }
     
     /**

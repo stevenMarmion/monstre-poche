@@ -1,10 +1,11 @@
 package com.esiea.monstre.poche.views;
 
-import com.esiea.monstre.poche.models.AppTerminal;
+import com.esiea.monstre.poche.models.App;
 import com.esiea.monstre.poche.models.entites.Attaque;
 import com.esiea.monstre.poche.models.entites.Bot;
 import com.esiea.monstre.poche.models.entites.Joueur;
 import com.esiea.monstre.poche.models.entites.Monstre;
+import com.esiea.monstre.poche.models.utils.Loaders;
 import com.esiea.monstre.poche.controllers.*;
 
 import javafx.application.Application;
@@ -20,23 +21,15 @@ import java.util.List;
  * Implémente NavigationCallback pour la gestion de la navigation entre les vues.
  */
 public class MonstrePocheUI extends Application implements NavigationCallback {
-    
     private Stage primaryStage;
     private Scene scene;
-    
-    private int currentMonsterIndex;
-    private String currentPlayerName;
 
     @Override
     public void start(Stage stage) {
         this.primaryStage = stage;
-
-        AppTerminal.chargeLoaders();
         
-        // Affichage du menu principal
         showMainMenu();
         
-        // Configuration de la fenêtre
         primaryStage.setTitle("Monstre Poche");
         primaryStage.setResizable(true);
         primaryStage.setMaximized(true);
@@ -85,7 +78,7 @@ public class MonstrePocheUI extends Application implements NavigationCallback {
             currentPlayerName = joueur2.getNomJoueur();
         }
         
-        List<Monstre> availableMonsters = AppTerminal.monstreLoader.getRessources();
+        List<Monstre> availableMonsters = App.monstreLoader.getRessources();
         
         MonsterSelectionView monsterSelectionView = new MonsterSelectionView(currentPlayerName, availableMonsters);
         new MonsterSelectionController(monsterSelectionView, this, joueur1, joueur2, isPlayer1);
@@ -125,7 +118,7 @@ public class MonstrePocheUI extends Application implements NavigationCallback {
         }
 
         Monstre currentMonstre = activePlayer.getMonstres().get(currentMonsterIndex);
-        List<Attaque> availableAttacks = AppTerminal.attaqueLoader.getRessources();
+        List<Attaque> availableAttacks = App.attaqueLoader.getRessources();
         
         AttackSelectionView attackSelectionView = new AttackSelectionView(currentPlayerName, currentMonstre, availableAttacks);
         
@@ -163,7 +156,7 @@ public class MonstrePocheUI extends Application implements NavigationCallback {
     @Override
     public void showMonsterSelectionBotGame(Joueur joueur1, Joueur bot) {
         currentPlayerName = joueur1.getNomJoueur();
-        List<Monstre> availableMonsters = AppTerminal.monstreLoader.getRessources();
+        List<Monstre> availableMonsters = App.monstreLoader.getRessources();
         
         MonsterSelectionView monsterSelectionView = new MonsterSelectionView(currentPlayerName, availableMonsters);
         new MonsterSelectionController(monsterSelectionView, this, joueur1, bot, true);
@@ -192,7 +185,7 @@ public class MonstrePocheUI extends Application implements NavigationCallback {
         }
 
         Monstre currentMonstre = activePlayer.getMonstres().get(currentMonsterIndex);
-        List<Attaque> availableAttacks = AppTerminal.attaqueLoader.getRessources();
+        List<Attaque> availableAttacks = App.attaqueLoader.getRessources();
         
         AttackSelectionView attackSelectionView = new AttackSelectionView(currentPlayerName, currentMonstre, availableAttacks);
         

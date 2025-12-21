@@ -53,7 +53,7 @@ public class BattleController {
         Attaque attaqueBot = bot.choisirActionAutomatiquement(view.getJoueur1().getMonstreActuel());
         player2Action = attaqueBot;
         player2Ready = true;
-        view.updateBattleLog(view.getJoueur2().getNomJoueur() + " (Bot) a choisi son action !");
+        view.updateBattleLog(view.getJoueur2().getNomJoueur() + " (Bot) a choisi: " + attaqueBot.getNomAttaque());
         executeTurnActions();
     }
     
@@ -146,11 +146,26 @@ public class BattleController {
         if (!player1Ready || !player2Ready) {
             return; // Attendre que les deux joueurs soient prêts
         }
-        
-        view.updateBattleLog("Exécution des actions...");
-        
-        // Utiliser la logique de Combat.gereOrdreExecutionActions
+        // Afficher uniquement les informations du tour courant
+        view.clearBattleLog();
+
+        // Annonce des actions
+        view.updateBattleLog("— Actions annoncées —");
+        view.updateBattleLog(view.getJoueur1().getNomJoueur() + ": " + formatAction(player1Action));
+        view.updateBattleLog(view.getJoueur2().getNomJoueur() + ": " + formatAction(player2Action));
+
+        // Activer le logger et exécuter
+        com.esiea.monstre.poche.models.combats.CombatLogger.enable();
+        com.esiea.monstre.poche.models.combats.CombatLogger.clear();
+
+        // Utiliser la logique d'ordre d'exécution
         Combat.gereOrdreExecutionActions(player1Action, player2Action);
+
+        // Récupérer et afficher les logs détaillés
+        String detailed = com.esiea.monstre.poche.models.combats.CombatLogger.getFormattedLogs();
+        if (detailed != null && !detailed.isEmpty()) {
+            view.updateBattleLog(detailed);
+        }
         
         // Mise à jour de l'affichage
         view.updatePokemonDisplay();
@@ -166,6 +181,17 @@ public class BattleController {
         
         view.setTurn(true);
         view.updateBattleLog("À " + view.getJoueur1().getNomJoueur() + " de choisir son action !");
+    }
+
+    private String formatAction(Object action) {
+        if (action == null) return "(aucune)";
+        if (action instanceof Attaque) {
+            return "Attaque: " + ((Attaque) action).getNomAttaque();
+        }
+        if (action instanceof Monstre) {
+            return "Changement: " + ((Monstre) action).getNomMonstre();
+        }
+        return action.getClass().getSimpleName();
     }
     
     /**

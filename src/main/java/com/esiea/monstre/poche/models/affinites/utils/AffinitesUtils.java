@@ -1,5 +1,6 @@
 package com.esiea.monstre.poche.models.affinites.utils;
 
+import com.esiea.monstre.poche.models.combats.CombatLogger;
 import com.esiea.monstre.poche.models.affinites.Eau;
 import com.esiea.monstre.poche.models.affinites.Feu;
 import com.esiea.monstre.poche.models.affinites.Foudre;
@@ -55,25 +56,41 @@ public class AffinitesUtils {
     public static void appliqueCapaciteSpeciale(Type statut, Monstre cible, Terrain terrain) {
         switch (statut.getLabelType().toLowerCase()) {
             case "feu":
+                CombatLogger.log("Capacité spéciale Feu appliquée sur " + cible.getNomMonstre() + ".");
                 ((Feu) statut).appliqueCapaciteSpeciale(cible);
                 break;
             case "eau":
+                String before = terrain.getStatutTerrain().getLabelStatut();
                 ((Eau) statut).appliqueCapaciteSpeciale(terrain);
+                String after = terrain.getStatutTerrain().getLabelStatut();
+                if (!after.equals(before)) {
+                    CombatLogger.log("La capacité Eau modifie le terrain: " + before + " -> " + after + ".");
+                    if (after.equals("Innonde")) {
+                        CombatLogger.log("Le terrain est désormais inondé.");
+                    }
+                } else {
+                    CombatLogger.log("La capacité Eau n'a pas modifié le terrain.");
+                }
                 break;
             case "foudre":
+                CombatLogger.log("Capacité spéciale Foudre appliquée sur " + cible.getNomMonstre() + ".");
                 ((Foudre) statut).appliqueCapaciteSpeciale(cible);
                 break;
             case "terre":
+                CombatLogger.log("Capacité spéciale Terre appliquée sur " + cible.getNomMonstre() + ".");
                 ((Terre) statut).appliqueCapaciteSpeciale(cible);
                 break;
             case "plante":
+                CombatLogger.log("Capacité spéciale Plante appliquée sur " + cible.getNomMonstre() + ".");
                 ((Plante) statut).appliqueCapaciteSpeciale(cible);
                 break;
             case "insecte":
+                CombatLogger.log("Capacité spéciale Insecte appliquée sur " + cible.getNomMonstre() + ".");
                 ((Insecte) statut).appliqueCapaciteSpeciale(cible);
                 break;
             case "nature":
                 if (terrain.getStatutTerrain().getLabelStatut().equals("Innonde")) {
+                    CombatLogger.log("Capacité spéciale Nature activée (terrain inondé) sur " + cible.getNomMonstre() + ".");
                     ((Nature) statut).appliqueCapaciteSpeciale(cible);
                 }
                 break;
@@ -96,6 +113,7 @@ public class AffinitesUtils {
         switch (statut.getLabelType().toLowerCase()) {
             case "nature":
                 if (terrain.getStatutTerrain().getLabelStatut().equals("Innonde")) {
+                    CombatLogger.log("Capacité Nature de soutien (terrain inondé) sur " + cible.getNomMonstre() + ".");
                     ((Nature) statut).appliqueCapaciteSpeciale(cible);
                 }
                 break;

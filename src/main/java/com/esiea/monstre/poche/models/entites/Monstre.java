@@ -150,8 +150,8 @@ public class Monstre implements Serializable {
 
         // Log avant attaque
         CombatLogger.log("═══════════════════════════════════════");
-        CombatLogger.log(this.nomMonstre + " utilise " + 
-            (attaqueUtilisee != null ? attaqueUtilisee.getNomAttaque() : "ses mains nues") + " !");
+            CombatLogger.log(this.nomMonstre + " utilise " + 
+                (attaqueUtilisee != null ? attaqueUtilisee.getNomAttaque() : "ses mains nues") + " :");
         
         // ensuite on applique nos effets avant attaque si le pokémon est paralysé ou autre
         StatutMonstreUtils.appliquerStatutMonstre(statut, this, (int) degatsAffliges);
@@ -164,17 +164,17 @@ public class Monstre implements Serializable {
             double pvAvant = cible.getPointsDeVie();
             cible.setPointsDeVie(cible.getPointsDeVie() - (int) degatsAffliges);
             
-            CombatLogger.log(cible.getNomMonstre() + " subit " + (int) degatsAffliges + " points de dégâts !");
-            CombatLogger.log((int)pvAvant + " → " + (int)cible.getPointsDeVie() + " / " + (int)cible.getPointsDeVieMax());
+                CombatLogger.log(cible.getNomMonstre() + " subit " + (int) degatsAffliges + " points de dégâts.");
+                CombatLogger.log("PV: " + (int)pvAvant + " -> " + (int)cible.getPointsDeVie() + " / " + (int)cible.getPointsDeVieMax());
 
             if (cible.getPointsDeVie() == 0) {
-                CombatLogger.log(cible.getNomMonstre() + " est K.O. !");
+                    CombatLogger.log(cible.getNomMonstre() + " est K.O.");
             }
 
             // les effets de l'attaque spéciale du monstre si elle est pas ratée
             AffinitesUtils.appliqueCapaciteSpeciale(typeMonstre, cible, terrain);
         } else {
-            CombatLogger.log(this.nomMonstre + " a raté son attaque !");
+                CombatLogger.log(this.nomMonstre + " a raté son attaque.");
         }
         
         CombatLogger.log("═══════════════════════════════════════");

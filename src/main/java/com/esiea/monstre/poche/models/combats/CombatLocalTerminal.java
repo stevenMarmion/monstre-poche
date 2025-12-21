@@ -3,7 +3,6 @@ package com.esiea.monstre.poche.models.combats;
 import java.util.Scanner;
 
 import com.esiea.monstre.poche.models.entites.Attaque;
-import com.esiea.monstre.poche.models.entites.Bot;
 import com.esiea.monstre.poche.models.entites.Monstre;
 import com.esiea.monstre.poche.models.inventaire.Objet;
 import com.esiea.monstre.poche.models.loader.AttaqueLoader;
@@ -12,43 +11,49 @@ import com.esiea.monstre.poche.models.entites.Joueur;
 import com.esiea.monstre.poche.models.visual.GameVisual;
 
 /**
- * Classe CombatBot qui gère un combat entre un joueur et un Bot.
- * Hérite de Combat et adapte la logique pour les actions automatiques du Bot.
+ * Combat pour deux joueurs locaux via terminal.
+ * Contient la gestion d'entrée/sortie terminal et repose sur la logique métier de Combat.
  */
-public class CombatBot extends Combat {
-    private Bot bot;
+public class CombatLocalTerminal extends Combat {
     private final Scanner scanner = new Scanner(System.in);
 
-    public CombatBot(Joueur joueur, Bot bot) {
-        super(joueur, bot);
-        this.bot = bot;
+    public CombatLocalTerminal(Joueur joueur1, Joueur joueur2) {
+        super(joueur1, joueur2);
     }
 
-    /**
-     * Lance le combat avec sélection automatique pour le Bot
-     */
     @Override
     public void lancer(MonstreLoader monstreLoader, AttaqueLoader attaqueLoader) {
-        // Le joueur humain sélectionne ses monstres et attaques
-        this.selectionnerMonstre(monstreLoader, joueur1);
-        this.selectionnerAttaque(attaqueLoader, joueur1);
+        GameVisual.afficherTitreSection("Configuration des monstres et attaques");
+        selectionnerMonstre(monstreLoader, joueur1);
+        selectionnerMonstre(monstreLoader, joueur2);
+
+        selectionnerAttaque(attaqueLoader, joueur1);
+        selectionnerAttaque(attaqueLoader, joueur2);
 
         GameVisual.afficherTitreSection("COMBAT LANCE !");
-        System.out.println("Le Bot " + bot.getNomJoueur() + " est pret au combat.");
-        System.out.println();
+        executerTour();
+    }
 
-        // Exécuter les tours de combat
-        this.executerTour();
+    @Override
+    public void executerTour() {
+        while (!joueur1.sontMonstresMorts() && !joueur2.sontMonstresMorts()) {
+            Object actionJoueur1 = gereChoixAction(joueur1);
+            Object actionJoueur2 = gereChoixAction(joueur2);
+            Combat.gereOrdreExecutionActions(actionJoueur1, actionJoueur2);
+        }
+        super.finDePartie();
     }
 
     @Override
     public void selectionnerMonstre(MonstreLoader monstreLoader, Joueur joueur) {
         GameVisual.afficherTitreSection("Selection des monstres - " + joueur.getNomJoueur());
         GameVisual.afficherSousTitre("Monstres disponibles");
+
         int index = 1;
         for (Monstre monstre : monstreLoader.getRessources()) {
             System.out.println(String.format("[%d] %s", index++, GameVisual.formatterMonstre(monstre)));
         }
+
         while (joueur.getMonstres().size() < 3) {
             String choixInput = GameVisual.demanderSaisie(this.scanner, "Choix " + (joueur.getMonstres().size() + 1) + "/3 >");
             try {
@@ -87,6 +92,7 @@ public class CombatBot extends Combat {
             for (Attaque attaque : attaquesCompatibles) {
                 System.out.println(String.format("[%d] %s", index++, GameVisual.formatterAttaque(attaque)));
             }
+
             while (monstre.getAttaques().size() < 4) {
                 String choixInput = GameVisual.demanderSaisie(this.scanner, "Choix " + (monstre.getAttaques().size() + 1) + "/4 >");
                 try {
@@ -101,7 +107,7 @@ public class CombatBot extends Combat {
                         continue;
                     }
                     monstre.ajouterAttaque(attaqueChargee);
-                    System.out.println("  [OK] Attaque ajoutee : " + attaqueChargee.getNomAttaque());
+                    System.out.println("  [OK] Attaque ajoutee pour " + joueur.getNomJoueur() + " : " + attaqueChargee.getNomAttaque() + " (" + monstre.getNomMonstre() + ")");
                 } catch (NumberFormatException e) {
                     GameVisual.afficherErreur("Saisie invalide. Veuillez entrer un numero.");
                 }
@@ -110,123 +116,11 @@ public class CombatBot extends Combat {
     }
 
     @Override
-    public Attaque choixAttaque(Joueur joueur) {
-        Monstre monstreActuel = joueur.getMonstreActuel();
-        GameVisual.afficherTitreSection("Attaques de " + monstreActuel.getNomMonstre());
-        int index = 1;
-        for (Attaque attaque : monstreActuel.getAttaques()) {
-            System.out.println(String.format("[%d] %s", index++, GameVisual.formatterAttaque(attaque)));
-        }
-        while (true) {
-            String choixInput = GameVisual.demanderSaisie(this.scanner, "Attaque choisie >");
-            try {
-                int indexChoisi = Integer.parseInt(choixInput);
-                if (indexChoisi < 1 || indexChoisi > monstreActuel.getAttaques().size()) {
-                    GameVisual.afficherErreur("Index invalide. Veuillez choisir un nombre entre 1 et " + monstreActuel.getAttaques().size());
-                    continue;
-                }
-                return monstreActuel.getAttaques().get(indexChoisi - 1);
-            } catch (NumberFormatException e) {
-                GameVisual.afficherErreur("Saisie invalide. Veuillez entrer un numero.");
-            }
-        }
-    }
-
-    @Override
-    public Objet utiliseObjet(Joueur joueur) {
-        GameVisual.afficherTitreSection("Objets de " + joueur.getNomJoueur());
-        int index = 1;
-        for (Objet objet : joueur.getObjets()) {
-            System.out.println(String.format("[%d] %s", index++, objet.getNomObjet()));
-        }
-        String nomObjetChoisi = GameVisual.demanderSaisie(this.scanner, "Objet choisi >");
-        for (Objet objet : joueur.getObjets()) {
-            if (objet.getNomObjet().equalsIgnoreCase(nomObjetChoisi)) {
-                return objet;
-            }
-        }
-        GameVisual.afficherErreur("Objet introuvable. L'action est ignoree.");
-        return null;
-    }
-
-    @Override
-    public Monstre changeMonstre(Joueur joueur) {
-        GameVisual.afficherTitreSection("Changement de monstre - " + joueur.getNomJoueur());
-        int index = 1;
-        for (Monstre monstre : joueur.getMonstres()) {
-            System.out.println(String.format("[%d] %s", index++, GameVisual.formatterMonstre(monstre)));
-        }
-        while (true) {
-            String choixInput = GameVisual.demanderSaisie(this.scanner, "Monstre envoye >");
-            try {
-                int indexChoisi = Integer.parseInt(choixInput);
-                if (indexChoisi < 1 || indexChoisi > joueur.getMonstres().size()) {
-                    GameVisual.afficherErreur("Index invalide. Veuillez choisir un nombre entre 1 et " + joueur.getMonstres().size());
-                    continue;
-                }
-                return joueur.getMonstres().get(indexChoisi - 1);
-            } catch (NumberFormatException e) {
-                GameVisual.afficherErreur("Saisie invalide. Veuillez entrer un numero.");
-            }
-        }
-    }
-
-    /**
-     * Exécute les tours de combat avec gestion des actions du Bot
-     */
-    @Override
-    public void executerTour() {
-        while (!joueur1.sontMonstresMorts() && !joueur2.sontMonstresMorts()) {
-            Object actionJoueur = this.gereChoixAction(joueur1);
-            Object actionBot = this.gereChoixActionBot();
-            Combat.gereOrdreExecutionActions(actionJoueur, actionBot);
-        }
-        this.finDePartie();
-    }
-
-    /**
-     * Gère l'action automatique du Bot
-     */
-    private Object gereChoixActionBot() {
-        GameVisual.afficherTitreSection("Tour du Bot " + bot.getNomJoueur());
-
-        Monstre monstreActifBot = bot.getMonstreActuel();
-        Monstre monstreActifJoueur = joueur1.getMonstreActuel();
-
-        if (monstreActifBot == null || monstreActifBot.getPointsDeVie() <= 0) {
-            bot.changerMonstreAutomatiquement();
-            return bot.getMonstreActuel();
-        }
-
-        System.out.println("Monstre actif du Bot : " + monstreActifBot.getNomMonstre() + " | PV " + (int) monstreActifBot.getPointsDeVie() + "/" + (int) monstreActifBot.getPointsDeVieMax());
-
-        // Le Bot choisit une attaque
-        Attaque attaqueBot = bot.choisirActionAutomatiquement(monstreActifJoueur);
-
-        if (attaqueBot != null) {
-            System.out.println("Le Bot choisit l'attaque : " + attaqueBot.getNomAttaque());
-        }
-
-        return attaqueBot;
-    }
-
-    /**
-     * Affiche l'interface de sélection d'action pour le joueur humain
-     */
-    @Override
     public Object gereChoixAction(Joueur joueur) {
         GameVisual.afficherTitreSection("Tour de " + joueur.getNomJoueur());
         Monstre actif = joueur.getMonstreActuel();
         System.out.println("Monstre actif : " + actif.getNomMonstre() + " | PV " + (int) actif.getPointsDeVie() + "/" + (int) actif.getPointsDeVieMax() + " | ATK " + actif.getAttaque() + " | DEF " + actif.getDefense() + " | VIT " + actif.getVitesse());
-
-        // Afficher les monstres de l'adversaire (Bot)
-        GameVisual.afficherSousTitre("Monstres du Bot adverse :");
-        for (Monstre m : bot.getMonstres()) {
-            String statut = m.getPointsDeVie() > 0 ? "Vivant" : "KO";
-            System.out.println("  - " + m.getNomMonstre() + " | PV " + (int) m.getPointsDeVie() + "/" + (int) m.getPointsDeVieMax() + " | " + statut);
-        }
-
-        System.out.println("\nActions disponibles :");
+        System.out.println("Actions disponibles :");
         System.out.println("  1) Attaquer");
         System.out.println("  2) Utiliser un objet");
         System.out.println("  3) Changer de monstre");
@@ -254,20 +148,85 @@ public class CombatBot extends Combat {
             default:
                 break;
         }
-
         return actionEffectuee;
     }
 
-    /**
-     * Fin du combat avec message personnalisé
-     */
     @Override
-    public void finDePartie() {
-        GameVisual.afficherTitreSection("FIN DU COMBAT");
-        if (joueur1.sontMonstresMorts()) {
-            System.out.println("Vous avez perdu ! Le Bot " + bot.getNomJoueur() + " a remporte la victoire !");
-        } else if (joueur2.sontMonstresMorts()) {
-            System.out.println("Felicitations ! Vous avez remporte la victoire contre le Bot " + bot.getNomJoueur() + " !");
+    public Attaque choixAttaque(Joueur joueur) {
+        Monstre monstreActuel = joueur.getMonstreActuel();
+        GameVisual.afficherTitreSection("Attaques de " + monstreActuel.getNomMonstre());
+        int index = 1;
+        for (Attaque attaque : monstreActuel.getAttaques()) {
+            System.out.println(String.format("[%d] %s", index++, GameVisual.formatterAttaque(attaque)));
         }
+
+        Attaque attaqueChoisie = null;
+        while (attaqueChoisie == null) {
+            String choixInput = GameVisual.demanderSaisie(this.scanner, "Attaque choisie >");
+            try {
+                int indexChoisi = Integer.parseInt(choixInput);
+                if (indexChoisi < 1 || indexChoisi > monstreActuel.getAttaques().size()) {
+                    GameVisual.afficherErreur("Index invalide. Veuillez choisir un nombre entre 1 et " + monstreActuel.getAttaques().size());
+                    continue;
+                }
+                attaqueChoisie = monstreActuel.getAttaques().get(indexChoisi - 1);
+            } catch (NumberFormatException e) {
+                GameVisual.afficherErreur("Saisie invalide. Veuillez entrer un numero.");
+            }
+        }
+        return attaqueChoisie;
+    }
+
+    @Override
+    public Objet utiliseObjet(Joueur joueur) {
+        GameVisual.afficherTitreSection("Objets de " + joueur.getNomJoueur());
+        int index = 1;
+        for (Objet objet : joueur.getObjets()) {
+            System.out.println(String.format("[%d] %s", index++, objet.getNomObjet()));
+        }
+
+        String nomObjetChoisi = GameVisual.demanderSaisie(this.scanner, "Objet choisi >");
+        Objet objetChoisi = null;
+        for (Objet objet : joueur.getObjets()) {
+            if (objet.getNomObjet().equalsIgnoreCase(nomObjetChoisi)) {
+                objetChoisi = objet;
+            }
+        }
+
+        while (objetChoisi == null) {
+            GameVisual.afficherErreur("Objet introuvable. Merci de saisir le nom exact d'un objet disponible.");
+            nomObjetChoisi = GameVisual.demanderSaisie(this.scanner, "Objet choisi >");
+            for (Objet objet : joueur.getObjets()) {
+                if (objet.getNomObjet().equalsIgnoreCase(nomObjetChoisi)) {
+                    objetChoisi = objet;
+                }
+            }
+        }
+        return objetChoisi;
+    }
+
+    @Override
+    public Monstre changeMonstre(Joueur joueur) {
+        GameVisual.afficherTitreSection("Changement de monstre - " + joueur.getNomJoueur());
+        int index = 1;
+        for (Monstre monstre : joueur.getMonstres()) {
+            System.out.println(String.format("[%d] %s", index++, GameVisual.formatterMonstre(monstre)));
+        }
+
+        Monstre monstreChoisi = null;
+        while (monstreChoisi == null) {
+            String choixInput = GameVisual.demanderSaisie(this.scanner, "Monstre envoye >");
+            try {
+                int indexChoisi = Integer.parseInt(choixInput);
+                if (indexChoisi < 1 || indexChoisi > joueur.getMonstres().size()) {
+                    GameVisual.afficherErreur("Index invalide. Veuillez choisir un nombre entre 1 et " + joueur.getMonstres().size());
+                    continue;
+                }
+                monstreChoisi = joueur.getMonstres().get(indexChoisi - 1);
+            } catch (NumberFormatException e) {
+                GameVisual.afficherErreur("Saisie invalide. Veuillez entrer un numero.");
+            }
+        }
+        return monstreChoisi;
     }
 }

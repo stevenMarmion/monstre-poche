@@ -1,29 +1,28 @@
 package com.esiea.monstre.poche.models;
 
 import java.util.Scanner;
-
-import com.esiea.monstre.poche.models.combats.Combat;
 import com.esiea.monstre.poche.models.combats.CombatBot;
+import com.esiea.monstre.poche.models.combats.CombatLocalTerminal;
 import com.esiea.monstre.poche.models.entites.Bot;
 import com.esiea.monstre.poche.models.entites.Joueur;
-import com.esiea.monstre.poche.models.loader.AttaqueLoader;
-import com.esiea.monstre.poche.models.loader.MonstreLoader;
 import com.esiea.monstre.poche.models.online.OnlineClient;
 import com.esiea.monstre.poche.models.online.OnlineServer;
+import com.esiea.monstre.poche.models.utils.Loaders;
 import com.esiea.monstre.poche.models.visual.GameVisual;
+import com.esiea.monstre.poche.views.MonstrePocheUI;
 
-public class AppTerminal {
-    public static final int LANCEMENT_JEU_LOCAL = 1;
-    public static final int LANCEMENT_JEU_BOT = 2;
-    public static final int LANCEMENT_JEU_ONLINE = 3;
+public class App {
+    private static final int LANCEMENT_JEU_LOCAL = 1;
+    private static final int LANCEMENT_JEU_BOT = 2;
+    private static final int LANCEMENT_JEU_ONLINE = 3;
 
-    public static Scanner scanner = new Scanner(System.in);
+    private static final int DEMARRAGE_SERVEUR = 1;
+    private static final int CONNEXION_SERVEUR = 2;
 
-    public static MonstreLoader monstreLoader;
-    public static AttaqueLoader attaqueLoader;
+    private static final Scanner scanner = new Scanner(System.in);
 
     public static void startAppTerminal() {
-        chargeLoaders();
+        Loaders.chargeLoaders();
         int modeJeu = GameVisual.afficherMenuModeJeu(scanner);
 
         switch (modeJeu) {
@@ -43,50 +42,45 @@ public class AppTerminal {
         }
     }
 
-    public static void lancementJeuLocal() {
-        String nomJoueur1 = GameVisual.demanderSaisie(scanner, "Entrez votre nom de joueur >");
-        Joueur joueur1 = new Joueur(nomJoueur1);
-
-        int difficulteBout = GameVisual.afficherMenuDifficulteBot(scanner);
-        Bot bot = new Bot("Monstre poche - Bot", difficulteBout);
-
-        bot.chargerMonstresAutomatiquement(monstreLoader);
-        bot.chargerAttaquesAutomatiquement(attaqueLoader);
-        
-        CombatBot combatBot = new CombatBot(joueur1, bot);
-        combatBot.lancer(monstreLoader, attaqueLoader);
+    public static void startAppInterface() {
+        Loaders.chargeLoaders();
+        MonstrePocheUI.main(null);
     }
 
-    public static void lancementJeuBot() {
+    private static void lancementJeuLocal() {
         String nomJoueur1 = GameVisual.demanderSaisie(scanner, "Entrez le nom du Joueur 1 >");
         Joueur joueur1 = new Joueur(nomJoueur1);
         String nomJoueur2 = GameVisual.demanderSaisie(scanner, "Entrez le nom du Joueur 2 >");
         Joueur joueur2 = new Joueur(nomJoueur2);
         
-        Combat combat = new Combat(joueur1, joueur2);
-        combat.lancer(monstreLoader, attaqueLoader);
+        CombatLocalTerminal combat = new CombatLocalTerminal(joueur1, joueur2);
+        combat.lancer(Loaders.monstreLoader, Loaders.attaqueLoader);
     }
 
-    public static void lancementJeuOnline() {
+    private static void lancementJeuBot() {
+        String nomJoueur1 = GameVisual.demanderSaisie(scanner, "Entrez votre nom de joueur >");
+        Joueur joueur1 = new Joueur(nomJoueur1);
+        int difficulteBout = GameVisual.afficherMenuDifficulteBot(scanner);
+        Bot bot = new Bot("Kylian le Bot", difficulteBout);
+        
+        CombatBot combatBot = new CombatBot(joueur1, bot);
+        combatBot.lancer(Loaders.monstreLoader, Loaders.attaqueLoader);
+    }
+
+    private static void lancementJeuOnline() {
         int choixEnLigne = GameVisual.afficherMenuJeuEnLigne(scanner);
 
-        if (choixEnLigne == 1) {
+        if (choixEnLigne == DEMARRAGE_SERVEUR) {
             int port = GameVisual.demanderPortServeur(scanner);
             OnlineServer server = new OnlineServer(port, scanner);
-            server.lancer(monstreLoader, attaqueLoader);
-        } else {
+            server.lancer(Loaders.monstreLoader, Loaders.attaqueLoader);
+        } 
+        if (choixEnLigne == CONNEXION_SERVEUR) {
             String[] config = GameVisual.demanderConfigurationServeur(scanner);
             String adresse = config[0];
             int port = Integer.parseInt(config[1]);
             OnlineClient client = new OnlineClient(adresse, port);
             client.lancer();
         }
-    }
-
-    public static void chargeLoaders() {
-        attaqueLoader = new AttaqueLoader("attacks.txt");
-        attaqueLoader.charger();
-        monstreLoader = new MonstreLoader("monsters.txt");
-        monstreLoader.charger();
     }
 }

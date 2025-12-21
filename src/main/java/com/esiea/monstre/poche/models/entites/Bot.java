@@ -3,7 +3,7 @@ package com.esiea.monstre.poche.models.entites;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
+import com.esiea.monstre.poche.models.App;
 import com.esiea.monstre.poche.models.affinites.Type;
 import com.esiea.monstre.poche.models.loader.AttaqueLoader;
 import com.esiea.monstre.poche.models.loader.MonstreLoader;
@@ -28,6 +28,8 @@ public class Bot extends Joueur {
         super(nomBot);
         this.random = new Random();
         this.niveauDifficulte = Math.min(Math.max(niveauDifficulte, 1), 3);
+        this.chargerMonstresAutomatiquement(App.monstreLoader);
+        this.chargerAttaquesAutomatiquement(App.attaqueLoader);
     }
 
     /**
