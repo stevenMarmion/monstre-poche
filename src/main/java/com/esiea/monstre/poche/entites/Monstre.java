@@ -10,6 +10,7 @@ import com.esiea.monstre.poche.etats.utils.StatutMonstreUtils;
 import com.esiea.monstre.poche.etats.utils.StatutTerrainUtils;
 
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 public class Monstre {
     // private static final int COEFF_MULTIPLICATEUR_DEGATS_MAINS_NUES = 20;
@@ -30,7 +31,7 @@ public class Monstre {
     private StatutMonstre statut;
     private boolean rateAttaque;
 
-    public Monstre(String nomMonstre, int pointsDeVie, int attaque, int defense, int vitesse, ArrayList<Attaque> attaques, Type typeMonstre) {
+    public Monstre(String nomMonstre, double pointsDeVie, int attaque, int defense, int vitesse, ArrayList<Attaque> attaques, Type typeMonstre) {
         this.nomMonstre = nomMonstre;
         this.pointsDeVie = pointsDeVie;
         this.pointsDeVieMax = pointsDeVie;
@@ -173,6 +174,22 @@ public class Monstre {
         double coef_aleatoire = 0.85 + (1.0 - 0.85) * Math.random();
         double degats = (20 * (monstreAttaquant.getAttaque() / cible.getDefense()) * coef_aleatoire);
         return degats;
+    }
+
+    public Monstre copyOf(){
+        ArrayList<Attaque> copiesAttaques = this.attaques.stream()
+                .map(Attaque::copyOf)
+                .collect(Collectors.toCollection(ArrayList::new));
+
+        return new Monstre(
+                this.getNomMonstre(),
+                this.getPointsDeVieMax(),
+                this.getAttaque(),
+                this.getDefense(),
+                this.getVitesse(),
+                copiesAttaques,
+                this.getTypeMonstre()
+        );
     }
 
     @Override

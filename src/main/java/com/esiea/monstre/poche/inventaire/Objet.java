@@ -10,4 +10,6 @@ public abstract class Objet {
     }
 
     public abstract void utiliserObjet(Monstre cible);
+
+    public abstract Objet copyOf();
 }

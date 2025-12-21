@@ -7,22 +7,22 @@ import java.util.Random;
 import com.esiea.monstre.poche.actions.Attaque;
 import com.esiea.monstre.poche.entites.Joueur;
 import com.esiea.monstre.poche.entites.Monstre;
-import com.esiea.monstre.poche.loader.AttaqueLoader;
-import com.esiea.monstre.poche.loader.MonstreLoader;
+import com.esiea.monstre.poche.inventaire.Objet;
+import com.esiea.monstre.poche.loader.*;
 
 /**
  * Classe Bot représentant un adversaire IA controllé par l'ordinateur.
  * Le bot joue automatiquement sans intervention de l'utilisateur.
  */
 public class Bot extends Joueur {
-    private static final int NOMBRE_MONSTRES = 3;
-    private static final int NOMBRE_ATTAQUES_PAR_MONSTRE = 4;
     private Random random;
+
+    //TODO faire une enum
     private int niveauDifficulte; // 1 = facile, 2 = moyen, 3 = difficile
 
     /**
      * Constructeur du Bot
-     * 
+     *
      * @param nomBot           Le nom du bot
      * @param niveauDifficulte Le niveau de difficulté (1-3)
      */
@@ -34,7 +34,7 @@ public class Bot extends Joueur {
 
     /**
      * Constructeur du Bot avec niveau de difficulte par défaut
-     * 
+     *
      * @param nomBot Le nom du bot
      */
     public Bot(String nomBot) {
@@ -43,11 +43,9 @@ public class Bot extends Joueur {
 
     /**
      * Charge automatiquement les monstres du Bot
-     * 
-     * @param monstreLoader Loader pour accéder aux monstres disponibles
      */
-    public void chargerMonstresAutomatiquement(MonstreLoader monstreLoader) {
-        List<Monstre> monstresDisponibles = monstreLoader.getRessources();
+    public void chargerMonstresAutomatiquement(GameResourcesFactory resourceFactory) {
+        List<Monstre> monstresDisponibles = resourceFactory.getTousLesMonstres();
 
         if (monstresDisponibles.isEmpty()) {
             System.out.println("[ERREUR] Aucun monstre disponible pour le bot.");
@@ -58,7 +56,7 @@ public class Bot extends Joueur {
         ArrayList<Monstre> monstresSelectionnes = new ArrayList<>();
         ArrayList<Integer> indicesUtilises = new ArrayList<>();
 
-        while (monstresSelectionnes.size() < NOMBRE_MONSTRES && monstresSelectionnes.size() < monstresDisponibles.size()) {
+        while (monstresSelectionnes.size() < Joueur.TAILLE_EQUIPE_MAX && monstresSelectionnes.size() < monstresDisponibles.size()) {
             int indexAleatoire = this.random.nextInt(monstresDisponibles.size());
 
             if (!indicesUtilises.contains(indexAleatoire)) {
@@ -71,19 +69,18 @@ public class Bot extends Joueur {
             }
         }
 
-        if (!monstresSelectionnes.isEmpty()) {
+        if (Boolean.FALSE.equals(monstresSelectionnes.isEmpty())) {
             this.setMonstreActuel(monstresSelectionnes.get(0));
             System.out.println("[BOT] " + this.getNomJoueur() + " a selectionne " + monstresSelectionnes.size() + " monstres.");
         }
     }
 
     /**
-     * Charge automatiquement les attaques pour tous les monstres du Bot
-     * 
-     * @param attaqueLoader Loader pour accéder aux attaques disponibles
+     * Charge automatiquement les objets utilisables par le bot.
+     *
      */
-    public void chargerAttaquesAutomatiquement(AttaqueLoader attaqueLoader) {
-        List<Attaque> attaquesDisponibles = attaqueLoader.getRessources();
+    public void chargerAttaquesAutomatiquement(GameResourcesFactory resourceFactory) {
+        List<Attaque> attaquesDisponibles = resourceFactory.getToutesLesAttaques();
 
         if (attaquesDisponibles.isEmpty()) {
             System.out.println("[ERREUR] Aucune attaque disponible pour le bot.");
@@ -93,7 +90,7 @@ public class Bot extends Joueur {
         for (Monstre monstre : this.getMonstres()) {
             ArrayList<Integer> indicesUtilises = new ArrayList<>();
 
-            while (monstre.getAttaques().size() < NOMBRE_ATTAQUES_PAR_MONSTRE
+            while (monstre.getAttaques().size() < Joueur.NOMBRE_ATTAQUES_PAR_MONSTRE
                     && monstre.getAttaques().size() < attaquesDisponibles.size()) {
                 int indexAleatoire = this.random.nextInt(attaquesDisponibles.size());
 
@@ -109,16 +106,36 @@ public class Bot extends Joueur {
                 }
             }
         }
-
         System.out.println("[BOT] " + this.getNomJoueur() + " a configure les attaques de ses monstres.");
     }
 
     /**
-     * Le bot choisit automatiquement une action (attaque ou changement de monstre)
-     * 
-     * @param monstreAdversaire Le monstre actuel de l'adversaire
-     * @return L'attaque choisie par le bot ou null
+     * Charge automatiquement les objets pour tous les monstres du Bot
      */
+    public void chargerObjetsAutomatiquement(GameResourcesFactory resourceFactory) {
+        List<Objet> objetsDisponibles = resourceFactory.getTousLesObjets();
+
+        if (objetsDisponibles.isEmpty()){
+            System.out.println("Aucun objets disponibles pour le bot.");
+        }
+        while(this.getObjets().size() < Joueur.TAILLE_INVENTAIRE_MAX
+            && this.getObjets().size() < objetsDisponibles.size()){
+
+            int indexAleatoire = this.random.nextInt(objetsDisponibles.size());
+            Objet objet = objetsDisponibles.get(indexAleatoire);
+
+            this.getObjets().add(objet);
+        }
+
+        System.out.println("[BOT] " + this.getNomJoueur() + " a configuré sa liste d'objets.");
+    }
+
+        /**
+         * Le bot choisit automatiquement une action (attaque ou changement de monstre)
+         *
+         * @param monstreAdversaire Le monstre actuel de l'adversaire
+         * @return L'attaque choisie par le bot ou null
+         */
     public Attaque choisirActionAutomatiquement(Monstre monstreAdversaire) {
         Monstre monstreActuel = this.getMonstreActuel();
 

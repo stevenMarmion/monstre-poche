@@ -3,6 +3,7 @@ package com.esiea.monstre.poche.visual;
 import java.util.Scanner;
 
 import com.esiea.monstre.poche.actions.Attaque;
+import com.esiea.monstre.poche.configuration.enums.ModeJeu;
 import com.esiea.monstre.poche.entites.Monstre;
 
 public class GameVisual {
@@ -38,24 +39,24 @@ public class GameVisual {
     /**
      * Affiche le menu de sélection du mode de jeu
      * @param scanner Le scanner pour lire l'entrée utilisateur
-     * @return 1 pour jouer contre un Bot, 2 pour jouer à deux joueurs locaux
+     * @return @see ModeJeu enum, avec identifiant 1 pour jouer contre un Bot, 2 pour jouer à deux joueurs locaux
      */
-    public static int afficherMenuModeJeu(Scanner scanner) {
+    public static ModeJeu afficherMenuModeJeu(Scanner scanner) {
         afficherTitreSection("MONSTRE POCHE - Selection du mode de jeu");
         
         System.out.println();
-        System.out.println("  [1] Jouer contre un Bot");
-        System.out.println("  [2] Jouer à deux joueurs (local)");
+        System.out.println(" [1] Jouer contre un Bot");
+        System.out.println(" [2] Jouer à deux joueurs (local)");
         System.out.println();
         
         String choix = demanderSaisie(scanner, "Votre choix (1 ou 2) >");
-        
-        while (!choix.equals("1") && !choix.equals("2")) {
+
+        while (Boolean.FALSE.equals(ModeJeu.existsByidentifiant(choix))) {
             afficherErreur("Choix invalide. Veuillez entrer 1 ou 2.");
             choix = demanderSaisie(scanner, "Votre choix (1 ou 2) >");
         }
         
-        return Integer.parseInt(choix);
+        return ModeJeu.fromIdentifiant(choix);
     }
 
     /**

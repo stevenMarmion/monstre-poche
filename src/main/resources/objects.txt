@@ -1,0 +1,38 @@
+Potion
+Name Super Potion de soin
+Type Soin
+Value 40
+EndPotion
+
+Potion
+Name Hyper Potion de soin
+Type Soin
+Value 80
+EndPotion
+
+Potion
+Name Potion boost d'attaque
+Type Attaque
+Value 15
+EndPotion
+
+Potion
+Name Potion boost de vitesse
+Type Vitesse
+Value 15
+EndPotion
+
+Medicament
+Name Anti-Brule
+Type brulure
+EndMedicament
+
+Medicament
+Name Anti-Para
+Type paralysie
+EndMedicament
+
+Medicament
+Name Anti-Poison
+Type poison
+EndMedicament

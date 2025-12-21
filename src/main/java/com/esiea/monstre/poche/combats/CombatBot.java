@@ -8,8 +8,7 @@ import com.esiea.monstre.poche.entites.Joueur;
 import com.esiea.monstre.poche.entites.Monstre;
 import com.esiea.monstre.poche.entites.Terrain;
 import com.esiea.monstre.poche.inventaire.Objet;
-import com.esiea.monstre.poche.loader.AttaqueLoader;
-import com.esiea.monstre.poche.loader.MonstreLoader;
+import com.esiea.monstre.poche.loader.GameResourcesFactory;
 import com.esiea.monstre.poche.visual.GameVisual;
 
 /**
@@ -29,16 +28,11 @@ public class CombatBot extends Combat {
      * Lance le combat avec sélection automatique pour le Bot
      */
     @Override
-    public void lancer(MonstreLoader monstreLoader, AttaqueLoader attaqueLoader) {
+    public void lancer(GameResourcesFactory resourceFactory) {
         // Le joueur humain sélectionne ses monstres et attaques
-        this.selectionnerMonstre(monstreLoader, super.joueur1);
-        this.selectionnerAttaque(attaqueLoader, super.joueur1);
-
-        // Le Bot charge automatiquement (déjà fait dans MonstrePoche, mais par sécurité)
-        if (bot.getMonstres().isEmpty()) {
-            bot.chargerMonstresAutomatiquement(monstreLoader);
-            bot.chargerAttaquesAutomatiquement(attaqueLoader);
-        }
+        this.selectionnerMonstre(resourceFactory, super.joueur1);
+        this.selectionnerAttaque(resourceFactory, super.joueur1);
+        this.selectionnerObjet(resourceFactory, super.joueur1);
 
         GameVisual.afficherTitreSection("COMBAT LANCE !");
         System.out.println("Le Bot " + bot.getNomJoueur() + " est pret au combat.");

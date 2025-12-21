@@ -3,7 +3,11 @@ package com.esiea.monstre.poche.inventaire.potions;
 import com.esiea.monstre.poche.entites.Monstre;
 
 public class PotionSante extends Potion {
-    private int pointsDeSoin;
+
+    /**
+     * Value en pourcentage de restoration des points de vie d'un monstre
+     */
+    private final int pointsDeSoin;
 
     public PotionSante(String nomObjet, int pointsDeSoin) {
         super(nomObjet);
@@ -18,5 +22,10 @@ public class PotionSante extends Potion {
         } else {
             cible.setPointsDeVie(cible.getPointsDeVie() + this.pointsDeSoin);
         }
+    }
+
+    @Override
+    public PotionSante copyOf(){
+        return new PotionSante(super.nomObjet, this.pointsDeSoin);
     }
 }
