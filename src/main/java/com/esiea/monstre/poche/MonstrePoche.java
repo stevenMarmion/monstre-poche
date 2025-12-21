@@ -6,10 +6,14 @@ import com.esiea.monstre.poche.bot.Bot;
 import com.esiea.monstre.poche.combats.Combat;
 import com.esiea.monstre.poche.combats.CombatBot;
 import com.esiea.monstre.poche.configuration.enums.ModeJeu;
+import com.esiea.monstre.poche.online.OnlineClient;
+import com.esiea.monstre.poche.online.OnlineServer;
 import com.esiea.monstre.poche.entites.Joueur;
 import com.esiea.monstre.poche.entites.Terrain;
 import com.esiea.monstre.poche.etats.Asseche;
 import com.esiea.monstre.poche.loader.*;
+import com.esiea.monstre.poche.loader.AttaqueLoader;
+import com.esiea.monstre.poche.loader.MonstreLoader;
 import com.esiea.monstre.poche.visual.GameVisual;
 
 public class MonstrePoche {
@@ -47,3 +51,4 @@ public class MonstrePoche {
         scanner.close();
     }
 }
+

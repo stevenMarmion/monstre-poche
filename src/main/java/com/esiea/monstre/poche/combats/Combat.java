@@ -16,16 +16,16 @@ import com.esiea.monstre.poche.visual.GameVisual;
 
 
 public class Combat {
-    public Joueur joueur1;
-    public Joueur joueur2;
+    public static Joueur joueur1;
+    public static Joueur joueur2;
 
-    private Terrain terrain;
+    public static Terrain terrain;
     private final Scanner scanner = new Scanner(System.in);
 
     public Combat(Joueur joueur1, Joueur joueur2, Terrain terrain) {
-        this.joueur1 = joueur1;
-        this.joueur2 = joueur2;
-        this.terrain = terrain;
+        Combat.joueur1 = joueur1;
+        Combat.joueur2 = joueur2;
+        Combat.terrain = terrain;
     }
     
     public void lancer(GameResourcesFactory resourcesFactory) {
@@ -46,7 +46,7 @@ public class Combat {
             Object actionJoueur1 = this.gereChoixAction(joueur1);
             Object actionJoueur2 = this.gereChoixAction(joueur2);
 
-            this.gereOrdreExecutionActions(actionJoueur1, actionJoueur2);
+            Combat.gereOrdreExecutionActions(actionJoueur1, actionJoueur2);
         }
         this.finDePartie();
     }
@@ -316,7 +316,7 @@ public class Combat {
         return monstreChoisi;
     }
 
-    public void gereOrdreExecutionActions(Object actionJoueur1, Object actionJoueur2) {
+    public static void gereOrdreExecutionActions(Object actionJoueur1, Object actionJoueur2) {
         if (actionJoueur1 instanceof Monstre) {
             joueur1.setMonstreActuel((Monstre) actionJoueur1);
         }
