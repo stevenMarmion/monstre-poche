@@ -7,9 +7,13 @@ import com.esiea.monstre.poche.inventaire.Objet;
 public class Joueur implements Serializable {
     protected static final long serialVersionUID = 1L;
     private String nomJoueur;
-    private ArrayList<Monstre> monstres;
+    private final ArrayList<Monstre> monstres;
     private Monstre monstreActuel;
     private ArrayList<Objet> objets;
+
+    public static final int TAILLE_EQUIPE_MAX = 3;
+    public static final int NOMBRE_ATTAQUES_PAR_MONSTRE = 4;
+    public static final int TAILLE_INVENTAIRE_MAX = 5;
 
     public Joueur(String nomJoueur) {
         this.nomJoueur = nomJoueur;

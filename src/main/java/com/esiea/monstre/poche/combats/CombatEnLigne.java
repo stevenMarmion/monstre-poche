@@ -1,14 +1,15 @@
 package com.esiea.monstre.poche.combats;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.esiea.monstre.poche.actions.Attaque;
 import com.esiea.monstre.poche.entites.Joueur;
 import com.esiea.monstre.poche.entites.Monstre;
 import com.esiea.monstre.poche.entites.Terrain;
 import com.esiea.monstre.poche.inventaire.Objet;
-import com.esiea.monstre.poche.loader.AttaqueLoader;
-import com.esiea.monstre.poche.loader.MonstreLoader;
+import com.esiea.monstre.poche.loader.GameResourcesFactory;
 import com.esiea.monstre.poche.online.OnlineConnection;
 import com.esiea.monstre.poche.visual.GameVisual;
 
@@ -24,14 +25,14 @@ public class CombatEnLigne extends Combat {
     }
 
     @Override
-    public void lancer(MonstreLoader monstreLoader, AttaqueLoader attaqueLoader) {
+    public void lancer(GameResourcesFactory resourcesFactory) {
         afficherTitrePourTous("Configuration de vos monstres");
-        this.selectionnerMonstre(monstreLoader, joueur1);
-        this.selectionnerAttaque(attaqueLoader, joueur1);
+        this.selectionnerMonstre(resourcesFactory, joueur1);
+        this.selectionnerAttaque(resourcesFactory, joueur1);
 
         connection.sendInfo("Configuration de vos monstres");
-        selectionnerMonstreDistant(monstreLoader, joueur2);
-        selectionnerAttaqueDistant(attaqueLoader, joueur2);
+        selectionnerMonstreDistant(resourcesFactory, joueur2);
+        selectionnerAttaqueDistant(resourcesFactory, joueur2);
 
         afficherTitrePourTous("COMBAT EN LIGNE LANCE !");
         connection.sendInfo("Combat lance !");
@@ -81,11 +82,12 @@ public class CombatEnLigne extends Combat {
         broadcast(etatDistant);
     }
 
-    private void selectionnerMonstreDistant(MonstreLoader monstreLoader, Joueur joueur) {
+    private void selectionnerMonstreDistant(GameResourcesFactory resourcesFactory, Joueur joueur) {
         broadcastToRemoteTitre("Selection des monstres - " + joueur.getNomJoueur());
         broadcastToRemoteSousTitre("Monstres disponibles");
         int index = 1;
-        for (Monstre monstre : monstreLoader.getRessources()) {
+        List<Monstre> monstresDisponibles = resourcesFactory.getTousLesMonstres();
+        for (Monstre monstre : monstresDisponibles) {
             broadcastToRemote(String.format("[%d] %s", index++, GameVisual.formatterMonstre(monstre)));
         }
 
@@ -94,12 +96,12 @@ public class CombatEnLigne extends Combat {
                 String choixInput = connection.ask("Choix " + (joueur.getMonstres().size() + 1) + "/3 >");
                 int indexChoisi = Integer.parseInt(choixInput);
 
-                if (indexChoisi < 1 || indexChoisi > monstreLoader.getRessources().size()) {
-                    broadcastToRemoteErreur("Index invalide. Veuillez choisir un nombre entre 1 et " + monstreLoader.getRessources().size());
+                if (indexChoisi < 1 || indexChoisi > monstresDisponibles.size()) {
+                    broadcastToRemoteErreur("Index invalide. Veuillez choisir un nombre entre 1 et " + monstresDisponibles.size());
                     continue;
                 }
 
-                Monstre monstreCharge = monstreLoader.getRessources().get(indexChoisi - 1);
+                Monstre monstreCharge = monstresDisponibles.get(indexChoisi - 1);
 
                 if (joueur.getMonstres().contains(monstreCharge)) {
                     broadcastToRemoteErreur("Ce monstre a deja ete selectionne.");
@@ -119,12 +121,14 @@ public class CombatEnLigne extends Combat {
         broadcastToRemote("Monstre actif initial : " + joueur.getMonstreActuel().getNomMonstre());
     }
 
-    private void selectionnerAttaqueDistant(AttaqueLoader attaqueLoader, Joueur joueur) {
+    private void selectionnerAttaqueDistant(GameResourcesFactory resourcesFactory, Joueur joueur) {
         broadcastToRemoteTitre("Selection des attaques - " + joueur.getNomJoueur());
         for (Monstre monstre : joueur.getMonstres()) {
             broadcastToRemoteSousTitre("Monstre : " + monstre.getNomMonstre());
-            java.util.ArrayList<Attaque> attaquesCompatibles = new java.util.ArrayList<>();
-            for (Attaque attaque : attaqueLoader.getRessources()) {
+            ArrayList<Attaque> attaquesCompatibles = new ArrayList<>();
+            //TODO nombres magiques dans la fonction, et éventuellement faire une fonction utilitaire pour la récupération des attaques compatibles car là on duplique le meme bout de code
+            // plusieurs fois dans Combat, CombatEnLigne, CombatBot
+            for (Attaque attaque : resourcesFactory.getToutesLesAttaques()) {
                 if (monstre.getTypeMonstre().getLabelType().equals(attaque.getTypeAttaque().getLabelType())) {
                     attaquesCompatibles.add(attaque);
                 }

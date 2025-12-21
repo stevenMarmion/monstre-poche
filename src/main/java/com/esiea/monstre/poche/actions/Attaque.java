@@ -73,6 +73,19 @@ public class Attaque implements Serializable {
         return ((numerateur/denominateur) + 2) * avantage * coeff;
     }
 
+    /**
+     * Renvoie une copie de l'objet Attaque
+     */
+    public Attaque copyOf(){
+        return new Attaque(
+                this.getNomAttaque(),
+                this.getNbUtilisations(),
+                this.getPuissanceAttaque(),
+                this.getProbabiliteEchec(),
+                this.getTypeAttaque()
+        );
+    }
+
     @Override
     public String toString() {
         return "Attaque (" +

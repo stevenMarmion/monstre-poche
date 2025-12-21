@@ -12,4 +12,6 @@ public abstract class Objet implements Serializable {
     }
 
     public abstract void utiliserObjet(Monstre cible);
+
+    public abstract Objet copyOf();
 }

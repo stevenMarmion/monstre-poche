@@ -3,6 +3,7 @@ package com.esiea.monstre.poche.visual;
 import java.util.Scanner;
 
 import com.esiea.monstre.poche.actions.Attaque;
+import com.esiea.monstre.poche.configuration.enums.ModeJeu;
 import com.esiea.monstre.poche.entites.Monstre;
 
 public class GameVisual {
@@ -55,9 +56,9 @@ public class GameVisual {
     /**
      * Affiche le menu de sélection du mode de jeu
      * @param scanner Le scanner pour lire l'entrée utilisateur
-     * @return 1 pour jouer contre un Bot, 2 pour jouer à deux joueurs locaux, 3 pour jouer en ligne
+     * @return @see ModeJeu enum, avec identifiant 1 pour jouer contre un Bot, 2 pour jouer à deux joueurs locaux
      */
-    public static int afficherMenuModeJeu(Scanner scanner) {
+    public static ModeJeu afficherMenuModeJeu(Scanner scanner) {
         afficherTitreSection("MONSTRE POCHE - Selection du mode de jeu");
         
         System.out.println();
@@ -66,14 +67,14 @@ public class GameVisual {
         System.out.println("  [3] Jouer en ligne");
         System.out.println();
         
-        String choix = demanderSaisie(scanner, "Votre choix (1, 2 ou 3) >");
-        
-        while (!choix.equals("1") && !choix.equals("2") && !choix.equals("3")) {
-            afficherErreur("Choix invalide. Veuillez entrer 1, 2 ou 3.");
-            choix = demanderSaisie(scanner, "Votre choix (1, 2 ou 3) >");
+        String choix = demanderSaisie(scanner, "Votre choix (1 ou 2) >");
+
+        while (Boolean.FALSE.equals(ModeJeu.existsByidentifiant(choix))) {
+            afficherErreur("Choix invalide. Veuillez entrer 1 ou 2.");
+            choix = demanderSaisie(scanner, "Votre choix (1 ou 2) >");
         }
         
-        return Integer.parseInt(choix);
+        return ModeJeu.fromIdentifiant(choix);
     }
 
     /**
@@ -107,19 +108,19 @@ public class GameVisual {
      */
     public static int afficherMenuJeuEnLigne(Scanner scanner) {
         afficherTitreSection("Jeu en ligne - Mode de connexion");
-        
+
         System.out.println();
         System.out.println("  [1] Créer un serveur (et attendre un adversaire)");
         System.out.println("  [2] Se connecter à un serveur");
         System.out.println();
-        
+
         String choix = demanderSaisie(scanner, "Votre choix (1 ou 2) >");
-        
+
         while (!choix.equals("1") && !choix.equals("2")) {
             afficherErreur("Choix invalide. Veuillez entrer 1 ou 2.");
             choix = demanderSaisie(scanner, "Votre choix (1 ou 2) >");
         }
-        
+
         return Integer.parseInt(choix);
     }
 
@@ -130,9 +131,9 @@ public class GameVisual {
      */
     public static int demanderPortServeur(Scanner scanner) {
         afficherTitreSection("Configuration du serveur");
-        
+
         String portStr = demanderSaisie(scanner, "Port d'écoute (défaut: 5555) >");
-        
+
         try {
             int port = portStr.isEmpty() ? 5555 : Integer.parseInt(portStr);
             if (port < 1024 || port > 65535) {
@@ -153,10 +154,10 @@ public class GameVisual {
      */
     public static String[] demanderConfigurationServeur(Scanner scanner) {
         afficherTitreSection("Connexion au serveur");
-        
+
         String adresse = demanderSaisie(scanner, "Adresse du serveur (défaut: localhost) >");
         adresse = adresse.isEmpty() ? "localhost" : adresse;
-        
+
         String portStr = demanderSaisie(scanner, "Port du serveur (défaut: 5555) >");
         int port = 5555;
         try {
@@ -168,7 +169,7 @@ public class GameVisual {
         } catch (NumberFormatException e) {
             afficherErreur("Port invalide. Utilisation du port 5555 par défaut.");
         }
-        
+
         return new String[]{adresse, String.valueOf(port)};
     }
 }

@@ -16,4 +16,9 @@ public class MedicamentAntiParalysie extends Medicament {
             cible.setStatut(new Normal());
         }
     }
+
+    @Override
+    public MedicamentAntiParalysie copyOf() {
+        return new MedicamentAntiParalysie(super.nomObjet);
+    }
 }

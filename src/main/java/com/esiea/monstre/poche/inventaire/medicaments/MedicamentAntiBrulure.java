@@ -16,4 +16,9 @@ public class MedicamentAntiBrulure extends Medicament {
             cible.setStatut(new Normal());
         }
     }
+
+    @Override
+    public MedicamentAntiBrulure copyOf() {
+        return new MedicamentAntiBrulure(super.nomObjet);
+    }
 }

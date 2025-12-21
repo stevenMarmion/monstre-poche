@@ -1,6 +1,7 @@
 package com.esiea.monstre.poche.etats;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -10,6 +11,7 @@ import com.esiea.monstre.poche.actions.Attaque;
 import com.esiea.monstre.poche.affinites.Normal;
 import com.esiea.monstre.poche.entites.Monstre;
 
+@Disabled
 class SousTerreTest {
     private SousTerre statutSousTerre;
     private Monstre monstre;

@@ -9,8 +9,7 @@ import com.esiea.monstre.poche.combats.CombatEnLigne;
 import com.esiea.monstre.poche.entites.Joueur;
 import com.esiea.monstre.poche.entites.Terrain;
 import com.esiea.monstre.poche.etats.Asseche;
-import com.esiea.monstre.poche.loader.AttaqueLoader;
-import com.esiea.monstre.poche.loader.MonstreLoader;
+import com.esiea.monstre.poche.loader.GameResourcesFactory;
 import com.esiea.monstre.poche.visual.GameVisual;
 
 /**
@@ -25,7 +24,7 @@ public class OnlineServer {
         this.scanner = scanner;
     }
 
-    public void lancer(MonstreLoader monstreLoader, AttaqueLoader attaqueLoader) {
+    public void lancer(GameResourcesFactory resourcesFactory) {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
             System.out.println("Serveur en attente d'un joueur sur le port " + port + " ...");
             Socket socket = serverSocket.accept();
@@ -40,7 +39,7 @@ public class OnlineServer {
                 Terrain terrain = new Terrain("Terrain en ligne", new Asseche());
 
                 CombatEnLigne combat = new CombatEnLigne(joueurLocal, joueurDistant, terrain, connection);
-                combat.lancer(monstreLoader, attaqueLoader);
+                combat.lancer(resourcesFactory);
             }
         } catch (IOException e) {
             System.out.println("[ERREUR] Probleme de serveur : " + e.getMessage());

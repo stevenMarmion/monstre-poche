@@ -16,5 +16,10 @@ public class MedicamentAntiPoison extends Medicament {
             cible.setStatut(new Normal());
         }
     }
+
+    @Override
+    public MedicamentAntiPoison copyOf() {
+        return new MedicamentAntiPoison(super.nomObjet);
+    }
     
 }

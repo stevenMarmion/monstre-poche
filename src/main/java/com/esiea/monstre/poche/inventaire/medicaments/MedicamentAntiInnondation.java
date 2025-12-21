@@ -17,4 +17,9 @@ package com.esiea.monstre.poche.inventaire.medicaments;// package com.esiea.mons
 //             terrain.setStatutTerrain(new Normal());
 //         }
 //     }
+
+      //  @Override
+       // public MedicamentAntiInnondation copyOf(){
+         //   return new MedicamentAntiInnondation(super.nomObjet);
+        //}
 // }
