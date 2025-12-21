@@ -3,7 +3,8 @@ package com.esiea.monstre.poche.configuration.enums;
 public enum ModeJeu {
 
     JOUEUR_CONTRE_IA("1", "Joueur vs IA"),
-    JOUEUR_CONTRE_JOUEUR("2", "Joueur vs Joueur");
+    JOUEUR_CONTRE_JOUEUR("2", "Joueur vs Joueur"),
+    JCJ_EN_LIGNE("3", "Joueur vs Joueur en ligne");
 
     private final String identifiant;
     private final String libelle;
