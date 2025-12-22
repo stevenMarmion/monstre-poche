@@ -1,5 +1,6 @@
 package com.esiea.monstre.poche.models.affinites;
 
+import com.esiea.monstre.poche.models.combats.CombatLogger;
 import com.esiea.monstre.poche.models.entites.Monstre;
 
 public class Nature extends Type {
@@ -9,10 +10,10 @@ public class Nature extends Type {
         double recuperation = cible.getPointsDeVie() * COEF_VINGTIEME;
         if ((cible.getPointsDeVie() + recuperation) > cible.getPointsDeVieMax()) {
             cible.setPointsDeVie(cible.getPointsDeVie() + recuperation);
-            System.out.println(cible.getNomMonstre() + " récupère jusqu'à ses points de vie max !");
+            CombatLogger.log(cible.getNomMonstre() + " récupère jusqu'à ses points de vie max !");
         } else {
             cible.setPointsDeVie(cible.getPointsDeVie() + recuperation);
-            System.out.println(cible.getNomMonstre() + " récupère " + recuperation + " points de vie.");
+            CombatLogger.log(cible.getNomMonstre() + " récupère " + recuperation + " points de vie.");
         }
     }
 }

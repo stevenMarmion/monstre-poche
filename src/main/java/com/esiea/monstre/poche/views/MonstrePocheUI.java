@@ -1,19 +1,20 @@
 package com.esiea.monstre.poche.views;
 
-import com.esiea.monstre.poche.models.App;
-import com.esiea.monstre.poche.models.entites.Attaque;
 import com.esiea.monstre.poche.models.entites.Bot;
 import com.esiea.monstre.poche.models.entites.Joueur;
-import com.esiea.monstre.poche.models.entites.Monstre;
-import com.esiea.monstre.poche.models.utils.Loaders;
-import com.esiea.monstre.poche.controllers.*;
+import com.esiea.monstre.poche.controllers.AttackSelectionController;
+import com.esiea.monstre.poche.controllers.BattleController;
+import com.esiea.monstre.poche.controllers.BotGameController;
+import com.esiea.monstre.poche.controllers.LocalGameController;
+import com.esiea.monstre.poche.controllers.MainMenuController;
+import com.esiea.monstre.poche.controllers.MonsterSelectionController;
+import com.esiea.monstre.poche.controllers.NavigationCallback;
+import com.esiea.monstre.poche.controllers.OnlineGameController;
+import com.esiea.monstre.poche.controllers.WinnerController;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Classe principale de l'application Monstre Poche.
@@ -21,19 +22,23 @@ import java.util.List;
  * Implémente NavigationCallback pour la gestion de la navigation entre les vues.
  */
 public class MonstrePocheUI extends Application implements NavigationCallback {
-    private Stage primaryStage;
+    private Stage stage;
     private Scene scene;
+
+    public static void main(String[] args) {
+        launch();
+    }
 
     @Override
     public void start(Stage stage) {
-        this.primaryStage = stage;
+        this.stage = stage;
         
         showMainMenu();
         
-        primaryStage.setTitle("Monstre Poche");
-        primaryStage.setResizable(true);
-        primaryStage.setMaximized(true);
-        primaryStage.show();
+        stage.setTitle("Monstre Poche");
+        stage.setResizable(true);
+        stage.setMaximized(true);
+        stage.show();
     }
     
     @Override
@@ -43,7 +48,7 @@ public class MonstrePocheUI extends Application implements NavigationCallback {
         
         scene = new Scene(mainMenuView, 1280, 720);
         scene.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
-        primaryStage.setScene(scene);
+        stage.setScene(scene);
     }
     
     @Override
@@ -71,70 +76,27 @@ public class MonstrePocheUI extends Application implements NavigationCallback {
     }
     
     @Override
-    public void showMonsterSelection(Joueur joueur1, Joueur joueur2, boolean isPlayer1) {
-        if (isPlayer1) {
-            currentPlayerName = joueur1.getNomJoueur();
-        } else {
-            currentPlayerName = joueur2.getNomJoueur();
-        }
-        
-        List<Monstre> availableMonsters = App.monstreLoader.getRessources();
-        
-        MonsterSelectionView monsterSelectionView = new MonsterSelectionView(currentPlayerName, availableMonsters);
-        new MonsterSelectionController(monsterSelectionView, this, joueur1, joueur2, isPlayer1);
-        
-        // Gestionnaire du bouton valider
-        monsterSelectionView.getBtnValidate().setOnAction(e -> {
-            List<Monstre> selectedMonsters = monsterSelectionView.getSelectedMonsters();
-            
-            if (isPlayer1) {
-                joueur1.setMonstres(selectedMonsters);
-                joueur1.setMonstreActuel(selectedMonsters.get(0));
-            } else {
-                joueur2.setMonstres(selectedMonsters);
-                joueur2.setMonstreActuel(selectedMonsters.get(0));
-            }
-            
-            currentMonsterIndex = 0;
-            showAttackSelection(joueur1, joueur2, isPlayer1);
-        });
-        
+    public void showMonsterSelectionPlayer(Joueur joueur) {
+        showMonsterSelectionPlayer(joueur, null);
+    }
+    
+    @Override
+    public void showMonsterSelectionPlayer(Joueur joueur, Runnable onComplete) {
+        MonsterSelectionView monsterSelectionView = new MonsterSelectionView(joueur);
+        new MonsterSelectionController(monsterSelectionView, this, joueur, onComplete);
+
         scene.setRoot(monsterSelectionView);
     }
     
     @Override
-    public void showAttackSelection(Joueur joueur1, Joueur joueur2, boolean isPlayer1) {
-        Joueur activePlayer = isPlayer1 ? joueur1 : joueur2;
+    public void showAttackSelectionPlayer(Joueur joueur) {
+        showAttackSelectionPlayer(joueur, null);
+    }
 
-        if (currentMonsterIndex >= activePlayer.getMonstres().size()) {
-            if (isPlayer1) {
-                System.out.println("Attaques sélectionnées pour " + joueur1.getNomJoueur() + ", au tour de " + joueur2.getNomJoueur());
-                showMonsterSelection(joueur1, joueur2, false);
-            } else {
-                System.out.println("Sélection terminée pour les deux joueurs ! Le jeu peut commencer.");
-                showBattle(joueur1, joueur2);
-            }
-            return;
-        }
-
-        Monstre currentMonstre = activePlayer.getMonstres().get(currentMonsterIndex);
-        List<Attaque> availableAttacks = App.attaqueLoader.getRessources();
-        
-        AttackSelectionView attackSelectionView = new AttackSelectionView(currentPlayerName, currentMonstre, availableAttacks);
-        
-        // Gestionnaire du bouton retour
-        attackSelectionView.getBtnBackToMenu().setOnAction(e -> showMainMenu());
-        
-        // Gestionnaire du bouton valider
-        attackSelectionView.getBtnValidate().setOnAction(e -> {
-            List<Attaque> selectedAttacks = attackSelectionView.getSelectedAttacks();
-            currentMonstre.setAttaques(new ArrayList<>(selectedAttacks));
-            
-            System.out.println(currentPlayerName + " a sélectionné " + selectedAttacks.size() + " attaques pour " + currentMonstre.getNomMonstre());
-            
-            currentMonsterIndex++;
-            showAttackSelection(joueur1, joueur2, isPlayer1);
-        });
+    @Override
+    public void showAttackSelectionPlayer(Joueur joueur, Runnable onComplete) {
+        AttackSelectionView attackSelectionView = new AttackSelectionView(joueur);
+        new AttackSelectionController(attackSelectionView, this, joueur, onComplete);
         
         scene.setRoot(attackSelectionView);
     }
@@ -143,6 +105,7 @@ public class MonstrePocheUI extends Application implements NavigationCallback {
     public void showBattle(Joueur joueur1, Joueur joueur2) {
         BattleView battleView = new BattleView(joueur1, joueur2);
         new BattleController(battleView, this);
+
         scene.setRoot(battleView);
     }
 
@@ -150,63 +113,15 @@ public class MonstrePocheUI extends Application implements NavigationCallback {
     public void showBattleBot(Joueur joueur1, Bot bot) {
         BattleView battleView = new BattleView(joueur1, bot);
         new BattleController(battleView, this);
+
         scene.setRoot(battleView);
     }
 
     @Override
-    public void showMonsterSelectionBotGame(Joueur joueur1, Joueur bot) {
-        currentPlayerName = joueur1.getNomJoueur();
-        List<Monstre> availableMonsters = App.monstreLoader.getRessources();
+    public void showWinnerView(Joueur winner) {
+        WinnerView winnerView = new WinnerView(winner);
+        new WinnerController(winnerView, this);
         
-        MonsterSelectionView monsterSelectionView = new MonsterSelectionView(currentPlayerName, availableMonsters);
-        new MonsterSelectionController(monsterSelectionView, this, joueur1, bot, true);
-        
-        // Gestionnaire du bouton valider
-        monsterSelectionView.getBtnValidate().setOnAction(e -> {
-            List<Monstre> selectedMonsters = monsterSelectionView.getSelectedMonsters();
-            
-            joueur1.setMonstres(selectedMonsters);
-            joueur1.setMonstreActuel(selectedMonsters.get(0));
-            
-            currentMonsterIndex = 0;
-            showAttackSelectionBotGame(joueur1, bot);
-        });
-        
-        scene.setRoot(monsterSelectionView);
-    }
-
-    @Override
-    public void showAttackSelectionBotGame(Joueur joueur1, Joueur bot) {
-        Joueur activePlayer = joueur1;
-
-        if (currentMonsterIndex >= activePlayer.getMonstres().size()) {
-            showBattle(joueur1, bot);
-            return;
-        }
-
-        Monstre currentMonstre = activePlayer.getMonstres().get(currentMonsterIndex);
-        List<Attaque> availableAttacks = App.attaqueLoader.getRessources();
-        
-        AttackSelectionView attackSelectionView = new AttackSelectionView(currentPlayerName, currentMonstre, availableAttacks);
-        
-        // Gestionnaire du bouton retour
-        attackSelectionView.getBtnBackToMenu().setOnAction(e -> showMainMenu());
-        
-        // Gestionnaire du bouton valider
-        attackSelectionView.getBtnValidate().setOnAction(e -> {
-            List<Attaque> selectedAttacks = attackSelectionView.getSelectedAttacks();
-            currentMonstre.setAttaques(new ArrayList<>(selectedAttacks));
-            
-            System.out.println(currentPlayerName + " a sélectionné " + selectedAttacks.size() + " attaques pour " + currentMonstre.getNomMonstre());
-            
-            currentMonsterIndex++;
-            showAttackSelectionBotGame(joueur1, bot);
-        });
-        
-        scene.setRoot(attackSelectionView);
-    }
-
-    public static void main(String[] args) {
-        launch();
+        scene.setRoot(winnerView);
     }
 }

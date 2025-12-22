@@ -12,8 +12,8 @@ import com.esiea.monstre.poche.models.visual.GameVisual;
 import com.esiea.monstre.poche.views.MonstrePocheUI;
 
 public class App {
-    private static final int LANCEMENT_JEU_LOCAL = 1;
-    private static final int LANCEMENT_JEU_BOT = 2;
+    private static final int LANCEMENT_JEU_BOT = 1;
+    private static final int LANCEMENT_JEU_LOCAL = 2;
     private static final int LANCEMENT_JEU_ONLINE = 3;
 
     private static final int DEMARRAGE_SERVEUR = 1;
@@ -26,12 +26,12 @@ public class App {
         int modeJeu = GameVisual.afficherMenuModeJeu(scanner);
 
         switch (modeJeu) {
-            case LANCEMENT_JEU_LOCAL:
-                lancementJeuLocal();
-                break;
-        
             case LANCEMENT_JEU_BOT:
                 lancementJeuBot();
+                break;
+            
+            case LANCEMENT_JEU_LOCAL:
+                lancementJeuLocal();
                 break;
 
             case LANCEMENT_JEU_ONLINE:
@@ -62,6 +62,8 @@ public class App {
         Joueur joueur1 = new Joueur(nomJoueur1);
         int difficulteBout = GameVisual.afficherMenuDifficulteBot(scanner);
         Bot bot = new Bot("Kylian le Bot", difficulteBout);
+        bot.chargerMonstresAutomatiquement(Loaders.monstreLoader);
+        bot.chargerAttaquesAutomatiquement(Loaders.attaqueLoader);
         
         CombatBot combatBot = new CombatBot(joueur1, bot);
         combatBot.lancer(Loaders.monstreLoader, Loaders.attaqueLoader);

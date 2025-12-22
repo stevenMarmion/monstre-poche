@@ -13,18 +13,22 @@ public class MonsterSelectionController {
     
     private MonsterSelectionView view;
     private NavigationCallback navigationCallback;
-    private Joueur joueur1;
-    private Joueur joueur2;
+    private Joueur joueur;
     private List<Monstre> selectedMonsters;
-    private boolean isPlayer1;
+    private Runnable onComplete;
     
-    public MonsterSelectionController(MonsterSelectionView view, NavigationCallback navigationCallback, 
-                                     Joueur joueur1, Joueur joueur2, boolean isPlayer1) {
+    public MonsterSelectionController(MonsterSelectionView view, NavigationCallback navigationCallback, Joueur joueur) {
         this.view = view;
         this.navigationCallback = navigationCallback;
-        this.joueur1 = joueur1;
-        this.joueur2 = joueur2;
-        this.isPlayer1 = isPlayer1;
+        this.joueur = joueur;
+        initializeEventHandlers();
+    }
+
+    public MonsterSelectionController(MonsterSelectionView view, NavigationCallback navigationCallback, Joueur joueur, Runnable onComplete) {
+        this.view = view;
+        this.navigationCallback = navigationCallback;
+        this.joueur = joueur;
+        this.onComplete = onComplete;
         initializeEventHandlers();
     }
     
@@ -47,11 +51,18 @@ public class MonsterSelectionController {
      * Gère la validation de la sélection des monstres.
      */
     private void handleValidateSelection() {
-        selectedMonsters = view.getSelectedMonsters();
-        System.out.println((isPlayer1 ? joueur1.getNomJoueur() : joueur2.getNomJoueur()) + " a sélectionné " + selectedMonsters.size() + " monstres");
+        System.out.println(joueur.getNomJoueur() + " a sélectionné " + view.getSelectedMonsters().size() + " monstres");
         
-        // Passer à la sélection des attaques
-        navigationCallback.showAttackSelection(joueur1, joueur2, isPlayer1);
+        List<Monstre> selectedMonsters = view.getSelectedMonsters();
+        joueur.setMonstres(selectedMonsters);
+        joueur.setMonstreActuel(selectedMonsters.get(0));
+
+        // Passer à la sélection des attaques en conservant le callback de fin si présent
+        if (onComplete != null) {
+            navigationCallback.showAttackSelectionPlayer(joueur, onComplete);
+        } else {
+            navigationCallback.showAttackSelectionPlayer(joueur);
+        }
     }
     
     public List<Monstre> getSelectedMonsters() {

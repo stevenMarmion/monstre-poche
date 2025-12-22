@@ -1,5 +1,6 @@
 package com.esiea.monstre.poche.models.affinites;
 
+import com.esiea.monstre.poche.models.combats.CombatLogger;
 import com.esiea.monstre.poche.models.entites.Monstre;
 import com.esiea.monstre.poche.models.etats.Empoisonne;
 
@@ -18,7 +19,7 @@ public class Insecte extends Nature {
         if ((nbTourAttaque % NB_TOUR_MAX_ATTAQUE_EMPOISONNEMENT) == 0) {
             nbTourAttaque++;
             cible.setStatut(new Empoisonne());   
-            System.out.println(cible.getNomMonstre() + " est empoisonné !");
+            CombatLogger.log(cible.getNomMonstre() + " est désormais empoisonné.");
         }
         super.appliqueCapaciteSpeciale(cible);
     }

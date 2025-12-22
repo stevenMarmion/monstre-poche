@@ -32,8 +32,7 @@ class MedicamentAntiParalysieTest {
         assertEquals("Paralyse", monstre.getStatut().getLabelStatut());
         
         medicament.utiliserObjet(monstre);
-        // Le médicament vérifie "Paralysie" mais le statut retourne "Paralyse", donc ne fonctionne pas
-        assertEquals("Paralyse", monstre.getStatut().getLabelStatut());
+        assertEquals("Normal", monstre.getStatut().getLabelStatut());
     }
 
     @Test

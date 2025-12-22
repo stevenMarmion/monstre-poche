@@ -1,5 +1,6 @@
 package com.esiea.monstre.poche.models.affinites;
 
+import com.esiea.monstre.poche.models.combats.CombatLogger;
 import com.esiea.monstre.poche.models.entites.Monstre;
 import com.esiea.monstre.poche.models.etats.Paralyse;
 
@@ -15,7 +16,7 @@ public class Foudre extends Type {
     public void appliqueCapaciteSpeciale(Monstre cible) {
         if (Math.random() < CHANCE_PARALYSIE) {
             cible.setStatut(new Paralyse());
-            System.out.println(cible.getNomMonstre() + " est paralysé !");
+            CombatLogger.log(cible.getNomMonstre() + " est désormais paralysé.");
         }
     }
 }

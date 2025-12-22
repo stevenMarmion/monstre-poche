@@ -1,5 +1,6 @@
 package com.esiea.monstre.poche.models.affinites;
 
+import com.esiea.monstre.poche.models.combats.CombatLogger;
 import com.esiea.monstre.poche.models.entites.Terrain;
 import com.esiea.monstre.poche.models.etats.Innonde;
 
@@ -22,7 +23,7 @@ public class Eau extends Type {
         boolean innonde = Math.random() < this.probabiliteInnondation;
         if (innonde) {
             terrain.setStatutTerrain(new Innonde((int) (Math.random() * NB_TOURS_MAX_INNONDATION) + NB_TOURS_MIN_INNONDATION));
-            System.out.println(terrain.getNomTerrain() + " est innondé !");
+            CombatLogger.log(terrain.getNomTerrain() + " est désormais inondé pendant " + terrain.getStatutTerrain().getNbToursEffet() + " tours.");
         }
     }
 }

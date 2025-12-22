@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.esiea.monstre.poche.models.combats.CombatLogger;
 import com.esiea.monstre.poche.models.inventaire.Objet;
 
 public class Joueur implements Serializable {
@@ -32,7 +33,7 @@ public class Joueur implements Serializable {
     }
 
     public void setMonstreActuel(Monstre monstreActuel) {
-        System.out.println("[CHANGEMENT] " + this.nomJoueur + " envoie " + monstreActuel.getNomMonstre() + " au combat.");
+        CombatLogger.log("[CHANGEMENT] " + this.nomJoueur + " envoie " + monstreActuel.getNomMonstre() + " au combat.");
         this.monstreActuel = monstreActuel;
     }
 
@@ -55,7 +56,7 @@ public class Joueur implements Serializable {
 
     public void ajouterMonstre(Monstre monstre) {
         if (monstres.size() >= 3) {
-            System.out.println("[INFO] La liste de monstres est pleine.");
+            CombatLogger.log("[INFO] La liste de monstres est pleine.");
             return;
         }
 
@@ -69,7 +70,7 @@ public class Joueur implements Serializable {
         if (!estMonstrePresentDansListe) {
             monstres.add(monstre);
         } else {
-            System.out.println("[INFO] Monstre deja present dans la liste.");
+            CombatLogger.log("[INFO] Monstre deja present dans la liste.");
         }
     }
 

@@ -15,8 +15,8 @@ import javafx.scene.text.FontWeight;
  */
 public class LocalGameView extends VBox {
     
-    private TextField txtPlayer1Name;
-    private TextField txtPlayer2Name;
+    private TextField firstPlayerName;
+    private TextField secondPlayerName;
     private Button btnStartGame;
     private Button btnBackToMenu;
     
@@ -59,16 +59,16 @@ public class LocalGameView extends VBox {
         lblPlayer1.setFont(Font.font("System", FontWeight.BOLD, 16));
         lblPlayer1.getStyleClass().add("label-text");
         
-        txtPlayer1Name = createTextField("Entrez le nom du joueur 1");
+        firstPlayerName = createTextField("Entrez le nom du joueur 1");
         
         // Champ pour le joueur 2
         Label lblPlayer2 = new Label("Nom du Joueur 2 :");
         lblPlayer2.setFont(Font.font("System", FontWeight.BOLD, 16));
         lblPlayer2.getStyleClass().add("label-text");
         
-        txtPlayer2Name = createTextField("Entrez le nom du joueur 2");
+        secondPlayerName = createTextField("Entrez le nom du joueur 2");
         
-        inputBox.getChildren().addAll(lblPlayer1, txtPlayer1Name, lblPlayer2, txtPlayer2Name);
+        inputBox.getChildren().addAll(lblPlayer1, firstPlayerName, lblPlayer2, secondPlayerName);
         
         // Bouton pour commencer le jeu
         btnStartGame = new Button("Commencer le jeu");
@@ -94,12 +94,12 @@ public class LocalGameView extends VBox {
     }
     
     // Getters
-    public TextField getTxtPlayer1Name() {
-        return txtPlayer1Name;
+    public TextField getFirstPlayerName() {
+        return firstPlayerName;
     }
     
-    public TextField getTxtPlayer2Name() {
-        return txtPlayer2Name;
+    public TextField getSecondPlayerName() {
+        return secondPlayerName;
     }
     
     public Button getBtnStartGame() {

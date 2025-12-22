@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import com.esiea.monstre.poche.models.affinites.Normal;
 import com.esiea.monstre.poche.models.combats.Combat;
+import com.esiea.monstre.poche.models.combats.CombatLocalTerminal;
 import com.esiea.monstre.poche.models.entites.Attaque;
 import com.esiea.monstre.poche.models.entites.Monstre;
 import com.esiea.monstre.poche.models.entites.Joueur;
@@ -23,7 +24,7 @@ class CombatTest {
     void setUp() {
         joueur1 = new Joueur("Steven");
         joueur2 = new Joueur("Kylian");
-        combat = new Combat(joueur1, joueur2);
+        combat = new CombatLocalTerminal(joueur1, joueur2);
         
         monstre1 = new Monstre("Pikachu", 100, 50, 40, 90, new ArrayList<Attaque>(), new Normal());
         monstre2 = new Monstre("Bulbizarre", 120, 45, 50, 45, new ArrayList<Attaque>(), new Normal());

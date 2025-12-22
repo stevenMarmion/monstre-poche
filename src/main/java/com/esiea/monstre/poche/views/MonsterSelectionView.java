@@ -1,6 +1,9 @@
 package com.esiea.monstre.poche.views;
 
+import com.esiea.monstre.poche.models.entites.Joueur;
 import com.esiea.monstre.poche.models.entites.Monstre;
+import com.esiea.monstre.poche.models.utils.Loaders;
+
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -29,15 +32,15 @@ public class MonsterSelectionView extends VBox {
     private Map<CheckBox, Monstre> monsterCheckBoxMap;
     private int maxMonstersToSelect = 3;
     
-    public MonsterSelectionView(String playerName, List<Monstre> availableMonsters) {
+    public MonsterSelectionView(Joueur joueur) {
         this.monsterCheckBoxMap = new HashMap<>();
-        initializeView(playerName, availableMonsters);
+        initializeView(joueur);
     }
     
     /**
      * Initialise la vue de sélection des monstres.
      */
-    private void initializeView(String playerName, List<Monstre> availableMonsters) {
+    private void initializeView(Joueur joueur) {
         // Configuration du conteneur principal
         this.setSpacing(20);
         this.setAlignment(Pos.TOP_CENTER);
@@ -55,7 +58,7 @@ public class MonsterSelectionView extends VBox {
         topBar.getChildren().add(btnBackToMenu);
         
         // Titre avec le nom du joueur
-        lblPlayerName = new Label(playerName + " - Sélectionner vos monstres");
+        lblPlayerName = new Label(joueur.getNomJoueur() + " - Sélectionner vos monstres");
         lblPlayerName.setFont(Font.font("System", FontWeight.BOLD, 28));
         lblPlayerName.getStyleClass().add("main-title");
         
@@ -70,7 +73,7 @@ public class MonsterSelectionView extends VBox {
         monsterListContainer.setPadding(new Insets(20));
         
         // Ajout des monstres disponibles
-        for (Monstre monstre : availableMonsters) {
+        for (Monstre monstre : Loaders.monstreLoader.getRessources()) {
             HBox monsterBox = createMonsterBox(monstre);
             monsterListContainer.getChildren().add(monsterBox);
         }

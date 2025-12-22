@@ -14,6 +14,10 @@ public abstract class StatutTerrain implements Serializable {
         }
     }
 
+    public int getNbToursEffet() {
+        return this.nbToursEffet;
+    }
+
     public String getLabelStatut() {
         return this.labelStatut;
     }

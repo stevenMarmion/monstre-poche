@@ -99,9 +99,19 @@ public abstract class Combat {
 
     public void finDePartie() {
         if (joueur1.sontMonstresMorts()) {
-            System.out.println("Le joueur " + joueur2.getNomJoueur() + " a gagné la partie !");
+            CombatLogger.log("Le joueur " + joueur2.getNomJoueur() + " a gagné la partie !");
         } else if (joueur2.sontMonstresMorts()) {
-            System.out.println("Le joueur " + joueur1.getNomJoueur() + " a gagné la partie !");
+            CombatLogger.log("Le joueur " + joueur1.getNomJoueur() + " a gagné la partie !");
+        }
+    }
+
+    public static Joueur getAWinner() {
+        if (joueur1.sontMonstresMorts()) {
+            return joueur2;
+        } else if (joueur2.sontMonstresMorts()) {
+            return joueur1;
+        } else {
+            return null;
         }
     }
 }

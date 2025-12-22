@@ -1,5 +1,6 @@
 package com.esiea.monstre.poche.models.affinites;
 
+import com.esiea.monstre.poche.models.combats.CombatLogger;
 import com.esiea.monstre.poche.models.entites.Monstre;
 import com.esiea.monstre.poche.models.etats.Normal;
 
@@ -15,7 +16,7 @@ public class Plante extends Nature {
     public void appliqueCapaciteSpeciale(Monstre cible) {
         if (CHANCE_SOIN < Math.random()) {
             cible.setStatut(new Normal());
-            System.out.println(cible.getNomMonstre() + " est soigné et redevient normal !");
+            CombatLogger.log(cible.getNomMonstre() + " est soigné et redevient normal !");
         }
         super.appliqueCapaciteSpeciale(cible);
     }

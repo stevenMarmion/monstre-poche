@@ -51,7 +51,7 @@ public class CombatLocalTerminal extends Combat {
 
         int index = 1;
         for (Monstre monstre : monstreLoader.getRessources()) {
-            System.out.println(String.format("[%d] %s", index++, GameVisual.formatterMonstre(monstre)));
+            CombatLogger.log(String.format("[%d] %s", index++, GameVisual.formatterMonstre(monstre)));
         }
 
         while (joueur.getMonstres().size() < 3) {
@@ -68,13 +68,13 @@ public class CombatLocalTerminal extends Combat {
                     continue;
                 }
                 joueur.ajouterMonstre(monstreCharge);
-                System.out.println("  [OK] Monstre ajoute : " + monstreCharge.getNomMonstre());
+                CombatLogger.log("  [OK] Monstre ajoute : " + monstreCharge.getNomMonstre());
             } catch (NumberFormatException e) {
                 GameVisual.afficherErreur("Saisie invalide. Veuillez entrer un numero.");
             }
         }
         joueur.setMonstreActuel(joueur.getMonstres().get(0));
-        System.out.println("Monstre actif initial : " + joueur.getMonstreActuel().getNomMonstre());
+        CombatLogger.log("Monstre actif initial : " + joueur.getMonstreActuel().getNomMonstre());
     }
 
     @Override
@@ -90,7 +90,7 @@ public class CombatLocalTerminal extends Combat {
             }
             int index = 1;
             for (Attaque attaque : attaquesCompatibles) {
-                System.out.println(String.format("[%d] %s", index++, GameVisual.formatterAttaque(attaque)));
+                CombatLogger.log(String.format("[%d] %s", index++, GameVisual.formatterAttaque(attaque)));
             }
 
             while (monstre.getAttaques().size() < 4) {
@@ -107,7 +107,7 @@ public class CombatLocalTerminal extends Combat {
                         continue;
                     }
                     monstre.ajouterAttaque(attaqueChargee);
-                    System.out.println("  [OK] Attaque ajoutee pour " + joueur.getNomJoueur() + " : " + attaqueChargee.getNomAttaque() + " (" + monstre.getNomMonstre() + ")");
+                    CombatLogger.log("  [OK] Attaque ajoutee pour " + joueur.getNomJoueur() + " : " + attaqueChargee.getNomAttaque() + " (" + monstre.getNomMonstre() + ")");
                 } catch (NumberFormatException e) {
                     GameVisual.afficherErreur("Saisie invalide. Veuillez entrer un numero.");
                 }
@@ -119,11 +119,11 @@ public class CombatLocalTerminal extends Combat {
     public Object gereChoixAction(Joueur joueur) {
         GameVisual.afficherTitreSection("Tour de " + joueur.getNomJoueur());
         Monstre actif = joueur.getMonstreActuel();
-        System.out.println("Monstre actif : " + actif.getNomMonstre() + " | PV " + (int) actif.getPointsDeVie() + "/" + (int) actif.getPointsDeVieMax() + " | ATK " + actif.getAttaque() + " | DEF " + actif.getDefense() + " | VIT " + actif.getVitesse());
-        System.out.println("Actions disponibles :");
-        System.out.println("  1) Attaquer");
-        System.out.println("  2) Utiliser un objet");
-        System.out.println("  3) Changer de monstre");
+        CombatLogger.log("Monstre actif : " + actif.getNomMonstre() + " | PV " + (int) actif.getPointsDeVie() + "/" + (int) actif.getPointsDeVieMax() + " | ATK " + actif.getAttaque() + " | DEF " + actif.getDefense() + " | VIT " + actif.getVitesse());
+        CombatLogger.log("Actions disponibles :");
+        CombatLogger.log("  1) Attaquer");
+        CombatLogger.log("  2) Utiliser un objet");
+        CombatLogger.log("  3) Changer de monstre");
 
         String choixAction = GameVisual.demanderSaisie(this.scanner, "Votre choix >");
         while (!choixAction.equals("1") && !choixAction.equals("2") && !choixAction.equals("3")) {
@@ -157,7 +157,7 @@ public class CombatLocalTerminal extends Combat {
         GameVisual.afficherTitreSection("Attaques de " + monstreActuel.getNomMonstre());
         int index = 1;
         for (Attaque attaque : monstreActuel.getAttaques()) {
-            System.out.println(String.format("[%d] %s", index++, GameVisual.formatterAttaque(attaque)));
+            CombatLogger.log(String.format("[%d] %s", index++, GameVisual.formatterAttaque(attaque)));
         }
 
         Attaque attaqueChoisie = null;
@@ -182,7 +182,7 @@ public class CombatLocalTerminal extends Combat {
         GameVisual.afficherTitreSection("Objets de " + joueur.getNomJoueur());
         int index = 1;
         for (Objet objet : joueur.getObjets()) {
-            System.out.println(String.format("[%d] %s", index++, objet.getNomObjet()));
+            CombatLogger.log(String.format("[%d] %s", index++, objet.getNomObjet()));
         }
 
         String nomObjetChoisi = GameVisual.demanderSaisie(this.scanner, "Objet choisi >");
@@ -210,7 +210,7 @@ public class CombatLocalTerminal extends Combat {
         GameVisual.afficherTitreSection("Changement de monstre - " + joueur.getNomJoueur());
         int index = 1;
         for (Monstre monstre : joueur.getMonstres()) {
-            System.out.println(String.format("[%d] %s", index++, GameVisual.formatterMonstre(monstre)));
+            CombatLogger.log(String.format("[%d] %s", index++, GameVisual.formatterMonstre(monstre)));
         }
 
         Monstre monstreChoisi = null;

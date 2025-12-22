@@ -8,22 +8,10 @@ import java.util.List;
  */
 public class CombatLogger {
     private static final List<String> logs = new ArrayList<>();
-    private static boolean enabled = false;
-    
-    public static void enable() {
-        enabled = true;
-        logs.clear();
-    }
-    
-    public static void disable() {
-        enabled = false;
-    }
     
     public static void log(String message) {
-        if (enabled) {
-            logs.add(message);
-            System.out.println(message);
-        }
+        logs.add(message);
+        System.out.println(message);
     }
     
     public static List<String> getLogs() {

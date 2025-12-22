@@ -3,8 +3,8 @@ package com.esiea.monstre.poche.models.entites;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import com.esiea.monstre.poche.models.App;
 import com.esiea.monstre.poche.models.affinites.Type;
+import com.esiea.monstre.poche.models.combats.CombatLogger;
 import com.esiea.monstre.poche.models.loader.AttaqueLoader;
 import com.esiea.monstre.poche.models.loader.MonstreLoader;
 
@@ -28,8 +28,6 @@ public class Bot extends Joueur {
         super(nomBot);
         this.random = new Random();
         this.niveauDifficulte = Math.min(Math.max(niveauDifficulte, 1), 3);
-        this.chargerMonstresAutomatiquement(App.monstreLoader);
-        this.chargerAttaquesAutomatiquement(App.attaqueLoader);
     }
 
     /**
@@ -50,7 +48,7 @@ public class Bot extends Joueur {
         List<Monstre> monstresDisponibles = monstreLoader.getRessources();
 
         if (monstresDisponibles.isEmpty()) {
-            System.out.println("[ERREUR] Aucun monstre disponible pour le bot.");
+            CombatLogger.log("[ERREUR] Aucun monstre disponible pour le bot.");
             return;
         }
 
@@ -73,7 +71,7 @@ public class Bot extends Joueur {
 
         if (!monstresSelectionnes.isEmpty()) {
             this.setMonstreActuel(monstresSelectionnes.get(0));
-            System.out.println("[BOT] " + this.getNomJoueur() + " a selectionne " + monstresSelectionnes.size() + " monstres.");
+            CombatLogger.log("[BOT] " + this.getNomJoueur() + " a selectionne " + monstresSelectionnes.size() + " monstres.");
         }
     }
 
@@ -86,7 +84,7 @@ public class Bot extends Joueur {
         List<Attaque> attaquesDisponibles = attaqueLoader.getRessources();
 
         if (attaquesDisponibles.isEmpty()) {
-            System.out.println("[ERREUR] Aucune attaque disponible pour le bot.");
+            CombatLogger.log("[ERREUR] Aucune attaque disponible pour le bot.");
             return;
         }
 
@@ -110,7 +108,7 @@ public class Bot extends Joueur {
             }
         }
 
-        System.out.println("[BOT] " + this.getNomJoueur() + " a configure les attaques de ses monstres.");
+        CombatLogger.log("[BOT] " + this.getNomJoueur() + " a configure les attaques de ses monstres.");
     }
 
     /**

@@ -1,7 +1,10 @@
 package com.esiea.monstre.poche.views;
 
 import com.esiea.monstre.poche.models.entites.Attaque;
+import com.esiea.monstre.poche.models.entites.Joueur;
 import com.esiea.monstre.poche.models.entites.Monstre;
+import com.esiea.monstre.poche.models.utils.Loaders;
+
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -30,22 +33,22 @@ public class AttackSelectionView extends VBox {
     private VBox attackListContainer;
     private Map<CheckBox, Attaque> attackCheckBoxMap;
     private int maxAttacksToSelect = 4;
-    private Monstre currentMonstre;
     
-    public AttackSelectionView(String playerName, Monstre monstre, List<Attaque> availableAttacks) {
-        this.currentMonstre = monstre;
+    public AttackSelectionView(Joueur joueur) {
         this.attackCheckBoxMap = new HashMap<>();
-        initializeView(playerName, monstre, availableAttacks);
+        initializeView(joueur);
     }
     
     /**
      * Initialise la vue de sélection des attaques.
      */
-    private void initializeView(String playerName, Monstre monstre, List<Attaque> availableAttacks) {
+    private void initializeView(Joueur joueur) {
+        Monstre currentMonstre = joueur.getMonstreActuel();
+
         // Filtrer les attaques par type du monstre
         List<Attaque> filteredAttacks = new ArrayList<>();
-        for (Attaque attaque : availableAttacks) {
-            if (attaque.getTypeAttaque().getLabelType().equals(monstre.getTypeMonstre().getLabelType())) {
+        for (Attaque attaque : Loaders.attaqueLoader.getRessources()) {
+            if (attaque.getTypeAttaque().getLabelType().equals(currentMonstre.getTypeMonstre().getLabelType())) {
                 filteredAttacks.add(attaque);
             }
         }
@@ -67,12 +70,12 @@ public class AttackSelectionView extends VBox {
         topBar.getChildren().add(btnBackToMenu);
         
         // Titre avec le nom du joueur
-        lblPlayerName = new Label(playerName + " - Sélectionner les attaques");
+        lblPlayerName = new Label(joueur.getNomJoueur() + " - Sélectionner les attaques");
         lblPlayerName.setFont(Font.font("System", FontWeight.BOLD, 28));
         lblPlayerName.getStyleClass().add("main-title");
         
         // Nom du monstre
-        lblMonsterName = new Label("Monstre : " + monstre.getNomMonstre() + " (" + monstre.getTypeMonstre().getLabelType() + ")");
+        lblMonsterName = new Label("Monstre : " + currentMonstre.getNomMonstre() + " (" + currentMonstre.getTypeMonstre().getLabelType() + ")");
         lblMonsterName.setFont(Font.font("System", FontWeight.BOLD, 20));
         lblMonsterName.getStyleClass().add("label-text");
         
@@ -183,13 +186,6 @@ public class AttackSelectionView extends VBox {
             }
         });
         return selected;
-    }
-    
-    /**
-     * Retourne le monstre pour lequel on sélectionne les attaques.
-     */
-    public Monstre getCurrentMonstre() {
-        return currentMonstre;
     }
     
     // Getters

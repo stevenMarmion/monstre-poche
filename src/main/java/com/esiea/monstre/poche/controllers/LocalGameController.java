@@ -36,8 +36,8 @@ public class LocalGameController {
      * Gère le clic sur le bouton "Commencer le jeu".
      */
     private void handleStartGame() {
-        String player1Name = view.getTxtPlayer1Name().getText().trim();
-        String player2Name = view.getTxtPlayer2Name().getText().trim();
+        String player1Name = view.getFirstPlayerName().getText().trim();
+        String player2Name = view.getSecondPlayerName().getText().trim();
         
         if (player1Name.isEmpty() || player2Name.isEmpty()) {
             System.out.println("Erreur : Les deux noms doivent être remplis");
@@ -46,8 +46,13 @@ public class LocalGameController {
 
         Joueur joueur1 = new Joueur(player1Name);
         Joueur joueur2 = new Joueur(player2Name);
-        
+
         System.out.println("Démarrage du jeu local - Joueur 1: " + player1Name + ", Joueur 2: " + player2Name);
-        navigationCallback.showMonsterSelection(joueur1, joueur2, true);
+
+        navigationCallback.showMonsterSelectionPlayer(joueur1, () -> {
+            navigationCallback.showMonsterSelectionPlayer(joueur2, () -> {
+                navigationCallback.showBattle(joueur1, joueur2);
+            });
+        });
     }
 }

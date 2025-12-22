@@ -1,8 +1,8 @@
 package com.esiea.monstre.poche.controllers;
 
-import com.esiea.monstre.poche.models.App;
 import com.esiea.monstre.poche.models.entites.Bot;
 import com.esiea.monstre.poche.models.entites.Joueur;
+import com.esiea.monstre.poche.models.utils.Loaders;
 import com.esiea.monstre.poche.views.BotGameView;
 
 /**
@@ -48,10 +48,12 @@ public class BotGameController {
         Joueur joueur = new Joueur(playerName);
 
         Bot bot = new Bot("Bot");
-        bot.chargerMonstresAutomatiquement(App.monstreLoader);
-        bot.chargerAttaquesAutomatiquement(App.attaqueLoader);
+        bot.chargerMonstresAutomatiquement(Loaders.monstreLoader);
+        bot.chargerAttaquesAutomatiquement(Loaders.attaqueLoader);
 
         System.out.println("Démarrage du jeu local - Joueur 1: " + playerName + ", Robot: " + bot.getNomJoueur());
-        navigationCallback.showMonsterSelectionBotGame(joueur, bot);
+        navigationCallback.showMonsterSelectionPlayer(joueur, () -> {
+            navigationCallback.showBattle(joueur, bot);
+        });
     }
 }

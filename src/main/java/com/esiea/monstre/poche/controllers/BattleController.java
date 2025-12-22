@@ -2,8 +2,11 @@ package com.esiea.monstre.poche.controllers;
 
 import com.esiea.monstre.poche.models.combats.Combat;
 import com.esiea.monstre.poche.models.combats.CombatBot;
+import com.esiea.monstre.poche.models.combats.CombatLocalTerminal;
+import com.esiea.monstre.poche.models.combats.CombatLogger;
 import com.esiea.monstre.poche.models.entites.Attaque;
 import com.esiea.monstre.poche.models.entites.Bot;
+import com.esiea.monstre.poche.models.entites.Joueur;
 import com.esiea.monstre.poche.models.entites.Monstre;
 import com.esiea.monstre.poche.views.BattleView;
 import java.util.List;
@@ -29,7 +32,7 @@ public class BattleController {
         if (view.getJoueur2() instanceof Bot) {
             this.combat = new CombatBot(view.getJoueur1(), (Bot) view.getJoueur2());
         } else {
-            this.combat = new Combat(view.getJoueur1(), view.getJoueur2());
+            this.combat = new CombatLocalTerminal(view.getJoueur1(), view.getJoueur2());
         }
         initializeEventHandlers();
         view.setTurn(true); // Toujours joueur 1 qui choisit en premier
@@ -53,7 +56,9 @@ public class BattleController {
         Attaque attaqueBot = bot.choisirActionAutomatiquement(view.getJoueur1().getMonstreActuel());
         player2Action = attaqueBot;
         player2Ready = true;
-        view.updateBattleLog(view.getJoueur2().getNomJoueur() + " (Bot) a choisi: " + attaqueBot.getNomAttaque());
+        if (attaqueBot != null) {
+            view.updateBattleLog(view.getJoueur2().getNomJoueur() + " (Bot) a choisi: " + attaqueBot.getNomAttaque());
+        }
         executeTurnActions();
     }
     
@@ -155,14 +160,13 @@ public class BattleController {
         view.updateBattleLog(view.getJoueur2().getNomJoueur() + ": " + formatAction(player2Action));
 
         // Activer le logger et exécuter
-        com.esiea.monstre.poche.models.combats.CombatLogger.enable();
-        com.esiea.monstre.poche.models.combats.CombatLogger.clear();
+        CombatLogger.clear();
 
         // Utiliser la logique d'ordre d'exécution
         Combat.gereOrdreExecutionActions(player1Action, player2Action);
 
         // Récupérer et afficher les logs détaillés
-        String detailed = com.esiea.monstre.poche.models.combats.CombatLogger.getFormattedLogs();
+        String detailed = CombatLogger.getFormattedLogs();
         if (detailed != null && !detailed.isEmpty()) {
             view.updateBattleLog(detailed);
         }
@@ -171,7 +175,11 @@ public class BattleController {
         view.updatePokemonDisplay();
         
         // Vérifier fin de combat
-        checkBattleEnd();
+        Joueur winner = Combat.getAWinner();
+        if (winner != null) {
+            navigationCallback.showWinnerView(winner);
+            return;
+        }
         
         // Réinitialiser pour le prochain tour
         player1Action = null;
@@ -200,25 +208,6 @@ public class BattleController {
     private void handleItemAction() {
         view.updateBattleLog("Fonctionnalité Objet non implémentée.");
         // TODO: implémenter la logique des objets
-    }
-    
-    /**
-     * Vérifie si le combat est terminé.
-     */
-    private void checkBattleEnd() {
-        // Vérifier si tous les Pokémon d'un joueur sont vaincus
-        boolean player1Defeated = view.getJoueur1().getMonstres().stream()
-                .allMatch(m -> m.getPointsDeVie() <= 0);
-        boolean player2Defeated = view.getJoueur2().getMonstres().stream()
-                .allMatch(m -> m.getPointsDeVie() <= 0);
-        
-        if (player1Defeated) {
-            view.updateBattleLog(view.getJoueur2().getNomJoueur() + " a remporté le combat !");
-            navigationCallback.showMainMenu();
-        } else if (player2Defeated) {
-            view.updateBattleLog(view.getJoueur1().getNomJoueur() + " a remporté le combat !");
-            navigationCallback.showMainMenu();
-        }
     }
 
     public Combat getCombat() {

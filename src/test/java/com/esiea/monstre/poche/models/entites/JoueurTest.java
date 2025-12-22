@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.ArrayList;
 
 import com.esiea.monstre.poche.models.affinites.Normal;
-import com.esiea.monstre.poche.models.entites.Joueur;
 
 class JoueurTest {
     private Joueur joueur;

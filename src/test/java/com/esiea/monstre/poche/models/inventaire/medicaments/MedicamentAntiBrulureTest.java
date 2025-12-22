@@ -32,8 +32,7 @@ class MedicamentAntiBrulureTest {
         assertEquals("Brule", monstre.getStatut().getLabelStatut());
         
         medicament.utiliserObjet(monstre);
-        // Le médicament vérifie "Brulure" mais le statut retourne "Brule", donc ne fonctionne pas
-        assertEquals("Brule", monstre.getStatut().getLabelStatut());
+        assertEquals("Normal", monstre.getStatut().getLabelStatut());
     }
 
     @Test

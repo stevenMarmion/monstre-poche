@@ -34,8 +34,7 @@ public class CombatBot extends Combat {
         this.selectionnerAttaque(attaqueLoader, joueur1);
 
         GameVisual.afficherTitreSection("COMBAT LANCE !");
-        System.out.println("Le Bot " + bot.getNomJoueur() + " est pret au combat.");
-        System.out.println();
+        CombatLogger.log("Le Bot " + bot.getNomJoueur() + " est pret au combat.");
 
         // Exécuter les tours de combat
         this.executerTour();
@@ -47,7 +46,7 @@ public class CombatBot extends Combat {
         GameVisual.afficherSousTitre("Monstres disponibles");
         int index = 1;
         for (Monstre monstre : monstreLoader.getRessources()) {
-            System.out.println(String.format("[%d] %s", index++, GameVisual.formatterMonstre(monstre)));
+            CombatLogger.log(String.format("[%d] %s", index++, GameVisual.formatterMonstre(monstre)));
         }
         while (joueur.getMonstres().size() < 3) {
             String choixInput = GameVisual.demanderSaisie(this.scanner, "Choix " + (joueur.getMonstres().size() + 1) + "/3 >");
@@ -63,13 +62,13 @@ public class CombatBot extends Combat {
                     continue;
                 }
                 joueur.ajouterMonstre(monstreCharge);
-                System.out.println("  [OK] Monstre ajoute : " + monstreCharge.getNomMonstre());
+                CombatLogger.log("  [OK] Monstre ajoute : " + monstreCharge.getNomMonstre());
             } catch (NumberFormatException e) {
                 GameVisual.afficherErreur("Saisie invalide. Veuillez entrer un numero.");
             }
         }
         joueur.setMonstreActuel(joueur.getMonstres().get(0));
-        System.out.println("Monstre actif initial : " + joueur.getMonstreActuel().getNomMonstre());
+        CombatLogger.log("Monstre actif initial : " + joueur.getMonstreActuel().getNomMonstre());
     }
 
     @Override
@@ -85,7 +84,7 @@ public class CombatBot extends Combat {
             }
             int index = 1;
             for (Attaque attaque : attaquesCompatibles) {
-                System.out.println(String.format("[%d] %s", index++, GameVisual.formatterAttaque(attaque)));
+                CombatLogger.log(String.format("[%d] %s", index++, GameVisual.formatterAttaque(attaque)));
             }
             while (monstre.getAttaques().size() < 4) {
                 String choixInput = GameVisual.demanderSaisie(this.scanner, "Choix " + (monstre.getAttaques().size() + 1) + "/4 >");
@@ -101,7 +100,7 @@ public class CombatBot extends Combat {
                         continue;
                     }
                     monstre.ajouterAttaque(attaqueChargee);
-                    System.out.println("  [OK] Attaque ajoutee : " + attaqueChargee.getNomAttaque());
+                    CombatLogger.log("  [OK] Attaque ajoutee : " + attaqueChargee.getNomAttaque());
                 } catch (NumberFormatException e) {
                     GameVisual.afficherErreur("Saisie invalide. Veuillez entrer un numero.");
                 }
@@ -115,7 +114,7 @@ public class CombatBot extends Combat {
         GameVisual.afficherTitreSection("Attaques de " + monstreActuel.getNomMonstre());
         int index = 1;
         for (Attaque attaque : monstreActuel.getAttaques()) {
-            System.out.println(String.format("[%d] %s", index++, GameVisual.formatterAttaque(attaque)));
+            CombatLogger.log(String.format("[%d] %s", index++, GameVisual.formatterAttaque(attaque)));
         }
         while (true) {
             String choixInput = GameVisual.demanderSaisie(this.scanner, "Attaque choisie >");
@@ -137,7 +136,7 @@ public class CombatBot extends Combat {
         GameVisual.afficherTitreSection("Objets de " + joueur.getNomJoueur());
         int index = 1;
         for (Objet objet : joueur.getObjets()) {
-            System.out.println(String.format("[%d] %s", index++, objet.getNomObjet()));
+            CombatLogger.log(String.format("[%d] %s", index++, objet.getNomObjet()));
         }
         String nomObjetChoisi = GameVisual.demanderSaisie(this.scanner, "Objet choisi >");
         for (Objet objet : joueur.getObjets()) {
@@ -154,7 +153,7 @@ public class CombatBot extends Combat {
         GameVisual.afficherTitreSection("Changement de monstre - " + joueur.getNomJoueur());
         int index = 1;
         for (Monstre monstre : joueur.getMonstres()) {
-            System.out.println(String.format("[%d] %s", index++, GameVisual.formatterMonstre(monstre)));
+            CombatLogger.log(String.format("[%d] %s", index++, GameVisual.formatterMonstre(monstre)));
         }
         while (true) {
             String choixInput = GameVisual.demanderSaisie(this.scanner, "Monstre envoye >");
@@ -198,13 +197,13 @@ public class CombatBot extends Combat {
             return bot.getMonstreActuel();
         }
 
-        System.out.println("Monstre actif du Bot : " + monstreActifBot.getNomMonstre() + " | PV " + (int) monstreActifBot.getPointsDeVie() + "/" + (int) monstreActifBot.getPointsDeVieMax());
+        CombatLogger.log("Monstre actif du Bot : " + monstreActifBot.getNomMonstre() + " | PV " + (int) monstreActifBot.getPointsDeVie() + "/" + (int) monstreActifBot.getPointsDeVieMax());
 
         // Le Bot choisit une attaque
         Attaque attaqueBot = bot.choisirActionAutomatiquement(monstreActifJoueur);
 
         if (attaqueBot != null) {
-            System.out.println("Le Bot choisit l'attaque : " + attaqueBot.getNomAttaque());
+            CombatLogger.log("Le Bot choisit l'attaque : " + attaqueBot.getNomAttaque());
         }
 
         return attaqueBot;
@@ -217,19 +216,19 @@ public class CombatBot extends Combat {
     public Object gereChoixAction(Joueur joueur) {
         GameVisual.afficherTitreSection("Tour de " + joueur.getNomJoueur());
         Monstre actif = joueur.getMonstreActuel();
-        System.out.println("Monstre actif : " + actif.getNomMonstre() + " | PV " + (int) actif.getPointsDeVie() + "/" + (int) actif.getPointsDeVieMax() + " | ATK " + actif.getAttaque() + " | DEF " + actif.getDefense() + " | VIT " + actif.getVitesse());
+        CombatLogger.log("Monstre actif : " + actif.getNomMonstre() + " | PV " + (int) actif.getPointsDeVie() + "/" + (int) actif.getPointsDeVieMax() + " | ATK " + actif.getAttaque() + " | DEF " + actif.getDefense() + " | VIT " + actif.getVitesse());
 
         // Afficher les monstres de l'adversaire (Bot)
         GameVisual.afficherSousTitre("Monstres du Bot adverse :");
         for (Monstre m : bot.getMonstres()) {
             String statut = m.getPointsDeVie() > 0 ? "Vivant" : "KO";
-            System.out.println("  - " + m.getNomMonstre() + " | PV " + (int) m.getPointsDeVie() + "/" + (int) m.getPointsDeVieMax() + " | " + statut);
+            CombatLogger.log("  - " + m.getNomMonstre() + " | PV " + (int) m.getPointsDeVie() + "/" + (int) m.getPointsDeVieMax() + " | " + statut);
         }
 
-        System.out.println("\nActions disponibles :");
-        System.out.println("  1) Attaquer");
-        System.out.println("  2) Utiliser un objet");
-        System.out.println("  3) Changer de monstre");
+        CombatLogger.log("\nActions disponibles :");
+        CombatLogger.log("  1) Attaquer");
+        CombatLogger.log("  2) Utiliser un objet");
+        CombatLogger.log("  3) Changer de monstre");
 
         String choixAction = GameVisual.demanderSaisie(this.scanner, "Votre choix >");
         while (!choixAction.equals("1") && !choixAction.equals("2") && !choixAction.equals("3")) {
@@ -261,13 +260,10 @@ public class CombatBot extends Combat {
     /**
      * Fin du combat avec message personnalisé
      */
-    @Override
     public void finDePartie() {
-        GameVisual.afficherTitreSection("FIN DU COMBAT");
-        if (joueur1.sontMonstresMorts()) {
-            System.out.println("Vous avez perdu ! Le Bot " + bot.getNomJoueur() + " a remporte la victoire !");
-        } else if (joueur2.sontMonstresMorts()) {
-            System.out.println("Felicitations ! Vous avez remporte la victoire contre le Bot " + bot.getNomJoueur() + " !");
+        if (Combat.getAWinner() != null) {
+            GameVisual.afficherTitreSection("FIN DU COMBAT");
+            CombatLogger.log("Le gagnant est : " + Combat.getAWinner().getNomJoueur() + " !");
         }
     }
 }

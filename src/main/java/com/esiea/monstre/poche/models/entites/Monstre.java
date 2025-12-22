@@ -135,7 +135,7 @@ public class Monstre implements Serializable {
         if (!this.attaques.contains(attaque) && this.attaques.size() < 4) {
             this.attaques.add(attaque);
         } else {
-            System.out.println("[INFO] Attaque non ajoutee : " + attaque.getNomAttaque() + " deja presente ou limite atteinte pour " + this.nomMonstre + ".");
+            CombatLogger.log("[INFO] Attaque non ajoutee : " + attaque.getNomAttaque() + " deja presente ou limite atteinte pour " + this.nomMonstre + ".");
         }
     }
 
@@ -150,14 +150,13 @@ public class Monstre implements Serializable {
 
         // Log avant attaque
         CombatLogger.log("═══════════════════════════════════════");
-            CombatLogger.log(this.nomMonstre + " utilise " + 
-                (attaqueUtilisee != null ? attaqueUtilisee.getNomAttaque() : "ses mains nues") + " :");
+        CombatLogger.log(this.nomMonstre + " utilise " + (attaqueUtilisee != null ? attaqueUtilisee.getNomAttaque() : "ses mains nues") + " :");
         
         // ensuite on applique nos effets avant attaque si le pokémon est paralysé ou autre
         StatutMonstreUtils.appliquerStatutMonstre(statut, this, (int) degatsAffliges);
         StatutTerrainUtils.appliquerStatutTerrain(terrain, this, (int) degatsAffliges);
 
-        AffinitesUtils.appliqueCapaciteSpecialeNature(typeMonstre, cible, terrain);
+        AffinitesUtils.appliqueCapaciteSpecialeNature(typeMonstre, this, terrain);
 
         // notre attaque principal, le process principal
         if (!this.isRateAttaque()) {

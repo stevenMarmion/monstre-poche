@@ -10,8 +10,6 @@ import com.esiea.monstre.poche.models.affinites.Feu;
 import com.esiea.monstre.poche.models.affinites.Normal;
 import com.esiea.monstre.poche.models.affinites.Terre;
 import com.esiea.monstre.poche.models.affinites.Eau;
-import com.esiea.monstre.poche.models.entites.Attaque;
-import com.esiea.monstre.poche.models.entites.Monstre;
 
 class AttaqueTest {
     private Attaque attaque;

@@ -1,6 +1,7 @@
 package com.esiea.monstre.poche.models.inventaire.potions;
 
 import com.esiea.monstre.poche.models.entites.Monstre;
+import com.esiea.monstre.poche.models.combats.CombatLogger;
 
 public class PotionSante extends Potion {
     private int pointsDeSoin;
@@ -12,7 +13,7 @@ public class PotionSante extends Potion {
 
     @Override
     public void utiliserObjet(Monstre cible) {
-        System.out.println("Utilisation de " + this.nomObjet + " sur " + cible.getNomMonstre());
+        CombatLogger.log("Utilisation de " + this.nomObjet + " sur " + cible.getNomMonstre());
         if (cible.getPointsDeVie() + this.pointsDeSoin > cible.getPointsDeVieMax()) {
             cible.setPointsDeVie(cible.getPointsDeVieMax());
         } else {

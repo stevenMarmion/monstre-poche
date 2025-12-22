@@ -1,6 +1,7 @@
 package com.esiea.monstre.poche.models.inventaire.potions;
 
 import com.esiea.monstre.poche.models.entites.Monstre;
+import com.esiea.monstre.poche.models.combats.CombatLogger;
 
 public class PotionVitesse  extends Potion {
     private int pointsDeVitesse;
@@ -12,7 +13,7 @@ public class PotionVitesse  extends Potion {
 
     @Override
     public void utiliserObjet(Monstre cible) {
-        System.out.println("Utilisation de " + this.nomObjet + " sur " + cible.getNomMonstre());
+        CombatLogger.log("Utilisation de " + this.nomObjet + " sur " + cible.getNomMonstre());
         cible.setVitesse(cible.getVitesse() + this.pointsDeVitesse);
     }
 }

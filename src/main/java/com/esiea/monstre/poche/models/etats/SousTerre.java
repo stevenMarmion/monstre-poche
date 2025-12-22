@@ -1,5 +1,6 @@
 package com.esiea.monstre.poche.models.etats;
 
+import com.esiea.monstre.poche.models.combats.CombatLogger;
 import com.esiea.monstre.poche.models.entites.Monstre;
 
 public class SousTerre extends StatutMonstre {
@@ -17,7 +18,7 @@ public class SousTerre extends StatutMonstre {
             // on double la défense du monstre la première fois qu'il entre sous terre
             if (this.nbToursAvecEffet == nbToursEffet) {
                 cible.setDefense(cible.getDefense() * 2);
-                System.out.println(cible.getNomMonstre() + " est maintenant sous terre, sa défense double !");
+                CombatLogger.log(cible.getNomMonstre() + " est maintenant sous terre, sa défense double !");
             }
             this.decrementerNbToursAvecEffet();
             sortirSousTerre(cible);
@@ -28,7 +29,7 @@ public class SousTerre extends StatutMonstre {
         if (this.nbToursAvecEffet == 0) {
             cible.setStatut(new Normal());
             cible.setDefense(cible.getDefense() / 2);
-            System.out.println(cible.getNomMonstre() + " sort de sous terre, sa défense revient à la normale !");
+            CombatLogger.log(cible.getNomMonstre() + " sort de sous terre, sa défense revient à la normale !");
         }
     }
 }
