@@ -1,7 +1,9 @@
-package com.esiea.monstre.poche.controllers;
+package com.esiea.monstre.poche.controllers.setup;
 
+import com.esiea.monstre.poche.controllers.INavigationCallback;
+import com.esiea.monstre.poche.models.combats.CombatLogger;
 import com.esiea.monstre.poche.models.entites.Joueur;
-import com.esiea.monstre.poche.views.LocalGameView;
+import com.esiea.monstre.poche.views.gui.setup.LocalGameView;
 
 /**
  * Controller pour le mode de jeu local.
@@ -9,11 +11,11 @@ import com.esiea.monstre.poche.views.LocalGameView;
 public class LocalGameController {
     
     private LocalGameView view;
-    private NavigationCallback navigationCallback;
+    private INavigationCallback INavigationCallback;
     
-    public LocalGameController(LocalGameView view, NavigationCallback navigationCallback) {
+    public LocalGameController(LocalGameView view, INavigationCallback INavigationCallback) {
         this.view = view;
-        this.navigationCallback = navigationCallback;
+        this.INavigationCallback = INavigationCallback;
         initializeEventHandlers();
     }
     
@@ -29,7 +31,7 @@ public class LocalGameController {
      * Gère le clic sur le bouton "Revenir au menu".
      */
     private void handleBackToMenu() {
-        navigationCallback.showMainMenu();
+        INavigationCallback.showMainMenu();
     }
     
     /**
@@ -40,18 +42,18 @@ public class LocalGameController {
         String player2Name = view.getSecondPlayerName().getText().trim();
         
         if (player1Name.isEmpty() || player2Name.isEmpty()) {
-            System.out.println("Erreur : Les deux noms doivent être remplis");
+            CombatLogger.error("Les deux noms doivent être remplis");
             return;
         }
 
         Joueur joueur1 = new Joueur(player1Name);
         Joueur joueur2 = new Joueur(player2Name);
 
-        System.out.println("Démarrage du jeu local - Joueur 1: " + player1Name + ", Joueur 2: " + player2Name);
+        CombatLogger.info("Démarrage du jeu local - " + player1Name + " VS " + player2Name);
 
-        navigationCallback.showMonsterSelectionPlayer(joueur1, () -> {
-            navigationCallback.showMonsterSelectionPlayer(joueur2, () -> {
-                navigationCallback.showBattle(joueur1, joueur2);
+        INavigationCallback.showMonsterSelectionPlayer(joueur1, () -> {
+            INavigationCallback.showMonsterSelectionPlayer(joueur2, () -> {
+                INavigationCallback.showBattle(joueur1, joueur2);
             });
         });
     }

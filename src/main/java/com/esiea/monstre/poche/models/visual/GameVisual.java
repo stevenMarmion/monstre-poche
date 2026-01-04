@@ -2,24 +2,26 @@ package com.esiea.monstre.poche.models.visual;
 
 import java.util.Scanner;
 
+import com.esiea.monstre.poche.models.combats.CombatLogger;
 import com.esiea.monstre.poche.models.entites.Attaque;
 import com.esiea.monstre.poche.models.entites.Monstre;
 
+/**
+ * Classe utilitaire pour l'affichage visuel dans le terminal.
+ * Utilise CombatLogger pour centraliser tous les affichages.
+ */
 public class GameVisual {
-    private static final String SECTION_DIVIDER = "----------------------------------------";
     
     public static void afficherTitreSection(String titre) {
-        System.out.println("\n" + SECTION_DIVIDER);
-        System.out.println(" " + titre);
-        System.out.println(SECTION_DIVIDER);
+        CombatLogger.logTitre(titre);
     }
 
     public static void afficherSousTitre(String sousTitre) {
-        System.out.println("  > " + sousTitre);
+        CombatLogger.logSousTitre(sousTitre);
     }
 
     public static void afficherErreur(String message) {
-        System.out.println("  [!] " + message);
+        CombatLogger.error(message);
     }
 
     public static String demanderSaisie(Scanner scanner, String invite) {
@@ -28,28 +30,33 @@ public class GameVisual {
     }
 
     public static String formatterMonstre(Monstre monstre) {
-        return String.format("%-15s | PV:%-4.0f/%-4.0f | ATK:%-3d | DEF:%-3d | VIT:%-3d | Type:%s", monstre.getNomMonstre(), monstre.getPointsDeVie(), monstre.getPointsDeVieMax(), monstre.getAttaque(), monstre.getDefense(), monstre.getVitesse(), monstre.getTypeMonstre().getLabelType());
+        return String.format("%-15s | PV:%-4.0f/%-4.0f | ATK:%-3d | DEF:%-3d | VIT:%-3d | Type:%s", 
+                monstre.getNomMonstre(), monstre.getPointsDeVie(), monstre.getPointsDeVieMax(), 
+                monstre.getAttaque(), monstre.getDefense(), monstre.getVitesse(), 
+                monstre.getTypeMonstre().getLabelType());
     }
 
     public static String formatterAttaque(Attaque attaque) {
-        return String.format("%-18s | Puissance:%-3d | Type:%s", attaque.getNomAttaque(), attaque.getPuissanceAttaque(), attaque.getTypeAttaque().getLabelType());
+        return String.format("%-18s | Puissance:%-3d | Type:%s", 
+                attaque.getNomAttaque(), attaque.getPuissanceAttaque(), 
+                attaque.getTypeAttaque().getLabelType());
     }
 
     public static String formatterTitre(String titre) {
-        return "\n" + SECTION_DIVIDER + "\n " + titre + "\n" + SECTION_DIVIDER;
+        return "========================================\n  " + titre + "\n========================================";
     }
 
     public static String afficherSousTitrePourTous(String sousTitre) {
-        System.out.println("  > " + sousTitre);
-        return "  > " + sousTitre;
+        CombatLogger.log("  ► " + sousTitre);
+        return "  ► " + sousTitre;
     }
 
     public static String formatterErreur(String message) {
-        return "  [!] " + message;
+        return "[ERREUR] " + message;
     }
 
     public static String formatterSousTitre(String sousTitre) {
-        return "  > " + sousTitre;
+        return "  ► " + sousTitre;
     }
 
     /**
@@ -58,13 +65,10 @@ public class GameVisual {
      * @return 1 pour jouer contre un Bot, 2 pour jouer à deux joueurs locaux, 3 pour jouer en ligne
      */
     public static int afficherMenuModeJeu(Scanner scanner) {
-        afficherTitreSection("MONSTRE POCHE - Selection du mode de jeu");
-        
-        System.out.println();
-        System.out.println("  [1] Jouer contre un Bot");
-        System.out.println("  [2] Jouer à deux joueurs (local)");
-        System.out.println("  [3] Jouer en ligne");
-        System.out.println();
+        CombatLogger.logMenu("MONSTRE POCHE - Sélection du mode de jeu",
+                "Jouer contre un Bot",
+                "Jouer à deux joueurs (local)",
+                "Jouer en ligne");
         
         String choix = demanderSaisie(scanner, "Votre choix (1, 2 ou 3) >");
         
@@ -82,13 +86,10 @@ public class GameVisual {
      * @return 1 pour facile, 2 pour moyen, 3 pour difficile
      */
     public static int afficherMenuDifficulteBot(Scanner scanner) {
-        afficherTitreSection("Selection du niveau de difficulte du Bot");
-        
-        System.out.println();
-        System.out.println("  [1] Facile");
-        System.out.println("  [2] Moyen");
-        System.out.println("  [3] Difficile");
-        System.out.println();
+        CombatLogger.logMenu("Sélection du niveau de difficulté du Bot",
+                "Facile",
+                "Moyen",
+                "Difficile");
         
         String choix = demanderSaisie(scanner, "Votre choix (1, 2 ou 3) >");
         
@@ -106,12 +107,9 @@ public class GameVisual {
      * @return 1 pour créer un serveur, 2 pour se connecter à un serveur
      */
     public static int afficherMenuJeuEnLigne(Scanner scanner) {
-        afficherTitreSection("Jeu en ligne - Mode de connexion");
-        
-        System.out.println();
-        System.out.println("  [1] Créer un serveur (et attendre un adversaire)");
-        System.out.println("  [2] Se connecter à un serveur");
-        System.out.println();
+        CombatLogger.logMenu("Jeu en ligne - Mode de connexion",
+                "Créer un serveur (et attendre un adversaire)",
+                "Se connecter à un serveur");
         
         String choix = demanderSaisie(scanner, "Votre choix (1 ou 2) >");
         
@@ -129,7 +127,7 @@ public class GameVisual {
      * @return Un array contenant [port]
      */
     public static int demanderPortServeur(Scanner scanner) {
-        afficherTitreSection("Configuration du serveur");
+        CombatLogger.logTitre("Configuration du serveur");
         
         String portStr = demanderSaisie(scanner, "Port d'écoute (défaut: 5555) >");
         
@@ -152,7 +150,7 @@ public class GameVisual {
      * @return Un array contenant [adresse, port]
      */
     public static String[] demanderConfigurationServeur(Scanner scanner) {
-        afficherTitreSection("Connexion au serveur");
+        CombatLogger.logTitre("Connexion au serveur");
         
         String adresse = demanderSaisie(scanner, "Adresse du serveur (défaut: localhost) >");
         adresse = adresse.isEmpty() ? "localhost" : adresse;
@@ -176,12 +174,9 @@ public class GameVisual {
      * Permet de demander au joueur s'il souhaite le jeu par interface ou par terminal
      */
     public static int afficherDemandeInterfaceTerminal(Scanner scanner) {
-        afficherTitreSection("Monstre Poche - mode de jeu");
-        
-        System.out.println();
-        System.out.println("  [1] Jouer par interface");
-        System.out.println("  [2] Jouer par terminal");
-        System.out.println();
+        CombatLogger.logMenu("Monstre Poche - Mode de jeu",
+                "Jouer par interface",
+                "Jouer par terminal");
         
         String choix = demanderSaisie(scanner, "Votre choix (1 ou 2) >");
         

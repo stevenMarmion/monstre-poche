@@ -1,6 +1,8 @@
-package com.esiea.monstre.poche.controllers;
+package com.esiea.monstre.poche.controllers.menu;
 
-import com.esiea.monstre.poche.views.MainMenuView;
+import com.esiea.monstre.poche.controllers.INavigationCallback;
+import com.esiea.monstre.poche.models.combats.CombatLogger;
+import com.esiea.monstre.poche.views.gui.menu.MainMenuView;
 
 /**
  * Controller pour le menu principal.
@@ -8,11 +10,11 @@ import com.esiea.monstre.poche.views.MainMenuView;
 public class MainMenuController {
     
     private MainMenuView view;
-    private NavigationCallback navigationCallback;
+    private INavigationCallback INavigationCallback;
     
-    public MainMenuController(MainMenuView view, NavigationCallback navigationCallback) {
+    public MainMenuController(MainMenuView view, INavigationCallback INavigationCallback) {
         this.view = view;
-        this.navigationCallback = navigationCallback;
+        this.INavigationCallback = INavigationCallback;
         initializeEventHandlers();
     }
     
@@ -29,24 +31,24 @@ public class MainMenuController {
      * Gère le clic sur le bouton "Jouer en local".
      */
     private void handleLocalGameClick() {
-        System.out.println("Navigation vers le mode local");
-        navigationCallback.showLocalGameSetup();
+        CombatLogger.debug("Navigation vers le mode local");
+        INavigationCallback.showLocalGameSetup();
     }
     
     /**
      * Gère le clic sur le bouton "Jouer contre un bot".
      */
     private void handleBotGameClick() {
-        System.out.println("Navigation vers le mode bot");
-        navigationCallback.showBotGameSetup();
+        CombatLogger.debug("Navigation vers le mode bot");
+        INavigationCallback.showBotGameSetup();
     }
     
     /**
      * Gère le clic sur le bouton "Jouer en ligne".
      */
     private void handleOnlineGameClick() {
-        System.out.println("Navigation vers le mode en ligne");
-        navigationCallback.showOnlineGameSetup();
+        CombatLogger.debug("Navigation vers le mode en ligne");
+        INavigationCallback.showOnlineGameSetup();
     }
 }
 

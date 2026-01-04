@@ -1,4 +1,4 @@
-package com.esiea.monstre.poche.views;
+package com.esiea.monstre.poche.views.gui.selection;
 
 import com.esiea.monstre.poche.models.entites.Joueur;
 import com.esiea.monstre.poche.models.entites.Monstre;

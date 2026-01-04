@@ -6,6 +6,7 @@ import java.net.Socket;
 import java.util.Scanner;
 
 import com.esiea.monstre.poche.models.combats.CombatEnLigne;
+import com.esiea.monstre.poche.models.combats.CombatLogger;
 import com.esiea.monstre.poche.models.loader.AttaqueLoader;
 import com.esiea.monstre.poche.models.loader.MonstreLoader;
 import com.esiea.monstre.poche.models.entites.Joueur;
@@ -25,11 +26,11 @@ public class OnlineServer {
 
     public void lancer(MonstreLoader monstreLoader, AttaqueLoader attaqueLoader) {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
-            System.out.println("Serveur en attente d'un joueur sur le port " + port + " ...");
+            CombatLogger.logReseau("Serveur en attente d'un joueur sur le port " + port + " ...");
             Socket socket = serverSocket.accept();
-            System.out.println("Joueur connecte depuis " + socket.getInetAddress());
+            CombatLogger.logReseau("Joueur connecté depuis " + socket.getInetAddress());
 
-            try (OnlineConnection connection = new OnlineConnection(socket)) {
+            try (OnlineConnection connection = new OnlineConnection(socket, null)) {
                 String nomJoueurLocal = GameVisual.demanderSaisie(scanner, "Entrez votre nom de joueur >");
                 String nomJoueurDistant = connection.ask("Entrez votre nom de joueur >");
 
@@ -40,7 +41,27 @@ public class OnlineServer {
                 combat.lancer(monstreLoader, attaqueLoader);
             }
         } catch (IOException e) {
-            System.out.println("[ERREUR] Probleme de serveur : " + e.getMessage());
+            CombatLogger.error("Problème de serveur : " + e.getMessage());
         }
+    }
+
+    /** Fonctions pour le mode interface */
+
+    public OnlineConnection demarrerServeur(Joueur hostPlayer) {
+        try (ServerSocket serverSocket = new ServerSocket(port)) {
+            CombatLogger.logReseau("Serveur en attente d'un joueur sur le port " + port + " ...");
+            Socket socket = serverSocket.accept();
+            CombatLogger.logReseau("Joueur connecté depuis " + socket.getInetAddress());
+
+            OnlineConnection connection = new OnlineConnection(socket, hostPlayer);
+            return connection;
+        } catch (Exception e) {
+            CombatLogger.error("Problème de serveur : " + e.getMessage());
+        }
+        return null;
+    }
+
+    public int getPort() {
+        return port;
     }
 }

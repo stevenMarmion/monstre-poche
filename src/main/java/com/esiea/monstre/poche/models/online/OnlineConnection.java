@@ -8,6 +8,8 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+import com.esiea.monstre.poche.models.entites.Joueur;
+
 /**
  * Connexion utilitaire pour envoyer/recevoir des messages simples entre le serveur et le client.
  */
@@ -16,25 +18,28 @@ public class OnlineConnection implements Closeable {
     private final BufferedReader in;
     private final PrintWriter out;
 
-    public OnlineConnection(Socket socket) throws IOException {
+    private Joueur joueur;
+
+    public OnlineConnection(Socket socket, Joueur joueur) throws IOException {
         this.socket = socket;
         this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         this.out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true);
+        this.joueur = joueur;
     }
 
     public void sendInfo(String message) {
         out.println("INFO|" + message);
-        out.flush();
+        // out.flush();
     }
 
     public void sendEnd(String message) {
         out.println("END|" + message);
-        out.flush();
+        // out.flush();
     }
 
     public String ask(String prompt) throws IOException {
         out.println("ASK|" + prompt);
-        out.flush();
+        // out.flush();
         return waitForAnswer();
     }
 
@@ -48,17 +53,16 @@ public class OnlineConnection implements Closeable {
         throw new IOException("Connexion interrompue avant reponse");
     }
 
-    public void sendRaw(String message) {
-        out.println(message);
-        out.flush();
-    }
-
-    public String readRaw() throws IOException {
-        return in.readLine();
-    }
-
     @Override
     public void close() throws IOException {
         socket.close();
+    }
+
+    public Socket getSocket() {
+        return socket;
+    }
+
+    public Joueur getJoueur() {
+        return joueur;
     }
 }

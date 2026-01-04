@@ -149,7 +149,7 @@ public class Monstre implements Serializable {
         }
 
         // Log avant attaque
-        CombatLogger.log("═══════════════════════════════════════");
+        CombatLogger.log("=======================================");
         CombatLogger.log(this.nomMonstre + " utilise " + (attaqueUtilisee != null ? attaqueUtilisee.getNomAttaque() : "ses mains nues") + " :");
         
         // ensuite on applique nos effets avant attaque si le pokémon est paralysé ou autre
@@ -176,7 +176,7 @@ public class Monstre implements Serializable {
                 CombatLogger.log(this.nomMonstre + " a raté son attaque.");
         }
         
-        CombatLogger.log("═══════════════════════════════════════");
+        CombatLogger.log("=======================================");
     }
 
     public double calculeDegat(Monstre monstreAttaquant, Monstre cible) {

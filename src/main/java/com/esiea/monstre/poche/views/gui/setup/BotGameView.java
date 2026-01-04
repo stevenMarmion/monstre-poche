@@ -1,4 +1,4 @@
-package com.esiea.monstre.poche.views;
+package com.esiea.monstre.poche.views.gui.setup;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;

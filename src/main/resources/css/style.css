@@ -110,6 +110,81 @@
     -fx-background-color: #1b160f;
 }
 
+/* Cartes modernes pour les modes en ligne */
+.cards-wrapper {
+    -fx-padding: 10 20 10 20;
+}
+
+.card-container {
+    -fx-background-color: rgba(26, 26, 26, 0.85);
+    -fx-background-radius: 14;
+    -fx-border-radius: 14;
+    -fx-border-color: linear-gradient(to bottom, #f0d070, #9ccf6b);
+    -fx-border-width: 2px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.45), 12, 0, 0, 6);
+    -fx-spacing: 12;
+}
+
+.card-container:hover {
+    -fx-border-color: linear-gradient(to bottom, #f8eec7, #cbe983);
+    -fx-effect: dropshadow(gaussian, rgba(240, 208, 112, 0.35), 16, 0, 0, 6);
+}
+
+.subtitle-text {
+    -fx-text-fill: #d2c29d;
+    -fx-font-size: 16px;
+    -fx-font-family: "Monospaced";
+    -fx-opacity: 0.9;
+}
+
+.pill-badge {
+    -fx-background-color: linear-gradient(to right, #f0d070, #d69a3a);
+    -fx-text-fill: #0f0f0f;
+    -fx-font-weight: bold;
+    -fx-font-family: "Monospaced";
+    -fx-padding: 4 12 4 12;
+    -fx-background-radius: 999;
+    -fx-border-radius: 999;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.35), 6, 0, 0, 2);
+}
+
+.pill-badge-alt {
+    -fx-background-color: linear-gradient(to right, #9ccf6b, #6fae3d);
+    -fx-text-fill: #0f0f0f;
+    -fx-font-weight: bold;
+    -fx-font-family: "Monospaced";
+    -fx-padding: 4 12 4 12;
+    -fx-background-radius: 999;
+    -fx-border-radius: 999;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.35), 6, 0, 0, 2);
+}
+
+/* Segment toggle for mode selection */
+.segment-toggle {
+    -fx-background-color: rgba(35, 35, 35, 0.85);
+    -fx-text-fill: #f8eec7;
+    -fx-font-weight: bold;
+    -fx-font-family: "Monospaced";
+    -fx-padding: 10 24 10 24;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-border-color: #d2c29d;
+    -fx-border-width: 2px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 8, 0, 0, 3);
+}
+
+.segment-toggle:hover {
+    -fx-border-color: #f0d070;
+}
+
+.segment-toggle-active {
+    -fx-background-color: linear-gradient(to bottom, #f0d070, #d69a3a);
+    -fx-text-fill: #0f0f0f;
+    -fx-border-color: #f8eec7;
+    -fx-effect: dropshadow(gaussian, rgba(240, 208, 112, 0.55), 12, 0, 0, 4);
+}
+
 /* Boîtes de monstre */
 .monster-box {
     -fx-background-color: rgba(20, 20, 20, 0.9);

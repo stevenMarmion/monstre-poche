@@ -2,15 +2,24 @@ package com.esiea.monstre.poche.views;
 
 import com.esiea.monstre.poche.models.entites.Bot;
 import com.esiea.monstre.poche.models.entites.Joueur;
-import com.esiea.monstre.poche.controllers.AttackSelectionController;
-import com.esiea.monstre.poche.controllers.BattleController;
-import com.esiea.monstre.poche.controllers.BotGameController;
-import com.esiea.monstre.poche.controllers.LocalGameController;
-import com.esiea.monstre.poche.controllers.MainMenuController;
-import com.esiea.monstre.poche.controllers.MonsterSelectionController;
-import com.esiea.monstre.poche.controllers.NavigationCallback;
-import com.esiea.monstre.poche.controllers.OnlineGameController;
-import com.esiea.monstre.poche.controllers.WinnerController;
+import com.esiea.monstre.poche.models.online.OnlineConnection;
+import com.esiea.monstre.poche.views.gui.battle.BattleView;
+import com.esiea.monstre.poche.views.gui.battle.WinnerView;
+import com.esiea.monstre.poche.views.gui.menu.MainMenuView;
+import com.esiea.monstre.poche.views.gui.selection.AttackSelectionView;
+import com.esiea.monstre.poche.views.gui.selection.MonsterSelectionView;
+import com.esiea.monstre.poche.views.gui.setup.BotGameView;
+import com.esiea.monstre.poche.views.gui.setup.LocalGameView;
+import com.esiea.monstre.poche.views.gui.setup.OnlineGameView;
+import com.esiea.monstre.poche.controllers.INavigationCallback;
+import com.esiea.monstre.poche.controllers.batlle.BattleController;
+import com.esiea.monstre.poche.controllers.batlle.WinnerController;
+import com.esiea.monstre.poche.controllers.menu.MainMenuController;
+import com.esiea.monstre.poche.controllers.selection.AttackSelectionController;
+import com.esiea.monstre.poche.controllers.selection.MonsterSelectionController;
+import com.esiea.monstre.poche.controllers.setup.BotGameController;
+import com.esiea.monstre.poche.controllers.setup.LocalGameController;
+import com.esiea.monstre.poche.controllers.setup.OnlineGameController;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -19,9 +28,9 @@ import javafx.stage.Stage;
 /**
  * Classe principale de l'application Monstre Poche.
  * Point d'entrée de l'interface graphique JavaFX.
- * Implémente NavigationCallback pour la gestion de la navigation entre les vues.
+ * Implémente INavigationCallback pour la gestion de la navigation entre les vues.
  */
-public class MonstrePocheUI extends Application implements NavigationCallback {
+public class MonstrePocheUI extends Application implements INavigationCallback {
     private Stage stage;
     private Scene scene;
 
@@ -76,21 +85,11 @@ public class MonstrePocheUI extends Application implements NavigationCallback {
     }
     
     @Override
-    public void showMonsterSelectionPlayer(Joueur joueur) {
-        showMonsterSelectionPlayer(joueur, null);
-    }
-    
-    @Override
     public void showMonsterSelectionPlayer(Joueur joueur, Runnable onComplete) {
         MonsterSelectionView monsterSelectionView = new MonsterSelectionView(joueur);
         new MonsterSelectionController(monsterSelectionView, this, joueur, onComplete);
 
         scene.setRoot(monsterSelectionView);
-    }
-    
-    @Override
-    public void showAttackSelectionPlayer(Joueur joueur) {
-        showAttackSelectionPlayer(joueur, null);
     }
 
     @Override
@@ -123,5 +122,13 @@ public class MonstrePocheUI extends Application implements NavigationCallback {
         new WinnerController(winnerView, this);
         
         scene.setRoot(winnerView);
+    }
+
+    @Override
+    public void showBattleOnline(Joueur joueur, OnlineConnection connection) {
+        BattleView battleView = new BattleView(joueur, null);
+        new BattleController(battleView, this);
+
+        scene.setRoot(battleView);
     }
 }

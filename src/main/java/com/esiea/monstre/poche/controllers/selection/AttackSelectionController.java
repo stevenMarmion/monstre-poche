@@ -1,9 +1,11 @@
-package com.esiea.monstre.poche.controllers;
+package com.esiea.monstre.poche.controllers.selection;
 
+import com.esiea.monstre.poche.controllers.INavigationCallback;
+import com.esiea.monstre.poche.models.combats.CombatLogger;
 import com.esiea.monstre.poche.models.entites.Attaque;
 import com.esiea.monstre.poche.models.entites.Joueur;
 import com.esiea.monstre.poche.models.entites.Monstre;
-import com.esiea.monstre.poche.views.AttackSelectionView;
+import com.esiea.monstre.poche.views.gui.selection.AttackSelectionView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,20 +16,20 @@ import java.util.List;
 public class AttackSelectionController {
     
     private AttackSelectionView view;
-    private NavigationCallback navigationCallback;
+    private INavigationCallback INavigationCallback;
     private Joueur joueur;
     private Runnable onComplete;
     
-    public AttackSelectionController(AttackSelectionView view, NavigationCallback navigationCallback, Joueur joueur) {
+    public AttackSelectionController(AttackSelectionView view, INavigationCallback INavigationCallback, Joueur joueur) {
         this.view = view;
-        this.navigationCallback = navigationCallback;
+        this.INavigationCallback = INavigationCallback;
         this.joueur = joueur;
         initializeEventHandlers();
     }
     
-    public AttackSelectionController(AttackSelectionView view, NavigationCallback navigationCallback, Joueur joueur, Runnable onComplete) {
+    public AttackSelectionController(AttackSelectionView view, INavigationCallback INavigationCallback, Joueur joueur, Runnable onComplete) {
         this.view = view;
-        this.navigationCallback = navigationCallback;
+        this.INavigationCallback = INavigationCallback;
         this.joueur = joueur;
         this.onComplete = onComplete;
         initializeEventHandlers();
@@ -45,7 +47,7 @@ public class AttackSelectionController {
      * Gère le clic sur le bouton "Revenir au menu".
      */
     private void handleBackToMenu() {
-        navigationCallback.showMainMenu();
+        INavigationCallback.showMainMenu();
     }
     
     /**
@@ -57,7 +59,7 @@ public class AttackSelectionController {
         List<Attaque> selectedAttacks = view.getSelectedAttacks();
         currentMonstre.setAttaques(new ArrayList<>(selectedAttacks));
 
-        System.out.println(joueur.getNomJoueur() + " a sélectionné " + selectedAttacks.size() + " attaques pour " + currentMonstre.getNomMonstre());
+        CombatLogger.info(joueur.getNomJoueur() + " a sélectionné " + selectedAttacks.size() + " attaques pour " + currentMonstre.getNomMonstre());
 
         // Passer au monstre suivant
         int currentMonsterIndex = joueur.getMonstres().indexOf(currentMonstre) + 1;
@@ -69,11 +71,7 @@ public class AttackSelectionController {
         } else {
             // Continuer avec le monstre suivant, en conservant le callback
             joueur.setMonstreActuel(joueur.getMonstres().get(currentMonsterIndex));
-            if (onComplete != null) {
-                navigationCallback.showAttackSelectionPlayer(joueur, onComplete);
-            } else {
-                navigationCallback.showAttackSelectionPlayer(joueur);
-            }
+            INavigationCallback.showAttackSelectionPlayer(joueur, onComplete);
         }
     }
 }

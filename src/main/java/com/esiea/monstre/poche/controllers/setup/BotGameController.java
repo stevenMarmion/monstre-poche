@@ -1,9 +1,11 @@
-package com.esiea.monstre.poche.controllers;
+package com.esiea.monstre.poche.controllers.setup;
 
+import com.esiea.monstre.poche.controllers.INavigationCallback;
+import com.esiea.monstre.poche.models.combats.CombatLogger;
 import com.esiea.monstre.poche.models.entites.Bot;
 import com.esiea.monstre.poche.models.entites.Joueur;
 import com.esiea.monstre.poche.models.utils.Loaders;
-import com.esiea.monstre.poche.views.BotGameView;
+import com.esiea.monstre.poche.views.gui.setup.BotGameView;
 
 /**
  * Controller pour le mode de jeu contre le bot.
@@ -11,11 +13,11 @@ import com.esiea.monstre.poche.views.BotGameView;
 public class BotGameController {
     
     private BotGameView view;
-    private NavigationCallback navigationCallback;
+    private INavigationCallback INavigationCallback;
     
-    public BotGameController(BotGameView view, NavigationCallback navigationCallback) {
+    public BotGameController(BotGameView view, INavigationCallback INavigationCallback) {
         this.view = view;
-        this.navigationCallback = navigationCallback;
+        this.INavigationCallback = INavigationCallback;
         initializeEventHandlers();
     }
     
@@ -31,7 +33,7 @@ public class BotGameController {
      * Gère le clic sur le bouton "Revenir au menu".
      */
     private void handleBackToMenu() {
-        navigationCallback.showMainMenu();
+        INavigationCallback.showMainMenu();
     }
     
     /**
@@ -41,7 +43,7 @@ public class BotGameController {
         String playerName = view.getTxtPlayerName().getText().trim();
         
         if (playerName.isEmpty()) {
-            System.out.println("Erreur : Le nom du joueur doit être rempli");
+            CombatLogger.error("Le nom du joueur doit être rempli");
             return;
         }
 
@@ -51,9 +53,9 @@ public class BotGameController {
         bot.chargerMonstresAutomatiquement(Loaders.monstreLoader);
         bot.chargerAttaquesAutomatiquement(Loaders.attaqueLoader);
 
-        System.out.println("Démarrage du jeu local - Joueur 1: " + playerName + ", Robot: " + bot.getNomJoueur());
-        navigationCallback.showMonsterSelectionPlayer(joueur, () -> {
-            navigationCallback.showBattle(joueur, bot);
+        CombatLogger.info("Démarrage du jeu - " + playerName + " VS " + bot.getNomJoueur());
+        INavigationCallback.showMonsterSelectionPlayer(joueur, () -> {
+            INavigationCallback.showBattle(joueur, bot);
         });
     }
 }

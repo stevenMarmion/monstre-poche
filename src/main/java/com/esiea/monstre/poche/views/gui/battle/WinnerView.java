@@ -1,4 +1,4 @@
-package com.esiea.monstre.poche.views;
+package com.esiea.monstre.poche.views.gui.battle;
 
 import com.esiea.monstre.poche.models.entites.Joueur;
 import javafx.geometry.Insets;

@@ -1,4 +1,4 @@
-package com.esiea.monstre.poche.views;
+package com.esiea.monstre.poche.views.gui.setup;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -11,20 +11,21 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
 /**
- * Vue pour le mode de jeu en ligne.
+ * Vue pour le mode de jeu local à deux joueurs.
  */
-public class OnlineGameView extends VBox {
+public class LocalGameView extends VBox {
     
-    private TextField txtPlayerName;
+    private TextField firstPlayerName;
+    private TextField secondPlayerName;
     private Button btnStartGame;
     private Button btnBackToMenu;
     
-    public OnlineGameView() {
+    public LocalGameView() {
         initializeView();
     }
     
     /**
-     * Initialise la vue du jeu en ligne.
+     * Initialise la vue du jeu local.
      */
     private void initializeView() {
         // Configuration du conteneur principal
@@ -44,23 +45,30 @@ public class OnlineGameView extends VBox {
         topBar.getChildren().add(btnBackToMenu);
         
         // Titre
-        Label title = new Label("Jouer en ligne");
+        Label title = new Label("Jouer en local à deux");
         title.setFont(Font.font("System", FontWeight.BOLD, 36));
         title.getStyleClass().add("main-title");
         
-        // Conteneur pour le champ de saisie
+        // Conteneur pour les champs de saisie
         VBox inputBox = new VBox(20);
         inputBox.setAlignment(Pos.CENTER);
         inputBox.setPadding(new Insets(20));
         
-        // Champ pour le joueur
-        Label lblPlayer = new Label("Nom du Joueur :");
-        lblPlayer.setFont(Font.font("System", FontWeight.BOLD, 16));
-        lblPlayer.getStyleClass().add("label-text");
+        // Champ pour le joueur 1
+        Label lblPlayer1 = new Label("Nom du Joueur 1 :");
+        lblPlayer1.setFont(Font.font("System", FontWeight.BOLD, 16));
+        lblPlayer1.getStyleClass().add("label-text");
         
-        txtPlayerName = createTextField("Entrez votre nom");
+        firstPlayerName = createTextField("Entrez le nom du joueur 1");
         
-        inputBox.getChildren().addAll(lblPlayer, txtPlayerName);
+        // Champ pour le joueur 2
+        Label lblPlayer2 = new Label("Nom du Joueur 2 :");
+        lblPlayer2.setFont(Font.font("System", FontWeight.BOLD, 16));
+        lblPlayer2.getStyleClass().add("label-text");
+        
+        secondPlayerName = createTextField("Entrez le nom du joueur 2");
+        
+        inputBox.getChildren().addAll(lblPlayer1, firstPlayerName, lblPlayer2, secondPlayerName);
         
         // Bouton pour commencer le jeu
         btnStartGame = new Button("Commencer le jeu");
@@ -86,8 +94,12 @@ public class OnlineGameView extends VBox {
     }
     
     // Getters
-    public TextField getTxtPlayerName() {
-        return txtPlayerName;
+    public TextField getFirstPlayerName() {
+        return firstPlayerName;
+    }
+    
+    public TextField getSecondPlayerName() {
+        return secondPlayerName;
     }
     
     public Button getBtnStartGame() {

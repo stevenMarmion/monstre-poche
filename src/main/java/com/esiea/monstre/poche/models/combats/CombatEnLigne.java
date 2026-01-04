@@ -1,6 +1,8 @@
 package com.esiea.monstre.poche.models.combats;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Scanner;
 
 import com.esiea.monstre.poche.models.entites.Attaque;
 import com.esiea.monstre.poche.models.entites.Monstre;
@@ -29,12 +31,11 @@ public class CombatEnLigne extends Combat {
         this.selectionnerMonstre(monstreLoader, joueur1);
         this.selectionnerAttaque(attaqueLoader, joueur1);
 
-        connection.sendInfo("Configuration de vos monstres");
+        afficherTitrePourTous("Configuration adversaire");
         selectionnerMonstreDistant(monstreLoader, joueur2);
         selectionnerAttaqueDistant(attaqueLoader, joueur2);
 
         afficherTitrePourTous("COMBAT EN LIGNE LANCE !");
-        connection.sendInfo("Combat lance !");
         this.executerTour();
     }
 
@@ -47,7 +48,7 @@ public class CombatEnLigne extends Combat {
             CombatLogger.log(String.format("[%d] %s", index++, GameVisual.formatterMonstre(monstre)));
         }
         while (joueur.getMonstres().size() < 3) {
-            String choixInput = GameVisual.demanderSaisie(new java.util.Scanner(System.in), "Choix " + (joueur.getMonstres().size() + 1) + "/3 >");
+            String choixInput = GameVisual.demanderSaisie(new Scanner(System.in), "Choix " + (joueur.getMonstres().size() + 1) + "/3 >");
             try {
                 int indexChoisi = Integer.parseInt(choixInput);
                 if (indexChoisi < 1 || indexChoisi > monstreLoader.getRessources().size()) {
@@ -74,7 +75,7 @@ public class CombatEnLigne extends Combat {
         GameVisual.afficherTitreSection("Selection des attaques - " + joueur.getNomJoueur());
         for (Monstre monstre : joueur.getMonstres()) {
             GameVisual.afficherSousTitre("Monstre : " + monstre.getNomMonstre());
-            java.util.ArrayList<Attaque> attaquesCompatibles = new java.util.ArrayList<>();
+            ArrayList<Attaque> attaquesCompatibles = new ArrayList<>();
             for (Attaque attaque : attaqueLoader.getRessources()) {
                 if (monstre.getTypeMonstre().getLabelType().equals(attaque.getTypeAttaque().getLabelType())) {
                     attaquesCompatibles.add(attaque);
@@ -85,7 +86,7 @@ public class CombatEnLigne extends Combat {
                 CombatLogger.log(String.format("[%d] %s", index++, GameVisual.formatterAttaque(attaque)));
             }
             while (monstre.getAttaques().size() < 4) {
-                String choixInput = GameVisual.demanderSaisie(new java.util.Scanner(System.in), "Choix " + (monstre.getAttaques().size() + 1) + "/4 >");
+                String choixInput = GameVisual.demanderSaisie(new Scanner(System.in), "Choix " + (monstre.getAttaques().size() + 1) + "/4 >");
                 try {
                     int indexChoisi = Integer.parseInt(choixInput);
                     if (indexChoisi < 1 || indexChoisi > attaquesCompatibles.size()) {
@@ -108,17 +109,26 @@ public class CombatEnLigne extends Combat {
 
     @Override
     public Object gereChoixAction(Joueur joueur) {
-        GameVisual.afficherTitreSection("Tour de " + joueur.getNomJoueur());
+        // Afficher localement ET envoyer au client distant
+        broadcastTitre("Tour de " + joueur.getNomJoueur());
         Monstre actif = joueur.getMonstreActuel();
-        CombatLogger.log("Monstre actif : " + actif.getNomMonstre() + " | PV " + (int) actif.getPointsDeVie() + "/" + (int) actif.getPointsDeVieMax() + " | ATK " + actif.getAttaque() + " | DEF " + actif.getDefense() + " | VIT " + actif.getVitesse());
+        String infoMonstre = "Monstre actif : " + actif.getNomMonstre() + " | PV " + (int) actif.getPointsDeVie() + "/" + (int) actif.getPointsDeVieMax() + " | ATK " + actif.getAttaque() + " | DEF " + actif.getDefense() + " | VIT " + actif.getVitesse();
+        CombatLogger.log(infoMonstre);
+        connection.sendInfo(infoMonstre);
+        
         CombatLogger.log("Actions disponibles :");
         CombatLogger.log("  1) Attaquer");
         CombatLogger.log("  2) Utiliser un objet");
         CombatLogger.log("  3) Changer de monstre");
-        String choixAction = GameVisual.demanderSaisie(new java.util.Scanner(System.in), "Votre choix >");
+        connection.sendInfo("Actions disponibles :");
+        connection.sendInfo("  1) Attaquer");
+        connection.sendInfo("  2) Utiliser un objet");
+        connection.sendInfo("  3) Changer de monstre");
+        
+        String choixAction = GameVisual.demanderSaisie(new Scanner(System.in), "Votre choix >");
         while (!choixAction.equals("1") && !choixAction.equals("2") && !choixAction.equals("3")) {
-            GameVisual.afficherErreur("Saisie invalide. Merci de choisir 1, 2 ou 3.");
-            choixAction = GameVisual.demanderSaisie(new java.util.Scanner(System.in), "Votre choix >");
+            CombatLogger.error("Saisie invalide. Merci de choisir 1, 2 ou 3.");
+            choixAction = GameVisual.demanderSaisie(new Scanner(System.in), "Votre choix >");
         }
         switch (choixAction) {
             case "1":
@@ -140,7 +150,7 @@ public class CombatEnLigne extends Combat {
             CombatLogger.log(String.format("[%d] %s", index++, GameVisual.formatterAttaque(attaque)));
         }
         while (true) {
-            String choixInput = GameVisual.demanderSaisie(new java.util.Scanner(System.in), "Attaque choisie >");
+            String choixInput = GameVisual.demanderSaisie(new Scanner(System.in), "Attaque choisie >");
             try {
                 int indexChoisi = Integer.parseInt(choixInput);
                 if (indexChoisi < 1 || indexChoisi > monstreActuel.getAttaques().size()) {
@@ -160,7 +170,7 @@ public class CombatEnLigne extends Combat {
         for (Objet objet : joueur.getObjets()) {
             CombatLogger.log(String.format("[%d] %s", index++, objet.getNomObjet()));
         }
-        String nomObjetChoisi = GameVisual.demanderSaisie(new java.util.Scanner(System.in), "Objet choisi >");
+        String nomObjetChoisi = GameVisual.demanderSaisie(new Scanner(System.in), "Objet choisi >");
         for (Objet objet : joueur.getObjets()) {
             if (objet.getNomObjet().equalsIgnoreCase(nomObjetChoisi)) {
                 return objet;
@@ -177,7 +187,7 @@ public class CombatEnLigne extends Combat {
             CombatLogger.log(String.format("[%d] %s", index++, GameVisual.formatterMonstre(monstre)));
         }
         while (true) {
-            String choixInput = GameVisual.demanderSaisie(new java.util.Scanner(System.in), "Monstre envoye >");
+            String choixInput = GameVisual.demanderSaisie(new Scanner(System.in), "Monstre envoye >");
             try {
                 int indexChoisi = Integer.parseInt(choixInput);
                 if (indexChoisi < 1 || indexChoisi > joueur.getMonstres().size()) {
@@ -204,23 +214,28 @@ public class CombatEnLigne extends Combat {
     }
 
     private void informerActions(Object actionLocal, Object actionDistant) {
-        String descriptionLocal = decrireAction(joueur1.getMonstreActuel(), actionLocal);
-        String descriptionDistant = decrireAction(joueur2.getMonstreActuel(), actionDistant);
-        broadcast(descriptionLocal);
-        broadcast(descriptionDistant);
+        CombatLogger.logSeparateur();
+        String descriptionLocal = decrireAction(joueur1, actionLocal);
+        String descriptionDistant = decrireAction(joueur2, actionDistant);
+        CombatLogger.log(descriptionLocal);
+        CombatLogger.log(descriptionDistant);
+        connection.sendInfo("----------------------------------------");
+        connection.sendInfo(descriptionLocal);
+        connection.sendInfo(descriptionDistant);
     }
 
-    private String decrireAction(Monstre monstre, Object action) {
+    private String decrireAction(Joueur joueur, Object action) {
+        Monstre monstre = joueur.getMonstreActuel();
         if (action instanceof Attaque) {
-            return "[ACTION] " + monstre.getNomMonstre() + " lance " + ((Attaque) action).getNomAttaque();
+            return "  " + joueur.getNomJoueur() + " : " + monstre.getNomMonstre() + " va utiliser " + ((Attaque) action).getNomAttaque();
         }
         if (action instanceof Monstre) {
-            return "[ACTION] changement de monstre -> " + ((Monstre) action).getNomMonstre();
+            return "  " + joueur.getNomJoueur() + " : change de monstre pour " + ((Monstre) action).getNomMonstre();
         }
         if (action instanceof Objet) {
-            return "[ACTION] utilisation de l'objet " + ((Objet) action).getNomObjet();
+            return "  " + joueur.getNomJoueur() + " : utilise " + ((Objet) action).getNomObjet();
         }
-        return "[ACTION] aucune action";
+        return "  " + joueur.getNomJoueur() + " : aucune action";
     }
 
     private void selectionnerMonstreDistant(MonstreLoader monstreLoader, Joueur joueur) {
@@ -265,7 +280,7 @@ public class CombatEnLigne extends Combat {
         broadcastToRemoteTitre("Selection des attaques - " + joueur.getNomJoueur());
         for (Monstre monstre : joueur.getMonstres()) {
             broadcastToRemoteSousTitre("Monstre : " + monstre.getNomMonstre());
-            java.util.ArrayList<Attaque> attaquesCompatibles = new java.util.ArrayList<>();
+            ArrayList<Attaque> attaquesCompatibles = new ArrayList<>();
             for (Attaque attaque : attaqueLoader.getRessources()) {
                 if (monstre.getTypeMonstre().getLabelType().equals(attaque.getTypeAttaque().getLabelType())) {
                     attaquesCompatibles.add(attaque);
@@ -412,11 +427,25 @@ public class CombatEnLigne extends Combat {
     }
 
     public void finDePartie() {
+        Joueur gagnant;
         if (joueur1.sontMonstresMorts()) {
-            broadcast("Le joueur " + joueur2.getNomJoueur() + " a gagne la partie !");
-        } else if (joueur2.sontMonstresMorts()) {
-            broadcast("Le joueur " + joueur1.getNomJoueur() + " a gagne la partie !");
+            gagnant = joueur2;
+        } else {
+            gagnant = joueur1;
         }
+        
+        // Log local
+        CombatLogger.log("");
+        CombatLogger.log("========================================");
+        CombatLogger.log("  VICTOIRE DE " + gagnant.getNomJoueur().toUpperCase() + " !");
+        CombatLogger.log("========================================");
+        CombatLogger.log("");
+        
+        // Envoyer au client
+        connection.sendInfo("");
+        connection.sendInfo("========================================");
+        connection.sendInfo("  VICTOIRE DE " + gagnant.getNomJoueur().toUpperCase() + " !");
+        connection.sendInfo("========================================");
         connection.sendEnd("Fin de la partie. Merci d'avoir joue.");
     }
 
@@ -426,49 +455,49 @@ public class CombatEnLigne extends Combat {
     }
 
     private void broadcastToRemote(String message) {
+        CombatLogger.log(message);
         connection.sendInfo(message);
     }
 
     private void broadcastTitre(String titre) {
-        GameVisual.afficherTitreSection(titre);
-        String formatted = GameVisual.formatterTitre(titre);
-        for (String line : formatted.split("\n")) {
-            if (!line.isEmpty()) {
-                connection.sendInfo(line);
-            }
-        }
+        CombatLogger.logTitre(titre);
+        connection.sendInfo("");
+        connection.sendInfo("========================================");
+        connection.sendInfo("  " + titre.toUpperCase());
+        connection.sendInfo("========================================");
     }
 
     private void broadcastToRemoteTitre(String titre) {
-        String formatted = GameVisual.formatterTitre(titre);
-        for (String line : formatted.split("\n")) {
-            if (!line.isEmpty()) {
-                connection.sendInfo(line);
-            }
-        }
+        CombatLogger.logTitre(titre);
+        connection.sendInfo("");
+        connection.sendInfo("========================================");
+        connection.sendInfo("  " + titre.toUpperCase());
+        connection.sendInfo("========================================");
     }
 
     private void broadcastToRemoteSousTitre(String sousTitre) {
-        connection.sendInfo(GameVisual.formatterSousTitre(sousTitre));
+        CombatLogger.logSousTitre(sousTitre);
+        connection.sendInfo("");
+        connection.sendInfo("  > " + sousTitre);
+        connection.sendInfo("----------------------------------------");
     }
 
     private void broadcastErreur(String message) {
-        GameVisual.afficherErreur(message);
-        connection.sendInfo(GameVisual.formatterErreur(message));
+        CombatLogger.error(message);
+        connection.sendInfo("[ERREUR] " + message);
     }
 
     private void broadcastToRemoteErreur(String message) {
-        connection.sendInfo(GameVisual.formatterErreur(message));
+        CombatLogger.error(message);
+        connection.sendInfo("[ERREUR] " + message);
     }
 
     private void afficherTitrePourTous(String titre) {
-        GameVisual.afficherTitreSection(titre);
-        String formatted = GameVisual.formatterTitre(titre);
-        for (String line : formatted.split("\n")) {
-            if (!line.isEmpty()) {
-                connection.sendInfo(line);
-            }
-        }
+        CombatLogger.logTitre(titre);
+        connection.sendInfo("");
+        connection.sendInfo("========================================");
+        connection.sendInfo("  " + titre.toUpperCase());
+        connection.sendInfo("========================================");
     }
 
     private void gereOrdreExecutionActionsEnLigne(Object actionJoueur1, Object actionJoueur2) {
@@ -514,20 +543,34 @@ public class CombatEnLigne extends Combat {
     }
 
     private void executerAttaqueAvecRelai(Monstre attaquant, Monstre cible, Terrain terrain, Attaque attaque) {
+        // Calculer les degats avant l'attaque
+        double degats = attaque.calculeDegatsAttaque(attaquant, cible);
+        
+        // Executer l'attaque
         attaquant.attaquer(cible, terrain, attaque);
         
-        // Relayer les informations de l'attaque au client
-        broadcast("\n[COMBAT] " + attaquant.getNomMonstre() + " attaque " + cible.getNomMonstre() + " avec " + attaque.getNomAttaque() + ".");
+        // Logger l'attaque de maniere uniforme
+        String msgAttaque = attaquant.getNomMonstre() + " utilise " + attaque.getNomAttaque() + " !";
+        String msgDegats = "    -> " + cible.getNomMonstre() + " subit " + (int) degats + " degats";
+        String msgPV = "    -> PV de " + cible.getNomMonstre() + ": " + (int) cible.getPointsDeVie() + "/" + (int) cible.getPointsDeVieMax();
         
-        // Calculer et afficher les dégats
-        double degats = attaque.calculeDegatsAttaque(attaquant, cible);
-        broadcast("         Degats infliges : " + (int) degats);
+        CombatLogger.log("");
+        CombatLogger.log("  " + msgAttaque);
+        CombatLogger.log(msgDegats);
+        CombatLogger.log(msgPV);
+        
+        connection.sendInfo("");
+        connection.sendInfo("  " + msgAttaque);
+        connection.sendInfo(msgDegats);
+        connection.sendInfo(msgPV);
         
         if (cible.getPointsDeVie() <= 0) {
-            broadcast("         " + cible.getNomMonstre() + " est KO !");
+            String msgKO = "  " + cible.getNomMonstre() + " est K.O. !";
+            CombatLogger.log("");
+            CombatLogger.log(msgKO);
+            connection.sendInfo("");
+            connection.sendInfo(msgKO);
         }
-        
-        broadcast("         PV restants pour " + cible.getNomMonstre() + " : " + (int) cible.getPointsDeVie());
     }
 
     @Override

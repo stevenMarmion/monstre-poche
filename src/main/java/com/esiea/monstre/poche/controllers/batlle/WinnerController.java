@@ -1,6 +1,7 @@
-package com.esiea.monstre.poche.controllers;
+package com.esiea.monstre.poche.controllers.batlle;
 
-import com.esiea.monstre.poche.views.WinnerView;
+import com.esiea.monstre.poche.controllers.INavigationCallback;
+import com.esiea.monstre.poche.views.gui.battle.WinnerView;
 
 /**
  * Controller pour la sélection des attaques.
@@ -8,11 +9,11 @@ import com.esiea.monstre.poche.views.WinnerView;
 public class WinnerController {
     
     private WinnerView view;
-    private NavigationCallback navigationCallback;
+    private INavigationCallback INavigationCallback;
     
-    public WinnerController(WinnerView view, NavigationCallback navigationCallback) {
+    public WinnerController(WinnerView view, INavigationCallback INavigationCallback) {
         this.view = view;
-        this.navigationCallback = navigationCallback;
+        this.INavigationCallback = INavigationCallback;
         initializeEventHandlers();
     }
     
@@ -27,6 +28,6 @@ public class WinnerController {
      * Gère le clic sur le bouton "Revenir au menu".
      */
     private void handleBackToMenu() {
-        navigationCallback.showMainMenu();
+        INavigationCallback.showMainMenu();
     }
 }
