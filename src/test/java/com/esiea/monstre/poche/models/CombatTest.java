@@ -2,16 +2,17 @@ package com.esiea.monstre.poche.models;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import com.esiea.monstre.pochebis.models.affinites.Normal;
+import com.esiea.monstre.pochebis.models.combats.Combat;
+import com.esiea.monstre.pochebis.models.combats.CombatLocalTerminal;
+import com.esiea.monstre.pochebis.models.entites.Attaque;
+import com.esiea.monstre.pochebis.models.entites.Joueur;
+import com.esiea.monstre.pochebis.models.entites.Monstre;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
-
-import com.esiea.monstre.poche.models.affinites.Normal;
-import com.esiea.monstre.poche.models.combats.Combat;
-import com.esiea.monstre.poche.models.combats.CombatLocalTerminal;
-import com.esiea.monstre.poche.models.entites.Attaque;
-import com.esiea.monstre.poche.models.entites.Monstre;
-import com.esiea.monstre.poche.models.entites.Joueur;
 
 class CombatTest {
     private Combat combat;

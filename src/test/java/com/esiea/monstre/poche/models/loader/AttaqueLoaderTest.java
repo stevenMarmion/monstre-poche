@@ -3,7 +3,8 @@ package com.esiea.monstre.poche.models.loader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.esiea.monstre.poche.models.entites.Attaque;
+import com.esiea.monstre.pochebis.models.entites.Attaque;
+import com.esiea.monstre.pochebis.models.loader.AttaqueLoader;
 
 import static org.junit.jupiter.api.Assertions.*;
 

@@ -2,11 +2,13 @@ package com.esiea.monstre.poche.models.entites;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
 
-import com.esiea.monstre.poche.models.etats.Asseche;
-import com.esiea.monstre.poche.models.etats.Innonde;
-import com.esiea.monstre.poche.models.etats.StatutTerrain;
+import com.esiea.monstre.pochebis.models.entites.Terrain;
+import com.esiea.monstre.pochebis.models.etats.Asseche;
+import com.esiea.monstre.pochebis.models.etats.Innonde;
+import com.esiea.monstre.pochebis.models.etats.StatutTerrain;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 class TerrainTest {
     private Terrain terrain;

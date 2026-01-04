@@ -2,14 +2,17 @@ package com.esiea.monstre.poche.models.entites;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import com.esiea.monstre.pochebis.models.affinites.Eau;
+import com.esiea.monstre.pochebis.models.affinites.Feu;
+import com.esiea.monstre.pochebis.models.affinites.Normal;
+import com.esiea.monstre.pochebis.models.affinites.Terre;
+import com.esiea.monstre.pochebis.models.entites.Attaque;
+import com.esiea.monstre.pochebis.models.entites.Monstre;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
-
-import com.esiea.monstre.poche.models.affinites.Feu;
-import com.esiea.monstre.poche.models.affinites.Normal;
-import com.esiea.monstre.poche.models.affinites.Terre;
-import com.esiea.monstre.poche.models.affinites.Eau;
 
 class AttaqueTest {
     private Attaque attaque;
