@@ -1,10 +1,10 @@
-package com.esiea.monstre.poche.models.loader;
+package com.esiea.monstre.poche.chore.models.loader;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.esiea.monstre.pochebis.models.entites.Monstre;
-import com.esiea.monstre.pochebis.models.loader.MonstreLoader;
+import com.esiea.monstre.poche.chore.models.entites.Monstre;
+import com.esiea.monstre.poche.chore.models.loader.MonstreLoader;
 
 import static org.junit.jupiter.api.Assertions.*;
 

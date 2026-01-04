@@ -1,9 +1,9 @@
-package com.esiea.monstre.poche.models.affinites;
+package com.esiea.monstre.poche.chore.models.affinites;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.esiea.monstre.pochebis.models.affinites.Terre;
+import com.esiea.monstre.poche.chore.models.affinites.Terre;
 
 import static org.junit.jupiter.api.Assertions.*;
 

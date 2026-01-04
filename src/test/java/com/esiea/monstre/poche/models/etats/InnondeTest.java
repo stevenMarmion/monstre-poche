@@ -1,9 +1,9 @@
-package com.esiea.monstre.poche.models.etats;
+package com.esiea.monstre.poche.chore.models.etats;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.esiea.monstre.pochebis.models.etats.Innonde;
+import com.esiea.monstre.poche.chore.models.etats.Innonde;
 
 import static org.junit.jupiter.api.Assertions.*;
 
