@@ -11,6 +11,8 @@ import com.esiea.monstre.poche.models.entites.Joueur;
 import com.esiea.monstre.poche.models.entites.Monstre;
 import com.esiea.monstre.poche.views.gui.battle.BattleView;
 
+import javafx.application.Platform;
+
 import java.util.List;
 
 /**
@@ -39,7 +41,7 @@ public class BattleController {
         
         // Configurer le CombatLogger pour envoyer les logs à l'interface graphique
         CombatLogger.setGuiCallback(message -> {
-            javafx.application.Platform.runLater(() -> view.updateBattleLog(message));
+            Platform.runLater(() -> view.updateBattleLog(message));
         });
         CombatLogger.clear();
         
@@ -69,7 +71,7 @@ public class BattleController {
         player2Action = attaqueBot;
         player2Ready = true;
         if (attaqueBot != null) {
-            CombatLogger.logActionBot(bot.getNomJoueur(), "choisit " + attaqueBot.getNomAttaque());
+            view.updateBattleLog(view.getJoueur2().getNomJoueur() + " (Bot) a choisi: " + attaqueBot.getNomAttaque());
         }
         executeTurnActions();
     }
@@ -82,13 +84,13 @@ public class BattleController {
             // Joueur 1 choisit son attaque
             List<Attaque> attaques = view.getJoueur1().getMonstreActuel().getAttaques();
             if (attaques == null || attaques.isEmpty()) {
-                CombatLogger.error(view.getJoueur1().getNomJoueur() + " n'a pas d'attaques disponibles.");
+                view.updateBattleLog(view.getJoueur1().getNomJoueur() + " n'a pas d'attaques disponibles.");
                 return;
             }
             view.displayAttackChoices(attaques, attaque -> {
                 player1Action = attaque;
                 player1Ready = true;
-                CombatLogger.log("  ✓ " + view.getJoueur1().getNomJoueur() + " a choisi : " + attaque.getNomAttaque());
+                view.updateBattleLog(view.getJoueur1().getNomJoueur() + " a choisi : " + attaque.getNomAttaque());
                 
                 // Si mode Bot, déclencher le tour du Bot automatiquement
                 if (view.getJoueur2() instanceof Bot) {
@@ -96,20 +98,20 @@ public class BattleController {
                 } else {
                     // Sinon, attendre le choix du joueur 2
                     view.setTurn(false);
-                    CombatLogger.logTourJoueur(view.getJoueur2());
+                    view.updateBattleLog("À " + view.getJoueur2().getNomJoueur() + " de choisir son action !");
                 }
             });
         } else if (!player2Ready) {
             // Joueur 2 choisit son attaque
             List<Attaque> attaques = view.getJoueur2().getMonstreActuel().getAttaques();
             if (attaques == null || attaques.isEmpty()) {
-                CombatLogger.error(view.getJoueur2().getNomJoueur() + " n'a pas d'attaques disponibles.");
+                view.updateBattleLog(view.getJoueur2().getNomJoueur() + " n'a pas d'attaques disponibles.");
                 return;
             }
             view.displayAttackChoices(attaques, attaque -> {
                 player2Action = attaque;
                 player2Ready = true;
-                CombatLogger.log("  ✓ " + view.getJoueur2().getNomJoueur() + " a choisi : " + attaque.getNomAttaque());
+                view.updateBattleLog(view.getJoueur2().getNomJoueur() + " a choisi : " + attaque.getNomAttaque());
                 executeTurnActions();
             });
         }
@@ -129,7 +131,7 @@ public class BattleController {
             view.displayMonsterChoices(available, selected -> {
                 player1Action = selected;
                 player1Ready = true;
-                CombatLogger.log("  ✓ " + view.getJoueur1().getNomJoueur() + " choisit d'envoyer " + selected.getNomMonstre() + " !");
+                view.updateBattleLog(view.getJoueur1().getNomJoueur() + " choisit d'envoyer " + selected.getNomMonstre() + " !");
                 
                 // Si mode Bot, déclencher le tour du Bot automatiquement
                 if (view.getJoueur2() instanceof Bot) {
@@ -137,7 +139,7 @@ public class BattleController {
                 } else {
                     // Sinon, attendre le choix du joueur 2
                     view.setTurn(false);
-                    CombatLogger.logTourJoueur(view.getJoueur2());
+                    view.updateBattleLog("À " + view.getJoueur2().getNomJoueur() + " de choisir son action !");
                 }
             });
         } else if (!player2Ready) {
@@ -150,7 +152,7 @@ public class BattleController {
             view.displayMonsterChoices(available, selected -> {
                 player2Action = selected;
                 player2Ready = true;
-                CombatLogger.log("  ✓ " + view.getJoueur2().getNomJoueur() + " choisit d'envoyer " + selected.getNomMonstre() + " !");
+                view.updateBattleLog(view.getJoueur2().getNomJoueur() + " choisit d'envoyer " + selected.getNomMonstre() + " !");
                 executeTurnActions();
             });
         }
@@ -167,12 +169,21 @@ public class BattleController {
         view.clearBattleLog();
 
         // Annonce des actions
-        CombatLogger.logSousTitre("Résolution du tour");
-        CombatLogger.log("  " + view.getJoueur1().getNomJoueur() + ": " + formatAction(player1Action));
-        CombatLogger.log("  " + view.getJoueur2().getNomJoueur() + ": " + formatAction(player2Action));
+        view.updateBattleLog("— Actions annoncées —");
+        view.updateBattleLog(view.getJoueur1().getNomJoueur() + ": " + formatAction(player1Action));
+        view.updateBattleLog(view.getJoueur2().getNomJoueur() + ": " + formatAction(player2Action));
+
+        // Activer le logger et exécuter
+        CombatLogger.clear();
 
         // Utiliser la logique d'ordre d'exécution
         Combat.gereOrdreExecutionActions(player1Action, player2Action);
+
+        // Récupérer et afficher les logs détaillés
+        String detailed = CombatLogger.getFormattedLogs();
+        if (detailed != null && !detailed.isEmpty()) {
+            view.updateBattleLog(detailed);
+        }
         
         // Mise à jour de l'affichage
         view.updatePokemonDisplay();
@@ -180,7 +191,6 @@ public class BattleController {
         // Vérifier fin de combat
         Joueur winner = Combat.getAWinner();
         if (winner != null) {
-            CombatLogger.logFinCombat(winner);
             INavigationCallback.showWinnerView(winner);
             return;
         }
@@ -192,7 +202,7 @@ public class BattleController {
         player2Ready = false;
         
         view.setTurn(true);
-        CombatLogger.logTourJoueur(view.getJoueur1());
+        view.updateBattleLog("À " + view.getJoueur1().getNomJoueur() + " de choisir son action !");
     }
 
     private String formatAction(Object action) {

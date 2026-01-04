@@ -1,5 +1,6 @@
 package com.esiea.monstre.poche.models.combats;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 import com.esiea.monstre.poche.models.entites.Attaque;
@@ -82,7 +83,7 @@ public class CombatLocalTerminal extends Combat {
         GameVisual.afficherTitreSection("Selection des attaques - " + joueur.getNomJoueur());
         for (Monstre monstre : joueur.getMonstres()) {
             GameVisual.afficherSousTitre("Monstre : " + monstre.getNomMonstre());
-            java.util.ArrayList<Attaque> attaquesCompatibles = new java.util.ArrayList<>();
+            ArrayList<Attaque> attaquesCompatibles = new ArrayList<>();
             for (Attaque attaque : attaqueLoader.getRessources()) {
                 if (monstre.getTypeMonstre().getLabelType().equals(attaque.getTypeAttaque().getLabelType())) {
                     attaquesCompatibles.add(attaque);

@@ -2,7 +2,7 @@ package com.esiea.monstre.poche.controllers;
 
 import com.esiea.monstre.poche.models.entites.Bot;
 import com.esiea.monstre.poche.models.entites.Joueur;
-import com.esiea.monstre.poche.models.online.OnlineConnection;
+import com.esiea.monstre.poche.views.gui.battle.BattleView;
 
 /**
  * Interface pour les callbacks de navigation.
@@ -17,5 +17,5 @@ public interface INavigationCallback {
     void showBattle(Joueur joueur1, Joueur joueur2);
     void showBattleBot(Joueur joueur1, Bot bot);
     void showWinnerView(Joueur winner);
-    void showBattleOnline(Joueur joueur, OnlineConnection connection);
+    void showBattleOnline(BattleView battleView);
 }

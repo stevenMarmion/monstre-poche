@@ -2,6 +2,7 @@ package com.esiea.monstre.poche.models.loader;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.*;
 
 
@@ -54,7 +55,7 @@ public abstract class ResourceLoader<T> {
             throw new IOException("Ressource introuvable dans le dossier resources du projet : " + nomFichier);
         }
 
-        return new BufferedReader(new java.io.InputStreamReader(stream));
+        return new BufferedReader(new InputStreamReader(stream));
     }
 
     public abstract T getRessourceParNom(String nom);

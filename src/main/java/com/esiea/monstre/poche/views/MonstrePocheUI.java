@@ -2,7 +2,6 @@ package com.esiea.monstre.poche.views;
 
 import com.esiea.monstre.poche.models.entites.Bot;
 import com.esiea.monstre.poche.models.entites.Joueur;
-import com.esiea.monstre.poche.models.online.OnlineConnection;
 import com.esiea.monstre.poche.views.gui.battle.BattleView;
 import com.esiea.monstre.poche.views.gui.battle.WinnerView;
 import com.esiea.monstre.poche.views.gui.menu.MainMenuView;
@@ -125,10 +124,8 @@ public class MonstrePocheUI extends Application implements INavigationCallback {
     }
 
     @Override
-    public void showBattleOnline(Joueur joueur, OnlineConnection connection) {
-        BattleView battleView = new BattleView(joueur, null);
-        new BattleController(battleView, this);
-
+    public void showBattleOnline(BattleView battleView) {
+        // La BattleView est deja creee et configuree par OnlineGameController
         scene.setRoot(battleView);
     }
 }

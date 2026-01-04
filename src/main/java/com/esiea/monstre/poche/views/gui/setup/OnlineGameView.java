@@ -2,6 +2,7 @@ package com.esiea.monstre.poche.views.gui.setup;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
@@ -256,5 +257,36 @@ public class OnlineGameView extends VBox {
         hostPort.setDisable(false);
         hostLoadingBox.setVisible(false);
         hostLoadingBox.setManaged(false);
+    }
+
+    /**
+     * Affiche un indicateur de chargement pour rejoindre un serveur.
+     */
+    public void showJoinLoading() {
+        btnJoinServer.setDisable(true);
+        joinPlayerName.setDisable(true);
+        joinHost.setDisable(true);
+        joinPort.setDisable(true);
+    }
+
+    /**
+     * Reinitialise l'etat de chargement pour rejoindre un serveur.
+     */
+    public void resetJoinLoading() {
+        btnJoinServer.setDisable(false);
+        joinPlayerName.setDisable(false);
+        joinHost.setDisable(false);
+        joinPort.setDisable(false);
+    }
+
+    /**
+     * Affiche un message d'erreur.
+     */
+    public void showError(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Erreur");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }
