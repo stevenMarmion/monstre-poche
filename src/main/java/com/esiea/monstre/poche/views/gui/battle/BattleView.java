@@ -67,8 +67,9 @@ public class BattleView extends StackPane {
 
     // Zone de logs
     private VBox logBox;
+    private ScrollPane logScrollPane;
     private List<String> battleLogBlocks = new ArrayList<>();
-    private static final int MAX_LOG_BLOCKS = 20;
+    private static final int MAX_LOG_BLOCKS = 50;
 
     // Panneaux de choix
     private HBox actionButtonsContainer;
@@ -105,21 +106,37 @@ public class BattleView extends StackPane {
             this.setStyle("-fx-background-color: linear-gradient(to bottom, #4a90a4 0%, #68b888 50%, #4a7848 100%);");
         }
 
-        // === OVERLAY PRINCIPAL ===
-        VBox mainOverlay = new VBox(0);
-        mainOverlay.setAlignment(Pos.TOP_CENTER);
-        mainOverlay.prefWidthProperty().bind(this.widthProperty());
-        mainOverlay.prefHeightProperty().bind(this.heightProperty());
+        // === LAYOUT PRINCIPAL : GAUCHE (combat) + DROITE (logs) ===
+        HBox mainLayout = new HBox(0);
+        mainLayout.setAlignment(Pos.CENTER);
+        mainLayout.prefWidthProperty().bind(this.widthProperty());
+        mainLayout.prefHeightProperty().bind(this.heightProperty());
+
+        // === PARTIE GAUCHE : Zone de combat (monstres + actions) ===
+        VBox leftPanel = new VBox(0);
+        leftPanel.setAlignment(Pos.TOP_CENTER);
+        leftPanel.prefWidthProperty().bind(this.widthProperty().multiply(0.7));
+        leftPanel.prefHeightProperty().bind(this.heightProperty());
+        HBox.setHgrow(leftPanel, Priority.ALWAYS);
 
         // Zone supérieure (monstres + infos)
         HBox battleArea = createBattleArea();
         VBox.setVgrow(battleArea, Priority.ALWAYS);
 
-        // Zone inférieure (logs + actions)
-        bottomPanel = createBottomPanel();
+        // Zone inférieure (actions)
+        bottomPanel = createActionBottomPanel();
 
-        mainOverlay.getChildren().addAll(battleArea, bottomPanel);
-        this.getChildren().add(mainOverlay);
+        leftPanel.getChildren().addAll(battleArea, bottomPanel);
+
+        // === PARTIE DROITE : Zone des logs ===
+        VBox rightPanel = createLogPanel();
+        rightPanel.prefWidthProperty().bind(this.widthProperty().multiply(0.3));
+        rightPanel.minWidthProperty().bind(this.widthProperty().multiply(0.25));
+        rightPanel.maxWidthProperty().bind(this.widthProperty().multiply(0.35));
+        rightPanel.prefHeightProperty().bind(this.heightProperty());
+
+        mainLayout.getChildren().addAll(leftPanel, rightPanel);
+        this.getChildren().add(mainLayout);
     }
 
     /**
@@ -359,97 +376,97 @@ public class BattleView extends StackPane {
     }
 
     /**
-     * Crée le panneau inférieur (logs + actions).
+     * Crée le panneau inférieur avec les actions (sans les logs).
      */
-    private VBox createBottomPanel() {
-        VBox panel = new VBox(0);
-        panel.setAlignment(Pos.BOTTOM_CENTER);
-        panel.setPrefHeight(220);
-        panel.setMinHeight(200);
+    private VBox createActionBottomPanel() {
+        VBox panel = new VBox(10);
+        panel.setAlignment(Pos.CENTER);
+        panel.setPadding(new Insets(15, 20, 20, 20));
+        panel.setMinHeight(180);
+        panel.setPrefHeight(200);
         panel.setStyle(
             "-fx-background-color: linear-gradient(to bottom, rgba(30, 40, 50, 0.95), rgba(20, 25, 35, 0.98)); " +
             "-fx-border-color: #5a6a7a; " +
             "-fx-border-width: 3 0 0 0;"
         );
 
-        // Zone principale : logs à gauche, actions à droite
-        HBox mainArea = new HBox(0);
-        mainArea.setAlignment(Pos.CENTER);
-        VBox.setVgrow(mainArea, Priority.ALWAYS);
-
-        // Zone des logs
-        VBox logZone = createLogZone();
-        HBox.setHgrow(logZone, Priority.ALWAYS);
-
-        // Zone des actions
+        // Zone des boutons d'action
         actionButtonsContainer = createActionPanel();
-
-        mainArea.getChildren().addAll(logZone, actionButtonsContainer);
-        panel.getChildren().add(mainArea);
-
-        return panel;
-    }
-
-    /**
-     * Crée la zone d'affichage des logs de combat.
-     */
-    private VBox createLogZone() {
-        VBox zone = new VBox(8);
-        zone.setPadding(new Insets(15, 20, 15, 25));
-        zone.setAlignment(Pos.TOP_LEFT);
-        zone.setStyle("-fx-border-color: #4a5a6a; -fx-border-width: 0 2 0 0;");
-        zone.setPrefWidth(420);
-        zone.setMinWidth(380);
-
-        // Titre
-        Label title = new Label("COMBAT");
-        title.setFont(Font.font("System", FontWeight.BOLD, 12));
-        title.setTextFill(Color.web("#8a9aaa"));
-
-        // Conteneur des logs avec scroll
-        logBox = new VBox(6);
-        logBox.setAlignment(Pos.TOP_LEFT);
-        logBox.setPadding(new Insets(5, 0, 5, 0));
-
-        ScrollPane scrollPane = new ScrollPane(logBox);
-        scrollPane.setFitToWidth(true);
-        scrollPane.setPrefHeight(140);
-        scrollPane.setMaxHeight(150);
-        scrollPane.setStyle(
-            "-fx-background: transparent; " +
-            "-fx-background-color: transparent; " +
-            "-fx-border-color: transparent;"
-        );
-        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        VBox.setVgrow(scrollPane, Priority.ALWAYS);
-
-        // Message initial
-        battleLogBlocks.add("Le combat commence ! Que doit faire " + joueur1.getMonstreActuel().getNomMonstre() + " ?");
-        refreshLogDisplay();
 
         // Panneaux de choix (cachés par défaut)
         attackGrid = new GridPane();
         attackGrid.setHgap(10);
         attackGrid.setVgap(8);
-        attackGrid.setPadding(new Insets(8, 0, 0, 0));
+        attackGrid.setAlignment(Pos.CENTER);
         attackGrid.setVisible(false);
         attackGrid.setManaged(false);
 
         monsterChoicePanel = new HBox(10);
-        monsterChoicePanel.setAlignment(Pos.CENTER_LEFT);
+        monsterChoicePanel.setAlignment(Pos.CENTER);
         monsterChoicePanel.setPadding(new Insets(8, 0, 0, 0));
         monsterChoicePanel.setVisible(false);
         monsterChoicePanel.setManaged(false);
 
         itemChoicePanel = new HBox(10);
-        itemChoicePanel.setAlignment(Pos.CENTER_LEFT);
+        itemChoicePanel.setAlignment(Pos.CENTER);
         itemChoicePanel.setPadding(new Insets(8, 0, 0, 0));
         itemChoicePanel.setVisible(false);
         itemChoicePanel.setManaged(false);
 
-        zone.getChildren().addAll(title, scrollPane, attackGrid, monsterChoicePanel, itemChoicePanel);
-        return zone;
+        panel.getChildren().addAll(actionButtonsContainer, attackGrid, monsterChoicePanel, itemChoicePanel);
+        return panel;
+    }
+
+    /**
+     * Crée le panneau des logs à droite de l'écran.
+     */
+    private VBox createLogPanel() {
+        VBox panel = new VBox(10);
+        panel.setAlignment(Pos.TOP_CENTER);
+        panel.setPadding(new Insets(15, 15, 15, 15));
+        panel.setStyle(
+            "-fx-background-color: linear-gradient(to bottom, rgba(25, 35, 50, 0.96), rgba(15, 20, 30, 0.98)); " +
+            "-fx-border-color: #4a5a7a; " +
+            "-fx-border-width: 0 0 0 3;"
+        );
+
+        // Titre
+        Label title = new Label("⚔ LOGS DU TOUR");
+        title.setFont(Font.font("System", FontWeight.BOLD, 14));
+        title.setTextFill(Color.web("#c0d0e0"));
+        title.setPadding(new Insets(0, 0, 5, 0));
+
+        // Conteneur des logs avec scroll
+        logBox = new VBox(8);
+        logBox.setAlignment(Pos.TOP_LEFT);
+        logBox.setPadding(new Insets(10, 5, 10, 5));
+
+        logScrollPane = new ScrollPane(logBox);
+        logScrollPane.setFitToWidth(true);
+        logScrollPane.setStyle(
+            "-fx-background: transparent; " +
+            "-fx-background-color: transparent; " +
+            "-fx-border-color: transparent;"
+        );
+        logScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        logScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        VBox.setVgrow(logScrollPane, Priority.ALWAYS);
+
+        // Message initial
+        battleLogBlocks.add("Le combat commence ! Que doit faire " + joueur1.getMonstreActuel().getNomMonstre() + " ?");
+        refreshLogDisplay();
+
+        panel.getChildren().addAll(title, logScrollPane);
+        return panel;
+    }
+
+    /**
+     * Crée le panneau inférieur (logs + actions).
+     * @deprecated Remplacé par createActionBottomPanel() et createLogPanel()
+     */
+    @Deprecated
+    private VBox createBottomPanel() {
+        return createActionBottomPanel();
     }
 
     /**
@@ -537,20 +554,30 @@ public class BattleView extends StackPane {
     private void refreshLogDisplay() {
         logBox.getChildren().clear();
 
-        // Afficher les derniers blocs de logs
-        int start = Math.max(0, battleLogBlocks.size() - MAX_LOG_BLOCKS);
-        for (int i = start; i < battleLogBlocks.size(); i++) {
+        // Afficher tous les blocs de logs
+        for (int i = 0; i < battleLogBlocks.size(); i++) {
             String block = battleLogBlocks.get(i);
             
-            VBox blockBox = new VBox(2);
-            blockBox.setPadding(new Insets(6, 10, 6, 10));
-            blockBox.setStyle(
-                "-fx-background-color: rgba(60, 70, 85, 0.7); " +
-                "-fx-background-radius: 8;"
-            );
-
+            VBox blockBox = new VBox(3);
+            blockBox.setPadding(new Insets(8, 12, 8, 12));
+            
             // Le dernier bloc est mis en évidence
             boolean isLast = (i == battleLogBlocks.size() - 1);
+            
+            if (isLast) {
+                blockBox.setStyle(
+                    "-fx-background-color: rgba(80, 100, 130, 0.85); " +
+                    "-fx-background-radius: 10; " +
+                    "-fx-border-color: #6a8aaa; " +
+                    "-fx-border-width: 1; " +
+                    "-fx-border-radius: 10;"
+                );
+            } else {
+                blockBox.setStyle(
+                    "-fx-background-color: rgba(50, 60, 75, 0.7); " +
+                    "-fx-background-radius: 8;"
+                );
+            }
 
             // Afficher chaque ligne du bloc
             String[] lines = block.split("\n");
@@ -559,13 +586,13 @@ public class BattleView extends StackPane {
 
                 Label lbl = new Label(line);
                 lbl.setWrapText(true);
-                lbl.setMaxWidth(350);
+                lbl.maxWidthProperty().bind(logBox.widthProperty().subtract(30));
 
                 if (isLast) {
-                    lbl.setFont(Font.font("System", FontWeight.BOLD, 13));
+                    lbl.setFont(Font.font("System", FontWeight.BOLD, 12));
                     lbl.setTextFill(Color.web("#f0f8ff"));
                 } else {
-                    lbl.setFont(Font.font("System", FontWeight.NORMAL, 12));
+                    lbl.setFont(Font.font("System", FontWeight.NORMAL, 11));
                     lbl.setTextFill(Color.web("#a0b0c0"));
                 }
 
@@ -573,6 +600,12 @@ public class BattleView extends StackPane {
             }
 
             logBox.getChildren().add(blockBox);
+        }
+        
+        // Scroll automatique vers le bas
+        if (logScrollPane != null) {
+            logScrollPane.layout();
+            logScrollPane.setVvalue(1.0);
         }
     }
 
@@ -598,7 +631,7 @@ public class BattleView extends StackPane {
         }
 
         // Limiter le nombre de blocs
-        while (battleLogBlocks.size() > 20) {
+        while (battleLogBlocks.size() > MAX_LOG_BLOCKS) {
             battleLogBlocks.remove(0);
         }
 

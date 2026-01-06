@@ -168,14 +168,14 @@ public class BattleController {
         view.updateBattleLog(view.getJoueur1().getNomJoueur() + ": " + formatAction(player1Action));
         view.updateBattleLog(view.getJoueur2().getNomJoueur() + ": " + formatAction(player2Action));
 
-        // Activer le logger et exécuter
-        CombatLogger.clear();
+        // Effacer uniquement les logs du tour actuel (pas tout l'historique)
+        CombatLogger.clearCurrentTurn();
 
         // Utiliser la logique d'ordre d'exécution
         Combat.gereOrdreExecutionActions(player1Action, player2Action);
 
-        // Récupérer et afficher les logs détaillés
-        String detailed = CombatLogger.getFormattedLogs();
+        // Récupérer et afficher les logs du tour actuel
+        String detailed = CombatLogger.getFormattedCurrentTurnLogs();
         if (detailed != null && !detailed.isEmpty()) {
             view.updateBattleLog(detailed);
         }

@@ -623,12 +623,12 @@ public class OnlineGameController {
         battleView.updateBattleLog(joueurLocal.getNomJoueur() + ": " + formatAction(localAction));
         battleView.updateBattleLog(joueurDistant.getNomJoueur() + ": " + formatAction(remoteAction));
         
-        // Executer les actions
-        CombatLogger.clear();
+        // Effacer uniquement les logs du tour actuel (pas tout l'historique)
+        CombatLogger.clearCurrentTurn();
         Combat.gereOrdreExecutionActions(action1, action2);
         
-        // Afficher les logs detailles
-        String detailed = CombatLogger.getFormattedLogs();
+        // Afficher les logs du tour actuel
+        String detailed = CombatLogger.getFormattedCurrentTurnLogs();
         if (detailed != null && !detailed.isEmpty()) {
             battleView.updateBattleLog(detailed);
         }

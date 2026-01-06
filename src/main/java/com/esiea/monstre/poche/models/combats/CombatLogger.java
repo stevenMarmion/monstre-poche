@@ -25,6 +25,9 @@ public class CombatLogger {
     /** Liste de tous les logs de la session */
     private static final List<String> logs = new ArrayList<>();
     
+    /** Liste des logs du tour actuel uniquement */
+    private static final List<String> currentTurnLogs = new ArrayList<>();
+    
     /** Callback pour envoyer les logs à l'interface graphique (si défini) */
     private static Consumer<String> guiCallback = null;
     
@@ -65,6 +68,15 @@ public class CombatLogger {
      */
     public static void clear() {
         logs.clear();
+        currentTurnLogs.clear();
+    }
+    
+    /**
+     * Efface les logs du tour actuel uniquement.
+     * À appeler au début de chaque nouveau tour.
+     */
+    public static void clearCurrentTurn() {
+        currentTurnLogs.clear();
     }
 
     // ===================================================================
@@ -106,6 +118,7 @@ public class CombatLogger {
      */
     private static void addLog(String message) {
         logs.add(message);
+        currentTurnLogs.add(message);
         
         // Affichage console (sauf mode silencieux)
         if (!silentMode) {
@@ -386,10 +399,24 @@ public class CombatLogger {
     }
     
     /**
+     * Retourne une copie des logs du tour actuel.
+     */
+    public static List<String> getCurrentTurnLogs() {
+        return new ArrayList<>(currentTurnLogs);
+    }
+    
+    /**
      * Retourne tous les logs formatés en une seule chaîne.
      */
     public static String getFormattedLogs() {
         return String.join("\n", logs);
+    }
+    
+    /**
+     * Retourne les logs du tour actuel formatés en une seule chaîne.
+     */
+    public static String getFormattedCurrentTurnLogs() {
+        return String.join("\n", currentTurnLogs);
     }
     
     /**
