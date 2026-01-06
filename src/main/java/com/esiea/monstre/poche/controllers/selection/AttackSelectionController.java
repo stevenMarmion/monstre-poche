@@ -64,10 +64,8 @@ public class AttackSelectionController {
         // Passer au monstre suivant
         int currentMonsterIndex = joueur.getMonstres().indexOf(currentMonstre) + 1;
         if (currentMonsterIndex >= joueur.getMonstres().size()) {
-            // Dernier monstre: notifier la fin de sélection si un callback est fourni
-            if (onComplete != null) {
-                onComplete.run();
-            }
+            // Dernier monstre: passer à la sélection des objets
+            INavigationCallback.showObjectSelectionPlayer(joueur, onComplete);
         } else {
             // Continuer avec le monstre suivant, en conservant le callback
             joueur.setMonstreActuel(joueur.getMonstres().get(currentMonsterIndex));

@@ -1,445 +1,988 @@
 package com.esiea.monstre.poche.views.gui.battle;
 
+import javafx.animation.FadeTransition;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.util.Duration;
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 import com.esiea.monstre.poche.models.entites.Attaque;
 import com.esiea.monstre.poche.models.entites.Joueur;
 import com.esiea.monstre.poche.models.entites.Monstre;
+import com.esiea.monstre.poche.models.inventaire.Objet;
 
 /**
- * Vue principale du système de combat.
- * Affiche les deux Pokémon en combat et les actions disponibles.
+ * Vue de combat style Pokémon - Design moderne inspiré des jeux GBA/DS.
+ * Image de fond en plein écran avec interface overlay.
  */
-public class BattleView extends BorderPane {
-    
-    // Containers pour les deux joueurs
-    private VBox player1Container;
-    private VBox player2Container;
-    
-    // Labels pour les informations des monstres
-    private Label lblMonster1Name;
-    private ProgressBar hpBar1;
-    private Label lblHp1;
-    private Label lblStats1;
-    
-    private Label lblMonster2Name;
-    private ProgressBar hpBar2;
-    private Label lblHp2;
-    private Label lblStats2;
-    
+public class BattleView extends StackPane {
+
+    // Couleurs par type (palette Pokémon officielle)
+    private static final Map<String, String> TYPE_COLORS = Map.ofEntries(
+        Map.entry("Feu", "#F08030"),
+        Map.entry("Eau", "#6890F0"),
+        Map.entry("Plante", "#78C850"),
+        Map.entry("Foudre", "#F8D030"),
+        Map.entry("Terre", "#E0C068"),
+        Map.entry("Normal", "#A8A878"),
+        Map.entry("Insecte", "#A8B820"),
+        Map.entry("Nature", "#228B22")
+    );
+
+    // Éléments d'interface - Monstre Ennemi
+    private Label lblEnemyName;
+    private Label lblEnemyHpText;
+    private Rectangle hpBarEnemyFill;
+    private VBox enemySpriteBox;
+
+    // Éléments d'interface - Monstre Joueur
+    private Label lblPlayerName;
+    private Label lblPlayerHpText;
+    private Rectangle hpBarPlayerFill;
+    private VBox playerSpriteBox;
+
     // Boutons d'action
     private Button btnAttack;
     private Button btnItem;
     private Button btnSwitch;
     private Button btnFlee;
-    private Label lblTurn;
-    private VBox attackChoicesBox;
-    
-    // Zone de messages
-    private Label lblBattleLog;
-    
+
+    // Zone de logs
+    private VBox logBox;
+    private List<String> battleLogBlocks = new ArrayList<>();
+    private static final int MAX_LOG_BLOCKS = 20;
+
+    // Panneaux de choix
+    private HBox actionButtonsContainer;
+    private GridPane attackGrid;
+    private HBox monsterChoicePanel;
+    private HBox itemChoicePanel;
+    private VBox bottomPanel;
+
     // Variables de jeu
     private Joueur joueur1;
     private Joueur joueur2;
     private boolean isPlayer1Turn;
-    
+
     public BattleView(Joueur joueur1, Joueur joueur2) {
         this.joueur1 = joueur1;
         this.joueur2 = joueur2;
         this.isPlayer1Turn = true;
-        
+
         initializeView();
     }
-    
-    /**
-     * Initialise la vue du combat.
-     */
+
     private void initializeView() {
-        this.setStyle("-fx-background-color: black;");
-        this.setPadding(new Insets(0));
-        
-        // Conteneur scrollable principal
-        VBox mainContent = new VBox(15);
-        mainContent.setAlignment(Pos.TOP_CENTER);
-        mainContent.setPadding(new Insets(15));
-        mainContent.setStyle("-fx-background-color: black;");
-        
-        // Plateau de combat rétro avec fond image
-        BorderPane battlefield = createBattlefield();
-        mainContent.getChildren().add(battlefield);
-        
-        // Conteneur inférieur pour les actions + log
-        VBox actionContainer = createActionContainer();
-        mainContent.getChildren().add(actionContainer);
-        
-        // ScrollPane pour la scrollabilité verticale
-        ScrollPane scrollPane = new ScrollPane(mainContent);
-        scrollPane.setFitToWidth(true);
-        scrollPane.setStyle("-fx-background-color: black; -fx-control-inner-background: black;");
-        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        
-        this.setCenter(scrollPane);
-    }
-    
-    /**
-     * Crée l'affichage des deux Pokémon.
-     */
-    private BorderPane createBattlefield() {
-        BorderPane battlefield = new BorderPane();
-        battlefield.setPadding(new Insets(10));
-        battlefield.setStyle("-fx-background-color: #1b1b1b; -fx-border-color: #d2c29d; -fx-border-width: 6px; -fx-border-radius: 8px; -fx-background-radius: 8px;");
-        
-        // CENTRE : fond du terrain + sprites en ligne, sans chevauchement
-        StackPane centerContent = new StackPane();
-        centerContent.setPrefSize(900, 450);
-        
-        // Fond du terrain (plan arrière)
-        Image bgImage = new Image(getClass().getResource("/images/exemple_terrain.jpg").toExternalForm(), 900, 0, true, true);
-        ImageView bgView = new ImageView(bgImage);
-        bgView.setPreserveRatio(true);
-        bgView.setFitWidth(900);
-        centerContent.getChildren().add(bgView);
-        
-        // Sprites en ligne horizontale sans chevauchement (plan avant)
-        HBox spriteRow = new HBox();
-        spriteRow.setAlignment(Pos.CENTER);
-        spriteRow.setPadding(new Insets(40, 80, 60, 80));
-        spriteRow.setSpacing(300);
-        
-        Label spritePlayer = new Label("◼");
-        spritePlayer.setFont(Font.font("Monospaced", FontWeight.EXTRA_BOLD, 72));
-        spritePlayer.setStyle("-fx-text-fill: #4b4b4b;");
-        
-        Label spriteEnemy = new Label("◆");
-        spriteEnemy.setFont(Font.font("Monospaced", FontWeight.EXTRA_BOLD, 64));
-        spriteEnemy.setStyle("-fx-text-fill: #d9d9d9;");
-        
-        spriteRow.getChildren().addAll(spritePlayer, spriteEnemy);
-        centerContent.getChildren().add(spriteRow);
-        
-        battlefield.setCenter(centerContent);
-        
-        // TOP : HUD du joueur 2 (ennemi en haut à gauche)
-        player2Container = createPlayerPokemonBox(joueur2, true);
-        BorderPane.setAlignment(player2Container, Pos.TOP_LEFT);
-        BorderPane.setMargin(player2Container, new Insets(15, 0, 0, 15));
-        battlefield.setTop(player2Container);
-        
-        // BOTTOM : HUD du joueur 1 (joueur en bas à droite)
-        player1Container = createPlayerPokemonBox(joueur1, false);
-        BorderPane.setAlignment(player1Container, Pos.BOTTOM_RIGHT);
-        BorderPane.setMargin(player1Container, new Insets(0, 15, 15, 0));
-        battlefield.setBottom(player1Container);
-        
-        return battlefield;
-    }
-    
-    /**
-     * Crée une boîte d'affichage pour un Pokémon.
-     */
-    private VBox createPlayerPokemonBox(Joueur joueur, boolean isRightSide) {
-        VBox box = new VBox(8);
-        box.setAlignment(Pos.CENTER_LEFT);
-        box.setPadding(new Insets(12));
-        box.setStyle("-fx-background-color: rgba(24,24,24,0.9); " +
-                "-fx-background-radius: 8; " +
-                "-fx-border-color: #d2c29d; " +
-                "-fx-border-width: 3px; " +
-                "-fx-border-radius: 8; " +
-                "-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.45), 6, 0, 0, 2);");
-        box.setPrefWidth(320);
-        
-        // Nom du joueur
-        Label playerNameLabel = new Label(joueur.getNomJoueur());
-        playerNameLabel.setFont(Font.font("Monospaced", FontWeight.BOLD, 14));
-        playerNameLabel.setStyle("-fx-text-fill: #f8eec7;");
-        
-        // Nom et type du monstre
-        Label monsterNameLabel = new Label(joueur.getMonstreActuel().getNomMonstre() + " (" + joueur.getMonstreActuel().getTypeMonstre().getLabelType() + ")");
-        monsterNameLabel.setFont(Font.font("Monospaced", FontWeight.BOLD, 16));
-        monsterNameLabel.setStyle("-fx-text-fill: #ffffff;");
-        
-        // Placeholder pour l'image (texte pour le moment)
-        Label imageLabel = new Label("■");
-        imageLabel.setFont(Font.font("Monospaced", FontWeight.EXTRA_BOLD, 36));
-        imageLabel.setStyle("-fx-text-fill: #bfbfbf;");
-        
-        // Barre de PV
-        HBox hpContainer = new HBox(10);
-        hpContainer.setAlignment(Pos.CENTER_LEFT);
-        hpContainer.setPrefWidth(300);
-        
-        Label hpLabel = new Label("PV :");
-        hpLabel.setFont(Font.font("Monospaced", FontWeight.BOLD, 13));
-        hpLabel.setStyle("-fx-text-fill: #f8eec7;");
-        
-        ProgressBar hpBar = new ProgressBar();
-        hpBar.setPrefWidth(200);
-        hpBar.setPrefHeight(25);
-        double hpRatio = joueur.getMonstreActuel().getPointsDeVie() / joueur.getMonstreActuel().getPointsDeVieMax();
-        hpBar.setProgress(Math.max(0, Math.min(1, hpRatio)));
-        hpBar.setStyle("-fx-accent: #4cff4c;");
-        
-        Label hpValue = new Label(String.format("%.0f / %.0f", joueur.getMonstreActuel().getPointsDeVie(), joueur.getMonstreActuel().getPointsDeVieMax()));
-        hpValue.setFont(Font.font("Monospaced", 12));
-        hpValue.setStyle("-fx-text-fill: #ffffff;");
-        
-        hpContainer.getChildren().addAll(hpLabel, hpBar, hpValue);
-        
-        // Statistiques
-        Label statsLabel = new Label(String.format(
-            "ATK: %d | DEF: %d | VIT: %d",
-            joueur.getMonstreActuel().getAttaque(),
-            joueur.getMonstreActuel().getDefense(),
-            joueur.getMonstreActuel().getVitesse()
-        ));
-        statsLabel.setFont(Font.font("Monospaced", 11));
-        statsLabel.setStyle("-fx-text-fill: #c9c9c9;");
-        
-        box.getChildren().addAll(playerNameLabel, monsterNameLabel, imageLabel, hpContainer, statsLabel);
-        
-        // Sauvegarder les références pour mises à jour ultérieures
-        if (!isRightSide) {
-            lblMonster1Name = monsterNameLabel;
-            hpBar1 = hpBar;
-            lblHp1 = hpValue;
-            lblStats1 = statsLabel;
-        } else {
-            lblMonster2Name = monsterNameLabel;
-            hpBar2 = hpBar;
-            lblHp2 = hpValue;
-            lblStats2 = statsLabel;
+        this.setAlignment(Pos.CENTER);
+
+        // === IMAGE DE FOND EN PLEIN ÉCRAN ===
+        try {
+            Image bgImage = new Image(getClass().getResource("/images/exemple_combat.png").toExternalForm());
+            ImageView bgView = new ImageView(bgImage);
+            bgView.setPreserveRatio(false);
+            bgView.fitWidthProperty().bind(this.widthProperty());
+            bgView.fitHeightProperty().bind(this.heightProperty());
+            this.getChildren().add(bgView);
+        } catch (Exception e) {
+            this.setStyle("-fx-background-color: linear-gradient(to bottom, #4a90a4 0%, #68b888 50%, #4a7848 100%);");
         }
+
+        // === OVERLAY PRINCIPAL ===
+        VBox mainOverlay = new VBox(0);
+        mainOverlay.setAlignment(Pos.TOP_CENTER);
+        mainOverlay.prefWidthProperty().bind(this.widthProperty());
+        mainOverlay.prefHeightProperty().bind(this.heightProperty());
+
+        // Zone supérieure (monstres + infos)
+        HBox battleArea = createBattleArea();
+        VBox.setVgrow(battleArea, Priority.ALWAYS);
+
+        // Zone inférieure (logs + actions)
+        bottomPanel = createBottomPanel();
+
+        mainOverlay.getChildren().addAll(battleArea, bottomPanel);
+        this.getChildren().add(mainOverlay);
+    }
+
+    /**
+     * Zone de combat avec les deux monstres face à face.
+     */
+    private HBox createBattleArea() {
+        HBox area = new HBox();
+        area.setAlignment(Pos.CENTER);
+        area.setPadding(new Insets(20, 30, 10, 30));
+
+        // === CÔTÉ JOUEUR (gauche) ===
+        VBox playerSide = new VBox(10);
+        playerSide.setAlignment(Pos.BOTTOM_CENTER);
+        playerSide.setPrefWidth(280);
+        HBox.setHgrow(playerSide, Priority.ALWAYS);
+
+        // Info box joueur
+        VBox playerInfoBox = createPlayerInfoBox();
         
+        // Sprite joueur
+        playerSpriteBox = createMonsterSpriteBox(joueur1.getMonstreActuel(), true);
+
+        playerSide.getChildren().addAll(playerInfoBox, playerSpriteBox);
+
+        // === ZONE CENTRALE (VS) ===
+        VBox centerZone = new VBox();
+        centerZone.setAlignment(Pos.CENTER);
+        centerZone.setPrefWidth(80);
+
+        Label vsLabel = new Label("VS");
+        vsLabel.setFont(Font.font("System", FontWeight.BOLD, 28));
+        vsLabel.setTextFill(Color.WHITE);
+        vsLabel.setStyle("-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.8), 8, 0, 2, 2);");
+        centerZone.getChildren().add(vsLabel);
+
+        // === CÔTÉ ENNEMI (droite) ===
+        VBox enemySide = new VBox(10);
+        enemySide.setAlignment(Pos.BOTTOM_CENTER);
+        enemySide.setPrefWidth(280);
+        HBox.setHgrow(enemySide, Priority.ALWAYS);
+
+        // Info box ennemi
+        VBox enemyInfoBox = createEnemyInfoBox();
+
+        // Sprite ennemi
+        enemySpriteBox = createMonsterSpriteBox(joueur2.getMonstreActuel(), false);
+
+        enemySide.getChildren().addAll(enemyInfoBox, enemySpriteBox);
+
+        area.getChildren().addAll(playerSide, centerZone, enemySide);
+        return area;
+    }
+
+    /**
+     * Crée le panneau d'info du joueur.
+     */
+    private VBox createPlayerInfoBox() {
+        Monstre m = joueur1.getMonstreActuel();
+        String typeColor = TYPE_COLORS.getOrDefault(m.getTypeMonstre().getLabelType(), "#A8A878");
+
+        VBox box = new VBox(5);
+        box.setAlignment(Pos.CENTER);
+        box.setPadding(new Insets(12, 18, 12, 18));
+        box.setMaxWidth(250);
+        box.setStyle(
+            "-fx-background-color: rgba(255, 255, 255, 0.92); " +
+            "-fx-background-radius: 15; " +
+            "-fx-border-color: " + typeColor + "; " +
+            "-fx-border-width: 3; " +
+            "-fx-border-radius: 15; " +
+            "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 10, 0, 0, 4);"
+        );
+
+        // Nom du joueur
+        Label playerLabel = new Label(joueur1.getNomJoueur());
+        playerLabel.setFont(Font.font("System", FontWeight.BOLD, 11));
+        playerLabel.setTextFill(Color.web("#666"));
+
+        // Nom du monstre + type
+        HBox nameRow = new HBox(8);
+        nameRow.setAlignment(Pos.CENTER);
+
+        lblPlayerName = new Label(m.getNomMonstre());
+        lblPlayerName.setFont(Font.font("System", FontWeight.BOLD, 16));
+        lblPlayerName.setTextFill(Color.web("#303030"));
+
+        Label typeLabel = new Label(m.getTypeMonstre().getLabelType());
+        typeLabel.setFont(Font.font("System", FontWeight.BOLD, 10));
+        typeLabel.setTextFill(Color.WHITE);
+        typeLabel.setPadding(new Insets(2, 8, 2, 8));
+        typeLabel.setStyle("-fx-background-color: " + typeColor + "; -fx-background-radius: 10;");
+
+        nameRow.getChildren().addAll(lblPlayerName, typeLabel);
+
+        // Barre de PV
+        HBox hpRow = createHpBar(m, true);
+
+        // Valeur PV
+        lblPlayerHpText = new Label(String.format("%.0f / %.0f PV", m.getPointsDeVie(), m.getPointsDeVieMax()));
+        lblPlayerHpText.setFont(Font.font("System", FontWeight.BOLD, 12));
+        lblPlayerHpText.setTextFill(Color.web("#404040"));
+
+        box.getChildren().addAll(playerLabel, nameRow, hpRow, lblPlayerHpText);
         return box;
     }
-    
-    /**
-     * Crée le conteneur des actions disponibles.
-     */
-    private VBox createActionContainer() {
-        VBox container = new VBox(20);
-        container.setAlignment(Pos.CENTER);
-        container.setPadding(new Insets(20));
-        
-        // Affichage du tour actuel
-        lblTurn = new Label(joueur1.getNomJoueur() + " - À votre tour !");
-        lblTurn.setFont(Font.font("Monospaced", FontWeight.BOLD, 16));
-        lblTurn.setStyle("-fx-text-fill: #f8eec7; -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.7), 6, 0, 1, 1);");
-        
-        // Conteneur pour les boutons
-        HBox buttonBox = new HBox(20);
-        buttonBox.setAlignment(Pos.CENTER);
-        buttonBox.setPadding(new Insets(10));
-        
-        // Boutons d'action (visibles seulement pour le joueur actuel)
-        btnAttack = createActionButton("Attaquer", "#c0392b");
-        btnItem = createActionButton("Objet", "#d68910");
-        btnSwitch = createActionButton("Changer", "#2471a3");
-        
-        buttonBox.getChildren().addAll(btnAttack, btnItem, btnSwitch);
-        
-        // Conteneur pour afficher les choix d'attaques en ligne dans l'interface
-        attackChoicesBox = new VBox(10);
-        attackChoicesBox.setAlignment(Pos.CENTER);
-        attackChoicesBox.setPadding(new Insets(10));
-        attackChoicesBox.setStyle("-fx-background-color: rgba(20, 20, 20, 0.92); -fx-background-radius: 8; -fx-border-color: #d2c29d; -fx-border-width: 3px; -fx-border-radius: 8;");
-        attackChoicesBox.setVisible(false);
-        attackChoicesBox.setManaged(false);
 
-        // Zone de messages (log) sous les boutons
-        lblBattleLog = new Label("Le combat commence !");
-        lblBattleLog.setFont(Font.font("Monospaced", FontWeight.BOLD, 14));
-        lblBattleLog.setStyle("-fx-text-fill: #f8eec7; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.6), 5, 0, 1, 1);");
-        lblBattleLog.setWrapText(true);
-        lblBattleLog.setMaxWidth(720);
-        
-        container.getChildren().addAll(lblTurn, buttonBox, attackChoicesBox, lblBattleLog);
-        return container;
+    /**
+     * Crée le panneau d'info de l'ennemi.
+     */
+    private VBox createEnemyInfoBox() {
+        Monstre m = joueur2.getMonstreActuel();
+        String typeColor = TYPE_COLORS.getOrDefault(m.getTypeMonstre().getLabelType(), "#A8A878");
+
+        VBox box = new VBox(5);
+        box.setAlignment(Pos.CENTER);
+        box.setPadding(new Insets(12, 18, 12, 18));
+        box.setMaxWidth(250);
+        box.setStyle(
+            "-fx-background-color: rgba(255, 255, 255, 0.92); " +
+            "-fx-background-radius: 15; " +
+            "-fx-border-color: " + typeColor + "; " +
+            "-fx-border-width: 3; " +
+            "-fx-border-radius: 15; " +
+            "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 10, 0, 0, 4);"
+        );
+
+        // Nom du joueur
+        Label playerLabel = new Label(joueur2.getNomJoueur());
+        playerLabel.setFont(Font.font("System", FontWeight.BOLD, 11));
+        playerLabel.setTextFill(Color.web("#666"));
+
+        // Nom du monstre + type
+        HBox nameRow = new HBox(8);
+        nameRow.setAlignment(Pos.CENTER);
+
+        lblEnemyName = new Label(m.getNomMonstre());
+        lblEnemyName.setFont(Font.font("System", FontWeight.BOLD, 16));
+        lblEnemyName.setTextFill(Color.web("#303030"));
+
+        Label typeLabel = new Label(m.getTypeMonstre().getLabelType());
+        typeLabel.setFont(Font.font("System", FontWeight.BOLD, 10));
+        typeLabel.setTextFill(Color.WHITE);
+        typeLabel.setPadding(new Insets(2, 8, 2, 8));
+        typeLabel.setStyle("-fx-background-color: " + typeColor + "; -fx-background-radius: 10;");
+
+        nameRow.getChildren().addAll(lblEnemyName, typeLabel);
+
+        // Barre de PV
+        HBox hpRow = createHpBar(m, false);
+
+        // Valeur PV
+        lblEnemyHpText = new Label(String.format("%.0f / %.0f PV", m.getPointsDeVie(), m.getPointsDeVieMax()));
+        lblEnemyHpText.setFont(Font.font("System", FontWeight.BOLD, 12));
+        lblEnemyHpText.setTextFill(Color.web("#404040"));
+
+        box.getChildren().addAll(playerLabel, nameRow, hpRow, lblEnemyHpText);
+        return box;
     }
-    
+
+    /**
+     * Crée une barre de PV.
+     */
+    private HBox createHpBar(Monstre m, boolean isPlayer) {
+        HBox row = new HBox(6);
+        row.setAlignment(Pos.CENTER);
+
+        Label hpLabel = new Label("PV");
+        hpLabel.setFont(Font.font("System", FontWeight.BOLD, 11));
+        hpLabel.setTextFill(Color.web("#f8a800"));
+
+        StackPane barContainer = new StackPane();
+        barContainer.setAlignment(Pos.CENTER_LEFT);
+
+        double maxWidth = 160;
+        double ratio = Math.max(0, m.getPointsDeVie() / m.getPointsDeVieMax());
+
+        Rectangle bg = new Rectangle(maxWidth, 12);
+        bg.setFill(Color.web("#404040"));
+        bg.setArcWidth(8);
+        bg.setArcHeight(8);
+
+        Rectangle fill = new Rectangle(maxWidth * ratio, 12);
+        fill.setArcWidth(8);
+        fill.setArcHeight(8);
+        if (ratio > 0.5) fill.setFill(Color.web("#48d048"));
+        else if (ratio > 0.2) fill.setFill(Color.web("#f8c800"));
+        else fill.setFill(Color.web("#f85858"));
+
+        barContainer.getChildren().addAll(bg, fill);
+
+        if (isPlayer) {
+            hpBarPlayerFill = fill;
+        } else {
+            hpBarEnemyFill = fill;
+        }
+
+        row.getChildren().addAll(hpLabel, barContainer);
+        return row;
+    }
+
+    /**
+     * Crée le sprite d'un monstre.
+     */
+    private VBox createMonsterSpriteBox(Monstre m, boolean isPlayer) {
+        String typeColor = TYPE_COLORS.getOrDefault(m.getTypeMonstre().getLabelType(), "#A8A878");
+        double size = isPlayer ? 100 : 90;
+
+        VBox spriteBox = new VBox(5);
+        spriteBox.setAlignment(Pos.CENTER);
+
+        // Cercle avec initiales
+        Label sprite = new Label(m.getNomMonstre().substring(0, Math.min(2, m.getNomMonstre().length())).toUpperCase());
+        sprite.setFont(Font.font("System", FontWeight.BOLD, isPlayer ? 38 : 34));
+        sprite.setTextFill(Color.WHITE);
+        sprite.setPrefSize(size, size);
+        sprite.setMinSize(size, size);
+        sprite.setMaxSize(size, size);
+        sprite.setAlignment(Pos.CENTER);
+        sprite.setStyle(String.format(
+            "-fx-background-color: radial-gradient(center 50%% 35%%, radius 55%%, %s, derive(%s, -30%%)); " +
+            "-fx-background-radius: 50%%; " +
+            "-fx-border-color: derive(%s, -45%%); " +
+            "-fx-border-width: 4; " +
+            "-fx-border-radius: 50%%; " +
+            "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 15, 0, 0, 8);",
+            typeColor, typeColor, typeColor
+        ));
+
+        // Ombre au sol
+        Rectangle shadow = new Rectangle(size * 1.2, 15);
+        shadow.setFill(Color.rgb(0, 0, 0, 0.25));
+        shadow.setArcWidth(size);
+        shadow.setArcHeight(15);
+
+        spriteBox.getChildren().addAll(sprite, shadow);
+        return spriteBox;
+    }
+
+    /**
+     * Crée le panneau inférieur (logs + actions).
+     */
+    private VBox createBottomPanel() {
+        VBox panel = new VBox(0);
+        panel.setAlignment(Pos.BOTTOM_CENTER);
+        panel.setPrefHeight(220);
+        panel.setMinHeight(200);
+        panel.setStyle(
+            "-fx-background-color: linear-gradient(to bottom, rgba(30, 40, 50, 0.95), rgba(20, 25, 35, 0.98)); " +
+            "-fx-border-color: #5a6a7a; " +
+            "-fx-border-width: 3 0 0 0;"
+        );
+
+        // Zone principale : logs à gauche, actions à droite
+        HBox mainArea = new HBox(0);
+        mainArea.setAlignment(Pos.CENTER);
+        VBox.setVgrow(mainArea, Priority.ALWAYS);
+
+        // Zone des logs
+        VBox logZone = createLogZone();
+        HBox.setHgrow(logZone, Priority.ALWAYS);
+
+        // Zone des actions
+        actionButtonsContainer = createActionPanel();
+
+        mainArea.getChildren().addAll(logZone, actionButtonsContainer);
+        panel.getChildren().add(mainArea);
+
+        return panel;
+    }
+
+    /**
+     * Crée la zone d'affichage des logs de combat.
+     */
+    private VBox createLogZone() {
+        VBox zone = new VBox(8);
+        zone.setPadding(new Insets(15, 20, 15, 25));
+        zone.setAlignment(Pos.TOP_LEFT);
+        zone.setStyle("-fx-border-color: #4a5a6a; -fx-border-width: 0 2 0 0;");
+        zone.setPrefWidth(420);
+        zone.setMinWidth(380);
+
+        // Titre
+        Label title = new Label("COMBAT");
+        title.setFont(Font.font("System", FontWeight.BOLD, 12));
+        title.setTextFill(Color.web("#8a9aaa"));
+
+        // Conteneur des logs avec scroll
+        logBox = new VBox(6);
+        logBox.setAlignment(Pos.TOP_LEFT);
+        logBox.setPadding(new Insets(5, 0, 5, 0));
+
+        ScrollPane scrollPane = new ScrollPane(logBox);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setPrefHeight(140);
+        scrollPane.setMaxHeight(150);
+        scrollPane.setStyle(
+            "-fx-background: transparent; " +
+            "-fx-background-color: transparent; " +
+            "-fx-border-color: transparent;"
+        );
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        VBox.setVgrow(scrollPane, Priority.ALWAYS);
+
+        // Message initial
+        battleLogBlocks.add("Le combat commence ! Que doit faire " + joueur1.getMonstreActuel().getNomMonstre() + " ?");
+        refreshLogDisplay();
+
+        // Panneaux de choix (cachés par défaut)
+        attackGrid = new GridPane();
+        attackGrid.setHgap(10);
+        attackGrid.setVgap(8);
+        attackGrid.setPadding(new Insets(8, 0, 0, 0));
+        attackGrid.setVisible(false);
+        attackGrid.setManaged(false);
+
+        monsterChoicePanel = new HBox(10);
+        monsterChoicePanel.setAlignment(Pos.CENTER_LEFT);
+        monsterChoicePanel.setPadding(new Insets(8, 0, 0, 0));
+        monsterChoicePanel.setVisible(false);
+        monsterChoicePanel.setManaged(false);
+
+        itemChoicePanel = new HBox(10);
+        itemChoicePanel.setAlignment(Pos.CENTER_LEFT);
+        itemChoicePanel.setPadding(new Insets(8, 0, 0, 0));
+        itemChoicePanel.setVisible(false);
+        itemChoicePanel.setManaged(false);
+
+        zone.getChildren().addAll(title, scrollPane, attackGrid, monsterChoicePanel, itemChoicePanel);
+        return zone;
+    }
+
+    /**
+     * Crée le panneau des boutons d'action.
+     */
+    private HBox createActionPanel() {
+        HBox panel = new HBox();
+        panel.setAlignment(Pos.CENTER);
+        panel.setPadding(new Insets(15, 25, 15, 15));
+        panel.setPrefWidth(260);
+        panel.setMinWidth(240);
+
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setAlignment(Pos.CENTER);
+
+        btnAttack = createActionButton("ATTAQUE", "#e85858", "#c84848");
+        btnItem = createActionButton("SAC", "#58b858", "#48a848");
+        btnSwitch = createActionButton("POKEMON", "#5898e8", "#4888d8");
+        btnFlee = createActionButton("FUITE", "#888898", "#707080");
+
+        grid.add(btnAttack, 0, 0);
+        grid.add(btnItem, 1, 0);
+        grid.add(btnSwitch, 0, 1);
+        grid.add(btnFlee, 1, 1);
+
+        panel.getChildren().add(grid);
+        return panel;
+    }
+
     /**
      * Crée un bouton d'action stylisé.
      */
-    private Button createActionButton(String text, String color) {
+    private Button createActionButton(String text, String color, String darkColor) {
         Button btn = new Button(text);
-        btn.setFont(Font.font("System", FontWeight.BOLD, 14));
-        btn.setPrefWidth(150);
-        btn.setPrefHeight(50);
-        btn.setStyle("-fx-background-color: " + color + "; " +
-                    "-fx-text-fill: white; " +
-                    "-fx-background-radius: 10; " +
-                    "-fx-border-radius: 10; " +
-                    "-fx-border-color: #2c3e50; " +
-                    "-fx-border-width: 2px; " +
-                    "-fx-cursor: hand; " +
-                    "-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 8, 0, 0, 3);");
-        
-        btn.setOnMouseEntered(e -> btn.setStyle(btn.getStyle() + 
-                    "-fx-scale-x: 1.05; -fx-scale-y: 1.05;"));
-        btn.setOnMouseExited(e -> btn.setStyle(btn.getStyle().replaceAll(
-                    "-fx-scale-x: 1.05; -fx-scale-y: 1.05;", "")));
-        
+        btn.setFont(Font.font("System", FontWeight.BOLD, 12));
+        btn.setPrefWidth(105);
+        btn.setPrefHeight(42);
+
+        String normalStyle = String.format(
+            "-fx-background-color: %s; " +
+            "-fx-text-fill: white; " +
+            "-fx-background-radius: 10; " +
+            "-fx-border-color: %s; " +
+            "-fx-border-width: 0 0 4 0; " +
+            "-fx-border-radius: 10; " +
+            "-fx-cursor: hand;",
+            color, darkColor
+        );
+        btn.setStyle(normalStyle);
+
+        btn.setOnMouseEntered(e -> btn.setStyle(String.format(
+            "-fx-background-color: derive(%s, 12%%); " +
+            "-fx-text-fill: white; " +
+            "-fx-background-radius: 10; " +
+            "-fx-border-color: %s; " +
+            "-fx-border-width: 0 0 4 0; " +
+            "-fx-border-radius: 10; " +
+            "-fx-cursor: hand;",
+            color, darkColor
+        )));
+
+        btn.setOnMouseExited(e -> btn.setStyle(normalStyle));
+
+        btn.setOnMousePressed(e -> btn.setStyle(String.format(
+            "-fx-background-color: %s; " +
+            "-fx-text-fill: white; " +
+            "-fx-background-radius: 10; " +
+            "-fx-border-color: %s; " +
+            "-fx-border-width: 4 0 0 0; " +
+            "-fx-border-radius: 10; " +
+            "-fx-cursor: hand;",
+            darkColor, darkColor
+        )));
+
+        btn.setOnMouseReleased(e -> btn.setStyle(normalStyle));
+
         return btn;
     }
-    
+
     /**
-     * Met à jour l'affichage des Pokémon.
+     * Rafraîchit l'affichage des logs.
      */
-    public void updatePokemonDisplay() {
-        if (joueur1.getMonstreActuel() != null && hpBar1 != null) {
-            Monstre m1 = joueur1.getMonstreActuel();
-            double hpRatio = m1.getPointsDeVie() / m1.getPointsDeVieMax();
-            hpBar1.setProgress(Math.max(0, Math.min(1, hpRatio)));
-            lblHp1.setText(String.format("%.0f / %.0f", m1.getPointsDeVie(), m1.getPointsDeVieMax()));
-            lblMonster1Name.setText(m1.getNomMonstre() + " (" + m1.getTypeMonstre().getLabelType() + ")");
-            lblStats1.setText(String.format("ATK: %d | DEF: %d | VIT: %d", m1.getAttaque(), m1.getDefense(), m1.getVitesse()));
-        }
-        
-        if (joueur2.getMonstreActuel() != null && hpBar2 != null) {
-            Monstre m2 = joueur2.getMonstreActuel();
-            double hpRatio = m2.getPointsDeVie() / m2.getPointsDeVieMax();
-            hpBar2.setProgress(Math.max(0, Math.min(1, hpRatio)));
-            lblHp2.setText(String.format("%.0f / %.0f", m2.getPointsDeVie(), m2.getPointsDeVieMax()));
-            lblMonster2Name.setText(m2.getNomMonstre() + " (" + m2.getTypeMonstre().getLabelType() + ")");
-            lblStats2.setText(String.format("ATK: %d | DEF: %d | VIT: %d", m2.getAttaque(), m2.getDefense(), m2.getVitesse()));
+    private void refreshLogDisplay() {
+        logBox.getChildren().clear();
+
+        // Afficher les derniers blocs de logs
+        int start = Math.max(0, battleLogBlocks.size() - MAX_LOG_BLOCKS);
+        for (int i = start; i < battleLogBlocks.size(); i++) {
+            String block = battleLogBlocks.get(i);
+            
+            VBox blockBox = new VBox(2);
+            blockBox.setPadding(new Insets(6, 10, 6, 10));
+            blockBox.setStyle(
+                "-fx-background-color: rgba(60, 70, 85, 0.7); " +
+                "-fx-background-radius: 8;"
+            );
+
+            // Le dernier bloc est mis en évidence
+            boolean isLast = (i == battleLogBlocks.size() - 1);
+
+            // Afficher chaque ligne du bloc
+            String[] lines = block.split("\n");
+            for (String line : lines) {
+                if (line.trim().isEmpty()) continue;
+
+                Label lbl = new Label(line);
+                lbl.setWrapText(true);
+                lbl.setMaxWidth(350);
+
+                if (isLast) {
+                    lbl.setFont(Font.font("System", FontWeight.BOLD, 13));
+                    lbl.setTextFill(Color.web("#f0f8ff"));
+                } else {
+                    lbl.setFont(Font.font("System", FontWeight.NORMAL, 12));
+                    lbl.setTextFill(Color.web("#a0b0c0"));
+                }
+
+                blockBox.getChildren().add(lbl);
+            }
+
+            logBox.getChildren().add(blockBox);
         }
     }
-    
+
     /**
-     * Met à jour le message du combat.
+     * Ajoute un bloc de log complet.
      */
     public void updateBattleLog(String message) {
         if (message == null || message.isEmpty()) return;
-        String existing = lblBattleLog.getText();
-        if (existing == null || existing.isEmpty()) {
-            lblBattleLog.setText(message);
-        } else {
-            lblBattleLog.setText(existing + "\n" + message);
+
+        // Découper les messages en blocs séparés par ===
+        String[] rawBlocks = message.split("={10,}");
+
+        for (String rawBlock : rawBlocks) {
+            String block = rawBlock.trim();
+            if (block.isEmpty()) continue;
+
+            // Nettoyer les lignes de séparation
+            block = block.replace("----------------------------------------", "").trim();
+
+            if (!block.isEmpty()) {
+                battleLogBlocks.add(block);
+            }
         }
+
+        // Limiter le nombre de blocs
+        while (battleLogBlocks.size() > 20) {
+            battleLogBlocks.remove(0);
+        }
+
+        refreshLogDisplay();
+
+        // Animation
+        FadeTransition fade = new FadeTransition(Duration.millis(250), logBox);
+        fade.setFromValue(0.7);
+        fade.setToValue(1.0);
+        fade.play();
     }
 
     public void clearBattleLog() {
-        lblBattleLog.setText("");
+        battleLogBlocks.clear();
+        Monstre current = isPlayer1Turn ? joueur1.getMonstreActuel() : joueur2.getMonstreActuel();
+        battleLogBlocks.add("Que doit faire " + current.getNomMonstre() + " ?");
+        refreshLogDisplay();
     }
-    
+
     /**
-     * Affiche les attaques disponibles dans l'interface pour le joueur courant.
+     * Met à jour l'affichage des monstres.
+     */
+    public void updatePokemonDisplay() {
+        // Joueur
+        if (joueur1.getMonstreActuel() != null) {
+            Monstre m1 = joueur1.getMonstreActuel();
+            double ratio = Math.max(0, m1.getPointsDeVie() / m1.getPointsDeVieMax());
+
+            lblPlayerName.setText(m1.getNomMonstre());
+            lblPlayerHpText.setText(String.format("%.0f / %.0f PV", m1.getPointsDeVie(), m1.getPointsDeVieMax()));
+
+            if (hpBarPlayerFill != null) {
+                hpBarPlayerFill.setWidth(160 * ratio);
+                if (ratio > 0.5) hpBarPlayerFill.setFill(Color.web("#48d048"));
+                else if (ratio > 0.2) hpBarPlayerFill.setFill(Color.web("#f8c800"));
+                else hpBarPlayerFill.setFill(Color.web("#f85858"));
+            }
+
+            updateSpriteBox(playerSpriteBox, m1, true);
+        }
+
+        // Ennemi
+        if (joueur2.getMonstreActuel() != null) {
+            Monstre m2 = joueur2.getMonstreActuel();
+            double ratio = Math.max(0, m2.getPointsDeVie() / m2.getPointsDeVieMax());
+
+            lblEnemyName.setText(m2.getNomMonstre());
+            lblEnemyHpText.setText(String.format("%.0f / %.0f PV", m2.getPointsDeVie(), m2.getPointsDeVieMax()));
+
+            if (hpBarEnemyFill != null) {
+                hpBarEnemyFill.setWidth(160 * ratio);
+                if (ratio > 0.5) hpBarEnemyFill.setFill(Color.web("#48d048"));
+                else if (ratio > 0.2) hpBarEnemyFill.setFill(Color.web("#f8c800"));
+                else hpBarEnemyFill.setFill(Color.web("#f85858"));
+            }
+
+            updateSpriteBox(enemySpriteBox, m2, false);
+        }
+    }
+
+    private void updateSpriteBox(VBox spriteBox, Monstre m, boolean isPlayer) {
+        if (spriteBox == null || m == null) return;
+
+        String typeColor = TYPE_COLORS.getOrDefault(m.getTypeMonstre().getLabelType(), "#A8A878");
+        double size = isPlayer ? 100 : 90;
+
+        spriteBox.getChildren().clear();
+
+        Label sprite = new Label(m.getNomMonstre().substring(0, Math.min(2, m.getNomMonstre().length())).toUpperCase());
+        sprite.setFont(Font.font("System", FontWeight.BOLD, isPlayer ? 38 : 34));
+        sprite.setTextFill(Color.WHITE);
+        sprite.setPrefSize(size, size);
+        sprite.setMinSize(size, size);
+        sprite.setMaxSize(size, size);
+        sprite.setAlignment(Pos.CENTER);
+        sprite.setStyle(String.format(
+            "-fx-background-color: radial-gradient(center 50%% 35%%, radius 55%%, %s, derive(%s, -30%%)); " +
+            "-fx-background-radius: 50%%; " +
+            "-fx-border-color: derive(%s, -45%%); " +
+            "-fx-border-width: 4; " +
+            "-fx-border-radius: 50%%; " +
+            "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 15, 0, 0, 8);",
+            typeColor, typeColor, typeColor
+        ));
+
+        Rectangle shadow = new Rectangle(size * 1.2, 15);
+        shadow.setFill(Color.rgb(0, 0, 0, 0.25));
+        shadow.setArcWidth(size);
+        shadow.setArcHeight(15);
+
+        spriteBox.getChildren().addAll(sprite, shadow);
+    }
+
+    /**
+     * Affiche les attaques disponibles.
      */
     public void displayAttackChoices(List<Attaque> attaques, Consumer<Attaque> onSelect) {
-        attackChoicesBox.getChildren().clear();
+        attackGrid.getChildren().clear();
+
         if (attaques == null || attaques.isEmpty()) {
-            Label none = new Label("Aucune attaque disponible");
-            none.setFont(Font.font("System", FontWeight.BOLD, 14));
-            none.setStyle("-fx-text-fill: #2c3e50;");
-            attackChoicesBox.getChildren().add(none);
-        } else {
-            for (Attaque a : attaques) {
-                Button btn = new Button(a.getNomAttaque() + " (Puissance: " + a.getPuissanceAttaque() + ", Uses: " + a.getNbUtilisations() + ")");
-                btn.setFont(Font.font("System", FontWeight.BOLD, 13));
-                btn.setStyle("-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-background-radius: 8; -fx-border-radius: 8; -fx-border-color: #27ae60; -fx-border-width: 2px;");
-                btn.setOnAction(e -> {
-                    // Remonter la sélection au contrôleur
-                    onSelect.accept(a);
-                    hideAttackChoices();
-                });
-                attackChoicesBox.getChildren().add(btn);
-            }
+            battleLogBlocks.add("Aucune attaque disponible !");
+            refreshLogDisplay();
+            return;
         }
-        attackChoicesBox.setVisible(true);
-        attackChoicesBox.setManaged(true);
+
+        battleLogBlocks.add("Choisissez une attaque :");
+        refreshLogDisplay();
+
+        int col = 0, row = 0;
+        for (Attaque a : attaques) {
+            String typeColor = TYPE_COLORS.getOrDefault(a.getTypeAttaque().getLabelType(), "#A8A878");
+
+            Button btn = new Button();
+            btn.setPrefWidth(165);
+            btn.setPrefHeight(48);
+
+            VBox content = new VBox(2);
+            content.setAlignment(Pos.CENTER_LEFT);
+            content.setPadding(new Insets(0, 8, 0, 8));
+
+            Label nameLabel = new Label(a.getNomAttaque().replace("_", " "));
+            nameLabel.setFont(Font.font("System", FontWeight.BOLD, 12));
+            nameLabel.setTextFill(Color.WHITE);
+
+            Label infoLabel = new Label(a.getTypeAttaque().getLabelType() + " | PP " + a.getNbUtilisations() + " | PWR " + a.getPuissanceAttaque());
+            infoLabel.setFont(Font.font("System", 9));
+            infoLabel.setTextFill(Color.web("#ddd"));
+
+            content.getChildren().addAll(nameLabel, infoLabel);
+            btn.setGraphic(content);
+
+            String normalStyle = String.format(
+                "-fx-background-color: %s; " +
+                "-fx-background-radius: 8; " +
+                "-fx-border-color: derive(%s, -30%%); " +
+                "-fx-border-width: 0 0 3 0; " +
+                "-fx-border-radius: 8; " +
+                "-fx-cursor: hand;",
+                typeColor, typeColor
+            );
+            btn.setStyle(normalStyle);
+
+            btn.setOnMouseEntered(e -> btn.setStyle(String.format(
+                "-fx-background-color: derive(%s, 15%%); " +
+                "-fx-background-radius: 8; " +
+                "-fx-border-color: derive(%s, -30%%); " +
+                "-fx-border-width: 0 0 3 0; " +
+                "-fx-border-radius: 8; " +
+                "-fx-cursor: hand;",
+                typeColor, typeColor
+            )));
+            btn.setOnMouseExited(e -> btn.setStyle(normalStyle));
+
+            btn.setOnAction(e -> {
+                onSelect.accept(a);
+                hideAllChoices();
+            });
+
+            attackGrid.add(btn, col, row);
+            col++;
+            if (col >= 2) { col = 0; row++; }
+        }
+
+        // Bouton retour
+        Button btnBack = createBackButton();
+        btnBack.setOnAction(e -> hideAllChoices());
+        attackGrid.add(btnBack, 0, row + 1);
+
+        attackGrid.setVisible(true);
+        attackGrid.setManaged(true);
+        actionButtonsContainer.setVisible(false);
+        actionButtonsContainer.setManaged(false);
     }
-    
+
     /**
-     * Cache la liste des attaques.
-     */
-    public void hideAttackChoices() {
-        attackChoicesBox.setVisible(false);
-        attackChoicesBox.setManaged(false);
-        attackChoicesBox.getChildren().clear();
-    }
-    
-    /**
-     * Affiche les monstres disponibles pour le joueur courant.
+     * Affiche les monstres disponibles.
      */
     public void displayMonsterChoices(List<Monstre> monstres, Consumer<Monstre> onSelect) {
-        attackChoicesBox.getChildren().clear();
+        monsterChoicePanel.getChildren().clear();
+
         if (monstres == null || monstres.isEmpty()) {
-            Label none = new Label("Aucun monstre disponible");
-            none.setFont(Font.font("System", FontWeight.BOLD, 14));
-            none.setStyle("-fx-text-fill: #2c3e50;");
-            attackChoicesBox.getChildren().add(none);
-        } else {
-            for (Monstre m : monstres) {
-                Button btn = new Button(m.getNomMonstre() + " (PV: " + (int)m.getPointsDeVie() + "/" + (int)m.getPointsDeVieMax() + ", " + m.getTypeMonstre().getLabelType() + ")");
-                btn.setFont(Font.font("System", FontWeight.BOLD, 13));
-                btn.setStyle("-fx-background-color: #3498db; -fx-text-fill: white; -fx-background-radius: 8; -fx-border-radius: 8; -fx-border-color: #2980b9; -fx-border-width: 2px;");
-                btn.setOnAction(e -> {
-                    onSelect.accept(m);
-                    hideAttackChoices();
-                });
-                attackChoicesBox.getChildren().add(btn);
-            }
+            battleLogBlocks.add("Aucun monstre disponible !");
+            refreshLogDisplay();
+            return;
         }
-        attackChoicesBox.setVisible(true);
-        attackChoicesBox.setManaged(true);
+
+        battleLogBlocks.add("Choisissez un monstre :");
+        refreshLogDisplay();
+
+        for (Monstre m : monstres) {
+            String typeColor = TYPE_COLORS.getOrDefault(m.getTypeMonstre().getLabelType(), "#A8A878");
+            double hpRatio = Math.max(0, m.getPointsDeVie() / m.getPointsDeVieMax());
+
+            VBox card = new VBox(4);
+            card.setAlignment(Pos.CENTER);
+            card.setPadding(new Insets(8, 12, 8, 12));
+            card.setPrefWidth(110);
+
+            String normalStyle = String.format(
+                "-fx-background-color: %s; " +
+                "-fx-background-radius: 10; " +
+                "-fx-border-color: derive(%s, -30%%); " +
+                "-fx-border-width: 0 0 3 0; " +
+                "-fx-border-radius: 10; " +
+                "-fx-cursor: hand;",
+                typeColor, typeColor
+            );
+            card.setStyle(normalStyle);
+
+            Label nameLabel = new Label(m.getNomMonstre());
+            nameLabel.setFont(Font.font("System", FontWeight.BOLD, 11));
+            nameLabel.setTextFill(Color.WHITE);
+
+            String hpColor = hpRatio > 0.5 ? "#48d048" : hpRatio > 0.2 ? "#f8c800" : "#f85858";
+            Label hpLabel = new Label(String.format("%.0f/%.0f PV", m.getPointsDeVie(), m.getPointsDeVieMax()));
+            hpLabel.setFont(Font.font("System", FontWeight.BOLD, 10));
+            hpLabel.setTextFill(Color.web(hpColor));
+
+            card.getChildren().addAll(nameLabel, hpLabel);
+
+            card.setOnMouseEntered(e -> card.setStyle(String.format(
+                "-fx-background-color: derive(%s, 15%%); " +
+                "-fx-background-radius: 10; " +
+                "-fx-border-color: derive(%s, -30%%); " +
+                "-fx-border-width: 0 0 3 0; " +
+                "-fx-border-radius: 10; " +
+                "-fx-cursor: hand;",
+                typeColor, typeColor
+            )));
+            card.setOnMouseExited(e -> card.setStyle(normalStyle));
+
+            card.setOnMouseClicked(e -> {
+                onSelect.accept(m);
+                hideAllChoices();
+            });
+
+            monsterChoicePanel.getChildren().add(card);
+        }
+
+        Button btnBack = createBackButton();
+        btnBack.setOnAction(e -> hideAllChoices());
+        monsterChoicePanel.getChildren().add(btnBack);
+
+        monsterChoicePanel.setVisible(true);
+        monsterChoicePanel.setManaged(true);
+        actionButtonsContainer.setVisible(false);
+        actionButtonsContainer.setManaged(false);
     }
-    
+
     /**
-     * Met à jour l'affichage du tour.
+     * Affiche les objets disponibles.
      */
+    public void displayItemChoices(List<Objet> objets, Consumer<Objet> onSelect) {
+        itemChoicePanel.getChildren().clear();
+
+        if (objets == null || objets.isEmpty()) {
+            battleLogBlocks.add("Aucun objet disponible !");
+            refreshLogDisplay();
+            return;
+        }
+
+        battleLogBlocks.add("Choisissez un objet :");
+        refreshLogDisplay();
+
+        for (Objet obj : objets) {
+            String objName = obj.getNomObjet();
+            final String objColor;
+
+            if (objName.toLowerCase().contains("medicament") || objName.toLowerCase().contains("anti")) {
+                objColor = "#e88848";
+            } else if (objName.toLowerCase().contains("degat")) {
+                objColor = "#e85858";
+            } else if (objName.toLowerCase().contains("vitesse")) {
+                objColor = "#5898e8";
+            } else {
+                objColor = "#58b858";
+            }
+
+            Button btn = new Button(objName.replace("_", " "));
+            btn.setPrefWidth(120);
+            btn.setPrefHeight(40);
+            btn.setFont(Font.font("System", FontWeight.BOLD, 10));
+
+            String normalStyle = String.format(
+                "-fx-background-color: %s; " +
+                "-fx-text-fill: white; " +
+                "-fx-background-radius: 8; " +
+                "-fx-border-color: derive(%s, -30%%); " +
+                "-fx-border-width: 0 0 3 0; " +
+                "-fx-border-radius: 8; " +
+                "-fx-cursor: hand;",
+                objColor, objColor
+            );
+            btn.setStyle(normalStyle);
+
+            btn.setOnMouseEntered(e -> btn.setStyle(String.format(
+                "-fx-background-color: derive(%s, 15%%); " +
+                "-fx-text-fill: white; " +
+                "-fx-background-radius: 8; " +
+                "-fx-border-color: derive(%s, -30%%); " +
+                "-fx-border-width: 0 0 3 0; " +
+                "-fx-border-radius: 8; " +
+                "-fx-cursor: hand;",
+                objColor, objColor
+            )));
+            btn.setOnMouseExited(e -> btn.setStyle(normalStyle));
+
+            btn.setOnAction(e -> {
+                onSelect.accept(obj);
+                hideAllChoices();
+            });
+
+            itemChoicePanel.getChildren().add(btn);
+        }
+
+        Button btnBack = createBackButton();
+        btnBack.setOnAction(e -> hideAllChoices());
+        itemChoicePanel.getChildren().add(btnBack);
+
+        itemChoicePanel.setVisible(true);
+        itemChoicePanel.setManaged(true);
+        actionButtonsContainer.setVisible(false);
+        actionButtonsContainer.setManaged(false);
+    }
+
+    /**
+     * Crée un bouton retour standard.
+     */
+    private Button createBackButton() {
+        Button btn = new Button("RETOUR");
+        btn.setPrefWidth(80);
+        btn.setPrefHeight(32);
+        btn.setFont(Font.font("System", FontWeight.BOLD, 10));
+        btn.setStyle(
+            "-fx-background-color: #606070; " +
+            "-fx-text-fill: white; " +
+            "-fx-background-radius: 6; " +
+            "-fx-border-color: #505060; " +
+            "-fx-border-width: 0 0 2 0; " +
+            "-fx-border-radius: 6; " +
+            "-fx-cursor: hand;"
+        );
+        return btn;
+    }
+
+    /**
+     * Cache tous les panneaux de choix.
+     */
+    public void hideAllChoices() {
+        attackGrid.setVisible(false);
+        attackGrid.setManaged(false);
+        attackGrid.getChildren().clear();
+
+        monsterChoicePanel.setVisible(false);
+        monsterChoicePanel.setManaged(false);
+        monsterChoicePanel.getChildren().clear();
+
+        itemChoicePanel.setVisible(false);
+        itemChoicePanel.setManaged(false);
+        itemChoicePanel.getChildren().clear();
+
+        actionButtonsContainer.setVisible(true);
+        actionButtonsContainer.setManaged(true);
+
+        clearBattleLog();
+    }
+
+    // Alias pour compatibilité
+    public void hideAttackChoices() {
+        hideAllChoices();
+    }
+
     public void setTurn(boolean player1Turn) {
         this.isPlayer1Turn = player1Turn;
-        String name = player1Turn ? joueur1.getNomJoueur() : joueur2.getNomJoueur();
-        lblTurn.setText(name + " - À votre tour !");
-    }
-    
-    // Getters pour les boutons
-    public Button getBtnAttack() {
-        return btnAttack;
+        clearBattleLog();
     }
 
-    public Joueur getJoueur1() {
-        return this.joueur1;
-    }
-
-    public Joueur getJoueur2() {
-        return this.joueur2;
-    }
-    
-    public Button getBtnItem() {
-        return btnItem;
-    }
-    
-    public Button getBtnSwitch() {
-        return btnSwitch;
-    }
-    
-    public Button getBtnFlee() {
-        return btnFlee;
-    }
-    
-    public void setIsPlayer1Turn(boolean isPlayer1Turn) {
-        this.isPlayer1Turn = isPlayer1Turn;
-    }
-    
-    public boolean isPlayer1Turn() {
-        return isPlayer1Turn;
-    }
+    // Getters
+    public Button getBtnAttack() { return btnAttack; }
+    public Button getBtnItem() { return btnItem; }
+    public Button getBtnSwitch() { return btnSwitch; }
+    public Button getBtnFlee() { return btnFlee; }
+    public Joueur getJoueur1() { return joueur1; }
+    public Joueur getJoueur2() { return joueur2; }
+    public boolean isPlayer1Turn() { return isPlayer1Turn; }
+    public void setIsPlayer1Turn(boolean isPlayer1Turn) { this.isPlayer1Turn = isPlayer1Turn; }
 }

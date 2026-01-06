@@ -6,6 +6,7 @@ import com.esiea.monstre.poche.controllers.battle.WinnerController;
 import com.esiea.monstre.poche.controllers.menu.MainMenuController;
 import com.esiea.monstre.poche.controllers.selection.AttackSelectionController;
 import com.esiea.monstre.poche.controllers.selection.MonsterSelectionController;
+import com.esiea.monstre.poche.controllers.selection.ObjectSelectionController;
 import com.esiea.monstre.poche.controllers.setup.BotGameController;
 import com.esiea.monstre.poche.controllers.setup.LocalGameController;
 import com.esiea.monstre.poche.controllers.setup.OnlineGameController;
@@ -18,6 +19,7 @@ import com.esiea.monstre.poche.views.gui.battle.WinnerView;
 import com.esiea.monstre.poche.views.gui.menu.MainMenuView;
 import com.esiea.monstre.poche.views.gui.selection.AttackSelectionView;
 import com.esiea.monstre.poche.views.gui.selection.MonsterSelectionView;
+import com.esiea.monstre.poche.views.gui.selection.ObjectSelectionView;
 import com.esiea.monstre.poche.views.gui.setup.BotGameView;
 import com.esiea.monstre.poche.views.gui.setup.LocalGameView;
 import com.esiea.monstre.poche.views.gui.setup.OnlineGameView;
@@ -104,6 +106,14 @@ public class MonstrePocheUI extends Application implements INavigationCallback {
         new AttackSelectionController(attackSelectionView, this, joueur, onComplete);
         
         scene.setRoot(attackSelectionView);
+    }
+
+    @Override
+    public void showObjectSelectionPlayer(Joueur joueur, Runnable onComplete) {
+        ObjectSelectionView objectSelectionView = new ObjectSelectionView(joueur);
+        new ObjectSelectionController(objectSelectionView, this, joueur, onComplete);
+        
+        scene.setRoot(objectSelectionView);
     }
     
     @Override

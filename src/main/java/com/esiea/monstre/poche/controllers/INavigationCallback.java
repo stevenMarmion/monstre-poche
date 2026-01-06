@@ -14,6 +14,7 @@ public interface INavigationCallback {
     void showOnlineGameSetup();
     void showMonsterSelectionPlayer(Joueur joueur, Runnable onComplete);
     void showAttackSelectionPlayer(Joueur joueur, Runnable onComplete);
+    void showObjectSelectionPlayer(Joueur joueur, Runnable onComplete);
     void showBattle(Joueur joueur1, Joueur joueur2);
     void showBattleBot(Joueur joueur1, Bot bot);
     void showWinnerView(Joueur winner);

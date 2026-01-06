@@ -13,6 +13,7 @@ import com.esiea.monstre.poche.models.entites.Attaque;
 import com.esiea.monstre.poche.models.entites.Bot;
 import com.esiea.monstre.poche.models.entites.Joueur;
 import com.esiea.monstre.poche.models.entites.Monstre;
+import com.esiea.monstre.poche.models.inventaire.Objet;
 import com.esiea.monstre.poche.views.gui.battle.BattleView;
 
 /**
@@ -213,15 +214,65 @@ public class BattleController {
         if (action instanceof Monstre) {
             return "Changement: " + ((Monstre) action).getNomMonstre();
         }
+        if (action instanceof Objet) {
+            return "Objet: " + ((Objet) action).getNomObjet();
+        }
         return action.getClass().getSimpleName();
     }
     
     /**
-     * Gère l'action Objet.
+     * Gère l'action Objet : affiche les objets disponibles et permet de les utiliser.
      */
     private void handleItemAction() {
-        view.updateBattleLog("Fonctionnalité Objet non implémentée.");
-        // TODO: implémenter la logique des objets
+        Joueur currentPlayer = !player1Ready ? view.getJoueur1() : view.getJoueur2();
+        
+        List<Objet> objets = currentPlayer.getObjets();
+        if (objets == null || objets.isEmpty()) {
+            view.updateBattleLog(currentPlayer.getNomJoueur() + " n'a pas d'objets dans son sac !");
+            return;
+        }
+        
+        view.displayItemChoices(objets, objet -> {
+            // Utiliser l'objet sur le monstre actuel du joueur
+            Monstre cible = currentPlayer.getMonstreActuel();
+            
+            if (!player1Ready) {
+                // Joueur 1 utilise un objet
+                objet.utiliserObjet(cible);
+                currentPlayer.getObjets().remove(objet);
+                
+                CombatLogger.logUtilisationObjet(currentPlayer, objet.getNomObjet(), cible);
+                view.updateBattleLog(currentPlayer.getNomJoueur() + " utilise " + objet.getNomObjet() + " sur " + cible.getNomMonstre() + " !");
+                
+                // L'objet compte comme action du tour
+                player1Action = objet;
+                player1Ready = true;
+                
+                view.updatePokemonDisplay();
+                
+                // Si mode Bot, déclencher le tour du Bot automatiquement
+                if (view.getJoueur2() instanceof Bot) {
+                    handleBotTurn();
+                } else {
+                    // Sinon, attendre le choix du joueur 2
+                    view.setTurn(false);
+                    view.updateBattleLog("À " + view.getJoueur2().getNomJoueur() + " de choisir son action !");
+                }
+            } else if (!player2Ready) {
+                // Joueur 2 utilise un objet
+                objet.utiliserObjet(cible);
+                currentPlayer.getObjets().remove(objet);
+                
+                CombatLogger.logUtilisationObjet(currentPlayer, objet.getNomObjet(), cible);
+                view.updateBattleLog(currentPlayer.getNomJoueur() + " utilise " + objet.getNomObjet() + " sur " + cible.getNomMonstre() + " !");
+                
+                player2Action = objet;
+                player2Ready = true;
+                
+                view.updatePokemonDisplay();
+                executeTurnActions();
+            }
+        });
     }
 
     public Combat getCombat() {
