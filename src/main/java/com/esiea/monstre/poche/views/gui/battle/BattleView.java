@@ -710,6 +710,7 @@ public class BattleView extends StackPane {
         int col = 0, row = 0;
         for (Attaque a : attaques) {
             String typeColor = TYPE_COLORS.getOrDefault(a.getTypeAttaque().getLabelType(), "#A8A878");
+            boolean hasNoPP = a.getNbUtilisations() <= 0;
 
             Button btn = new Button();
             btn.setPrefWidth(165);
@@ -721,41 +722,57 @@ public class BattleView extends StackPane {
 
             Label nameLabel = new Label(a.getNomAttaque().replace("_", " "));
             nameLabel.setFont(Font.font("System", FontWeight.BOLD, 12));
-            nameLabel.setTextFill(Color.WHITE);
+            nameLabel.setTextFill(hasNoPP ? Color.GRAY : Color.WHITE);
 
-            Label infoLabel = new Label(a.getTypeAttaque().getLabelType() + " | PP " + a.getNbUtilisations() + " | PWR " + a.getPuissanceAttaque());
+            String ppText = hasNoPP ? "PP VIDE" : ("PP " + a.getNbUtilisations());
+            Label infoLabel = new Label(a.getTypeAttaque().getLabelType() + " | " + ppText + " | PWR " + a.getPuissanceAttaque());
             infoLabel.setFont(Font.font("System", 9));
-            infoLabel.setTextFill(Color.web("#ddd"));
+            infoLabel.setTextFill(hasNoPP ? Color.DARKGRAY : Color.web("#ddd"));
 
             content.getChildren().addAll(nameLabel, infoLabel);
             btn.setGraphic(content);
 
-            String normalStyle = String.format(
-                "-fx-background-color: %s; " +
-                "-fx-background-radius: 8; " +
-                "-fx-border-color: derive(%s, -30%%); " +
-                "-fx-border-width: 0 0 3 0; " +
-                "-fx-border-radius: 8; " +
-                "-fx-cursor: hand;",
-                typeColor, typeColor
-            );
+            String normalStyle;
+            if (hasNoPP) {
+                // Style grisé pour les attaques sans PP
+                normalStyle = "-fx-background-color: #444; " +
+                    "-fx-background-radius: 8; " +
+                    "-fx-border-color: #333; " +
+                    "-fx-border-width: 0 0 3 0; " +
+                    "-fx-border-radius: 8; " +
+                    "-fx-opacity: 0.6;";
+                btn.setDisable(true);
+            } else {
+                normalStyle = String.format(
+                    "-fx-background-color: %s; " +
+                    "-fx-background-radius: 8; " +
+                    "-fx-border-color: derive(%s, -30%%); " +
+                    "-fx-border-width: 0 0 3 0; " +
+                    "-fx-border-radius: 8; " +
+                    "-fx-cursor: hand;",
+                    typeColor, typeColor
+                );
+            }
             btn.setStyle(normalStyle);
 
-            btn.setOnMouseEntered(e -> btn.setStyle(String.format(
-                "-fx-background-color: derive(%s, 15%%); " +
-                "-fx-background-radius: 8; " +
-                "-fx-border-color: derive(%s, -30%%); " +
-                "-fx-border-width: 0 0 3 0; " +
-                "-fx-border-radius: 8; " +
-                "-fx-cursor: hand;",
-                typeColor, typeColor
-            )));
-            btn.setOnMouseExited(e -> btn.setStyle(normalStyle));
+            if (!hasNoPP) {
+                btn.setOnMouseEntered(e -> btn.setStyle(String.format(
+                    "-fx-background-color: derive(%s, 15%%); " +
+                    "-fx-background-radius: 8; " +
+                    "-fx-border-color: derive(%s, -30%%); " +
+                    "-fx-border-width: 0 0 3 0; " +
+                    "-fx-border-radius: 8; " +
+                    "-fx-cursor: hand;",
+                    typeColor, typeColor
+                )));
+                final String savedStyle = normalStyle;
+                btn.setOnMouseExited(e -> btn.setStyle(savedStyle));
 
-            btn.setOnAction(e -> {
-                onSelect.accept(a);
-                hideAllChoices();
-            });
+                btn.setOnAction(e -> {
+                    onSelect.accept(a);
+                    hideAllChoices();
+                });
+            }
 
             attackGrid.add(btn, col, row);
             col++;

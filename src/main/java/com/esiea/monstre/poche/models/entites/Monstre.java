@@ -140,6 +140,17 @@ public class Monstre implements Serializable {
     }
 
     public void attaquer(Monstre cible, Terrain terrain, Attaque attaqueUtilisee) {
+        // Vérifier si l'attaque a encore des utilisations disponibles
+        if (attaqueUtilisee != null && attaqueUtilisee.getNbUtilisations() <= 0) {
+            CombatLogger.log(this.nomMonstre + " ne peut pas utiliser " + attaqueUtilisee.getNomAttaque() + " : plus de PP !");
+            return;
+        }
+        
+        // Décrémenter le nombre d'utilisations de l'attaque
+        if (attaqueUtilisee != null) {
+            attaqueUtilisee.setNbUtilisations(attaqueUtilisee.getNbUtilisations() - 1);
+        }
+        
         // on commence par calculer les dégâts, c'est la base de tout
         double degatsAffliges;
         if (attaqueUtilisee == null || !this.attaques.contains(attaqueUtilisee)) {
@@ -148,9 +159,13 @@ public class Monstre implements Serializable {
             degatsAffliges = attaqueUtilisee.calculeDegatsAttaque(this, cible);
         }
 
-        // Log avant attaque
+        // Log avant attaque avec PP restants
         CombatLogger.log("=======================================");
-        CombatLogger.log(this.nomMonstre + " utilise " + (attaqueUtilisee != null ? attaqueUtilisee.getNomAttaque() : "ses mains nues") + " :");
+        if (attaqueUtilisee != null) {
+            CombatLogger.log(this.nomMonstre + " utilise " + attaqueUtilisee.getNomAttaque() + " (PP restants: " + attaqueUtilisee.getNbUtilisations() + ") :");
+        } else {
+            CombatLogger.log(this.nomMonstre + " utilise ses mains nues :");
+        }
         
         // ensuite on applique nos effets avant attaque si le pokémon est paralysé ou autre
         StatutMonstreUtils.appliquerStatutMonstre(statut, this, (int) degatsAffliges);

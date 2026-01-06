@@ -168,7 +168,8 @@ public class CombatBot extends Combat {
         GameVisual.afficherTitreSection("Attaques de " + monstreActuel.getNomMonstre());
         int index = 1;
         for (Attaque attaque : monstreActuel.getAttaques()) {
-            CombatLogger.log(String.format("[%d] %s", index++, GameVisual.formatterAttaque(attaque)));
+            String ppStatus = attaque.getNbUtilisations() <= 0 ? " [VIDE]" : "";
+            CombatLogger.log(String.format("[%d] %s%s", index++, GameVisual.formatterAttaque(attaque), ppStatus));
         }
         while (true) {
             String choixInput = GameVisual.demanderSaisie(this.scanner, "Attaque choisie >");
@@ -178,7 +179,12 @@ public class CombatBot extends Combat {
                     GameVisual.afficherErreur("Index invalide. Veuillez choisir un nombre entre 1 et " + monstreActuel.getAttaques().size());
                     continue;
                 }
-                return monstreActuel.getAttaques().get(indexChoisi - 1);
+                Attaque attaqueTemp = monstreActuel.getAttaques().get(indexChoisi - 1);
+                if (attaqueTemp.getNbUtilisations() <= 0) {
+                    GameVisual.afficherErreur("Cette attaque n'a plus de PP ! Choisissez une autre attaque.");
+                    continue;
+                }
+                return attaqueTemp;
             } catch (NumberFormatException e) {
                 GameVisual.afficherErreur("Saisie invalide. Veuillez entrer un numero.");
             }

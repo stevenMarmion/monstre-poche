@@ -163,7 +163,8 @@ public class CombatEnLigne extends Combat {
         GameVisual.afficherTitreSection("Attaques de " + monstreActuel.getNomMonstre());
         int index = 1;
         for (Attaque attaque : monstreActuel.getAttaques()) {
-            CombatLogger.log(String.format("[%d] %s", index++, GameVisual.formatterAttaque(attaque)));
+            String ppStatus = attaque.getNbUtilisations() <= 0 ? " [VIDE]" : "";
+            CombatLogger.log(String.format("[%d] %s%s", index++, GameVisual.formatterAttaque(attaque), ppStatus));
         }
         while (true) {
             String choixInput = GameVisual.demanderSaisie(new Scanner(System.in), "Attaque choisie >");
@@ -173,7 +174,12 @@ public class CombatEnLigne extends Combat {
                     GameVisual.afficherErreur("Index invalide. Veuillez choisir un nombre entre 1 et " + monstreActuel.getAttaques().size());
                     continue;
                 }
-                return monstreActuel.getAttaques().get(indexChoisi - 1);
+                Attaque attaqueTemp = monstreActuel.getAttaques().get(indexChoisi - 1);
+                if (attaqueTemp.getNbUtilisations() <= 0) {
+                    GameVisual.afficherErreur("Cette attaque n'a plus de PP ! Choisissez une autre attaque.");
+                    continue;
+                }
+                return attaqueTemp;
             } catch (NumberFormatException e) {
                 GameVisual.afficherErreur("Saisie invalide. Veuillez entrer un numero.");
             }
@@ -378,7 +384,8 @@ public class CombatEnLigne extends Combat {
         broadcastToRemoteTitre("Attaques de " + monstreActuel.getNomMonstre());
         int index = 1;
         for (Attaque attaque : monstreActuel.getAttaques()) {
-            broadcastToRemote(String.format("[%d] %s", index++, GameVisual.formatterAttaque(attaque)));
+            String ppStatus = attaque.getNbUtilisations() <= 0 ? " [VIDE]" : "";
+            broadcastToRemote(String.format("[%d] %s%s", index++, GameVisual.formatterAttaque(attaque), ppStatus));
         }
 
         while (true) {
@@ -389,7 +396,12 @@ public class CombatEnLigne extends Combat {
                     broadcastToRemoteErreur("Index invalide. Veuillez choisir un nombre entre 1 et " + monstreActuel.getAttaques().size());
                     continue;
                 }
-                return monstreActuel.getAttaques().get(indexChoisi - 1);
+                Attaque attaqueTemp = monstreActuel.getAttaques().get(indexChoisi - 1);
+                if (attaqueTemp.getNbUtilisations() <= 0) {
+                    broadcastToRemoteErreur("Cette attaque n'a plus de PP ! Choisissez une autre attaque.");
+                    continue;
+                }
+                return attaqueTemp;
             } catch (NumberFormatException e) {
                 broadcastToRemoteErreur("Saisie invalide. Veuillez entrer un numero.");
             } catch (IOException e) {
