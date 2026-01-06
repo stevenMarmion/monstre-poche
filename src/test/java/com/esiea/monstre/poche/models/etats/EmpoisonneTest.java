@@ -1,12 +1,11 @@
-package com.esiea.monstre.poche.chore.models.etats;
+package com.esiea.monstre.poche.models.etats;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.esiea.monstre.poche.chore.models.affinites.Normal;
-import com.esiea.monstre.poche.chore.models.entites.Attaque;
-import com.esiea.monstre.poche.chore.models.entites.Monstre;
-import com.esiea.monstre.poche.chore.models.etats.Empoisonne;
+import com.esiea.monstre.poche.models.affinites.Normal;
+import com.esiea.monstre.poche.models.entites.Attaque;
+import com.esiea.monstre.poche.models.entites.Monstre;
 
 import static org.junit.jupiter.api.Assertions.*;
 

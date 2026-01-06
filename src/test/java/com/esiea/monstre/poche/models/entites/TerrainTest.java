@@ -1,12 +1,11 @@
-package com.esiea.monstre.poche.chore.models.entites;
+package com.esiea.monstre.poche.models.entites;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.esiea.monstre.poche.chore.models.entites.Terrain;
-import com.esiea.monstre.poche.chore.models.etats.Asseche;
-import com.esiea.monstre.poche.chore.models.etats.Innonde;
-import com.esiea.monstre.poche.chore.models.etats.StatutTerrain;
+import com.esiea.monstre.poche.models.etats.Asseche;
+import com.esiea.monstre.poche.models.etats.Innonde;
+import com.esiea.monstre.poche.models.etats.StatutTerrain;
 
 import static org.junit.jupiter.api.Assertions.*;
 

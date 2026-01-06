@@ -1,8 +1,0 @@
-package com.esiea.monstre.poche.chore.models.etats;
-
-public class Normal extends StatutMonstre {
-    
-    public Normal() {
-        this.labelStatut = "Normal";
-    }
-}
