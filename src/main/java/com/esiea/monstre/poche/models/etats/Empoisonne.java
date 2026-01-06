@@ -10,12 +10,12 @@ public class Empoisonne extends StatutMonstre {
     }
 
     public void appliquerEffets(Monstre cible, double degats) {
-        double degatsPoison = degats / 10;
+        // CDC: subit un dixième de son attaque
+        double degatsPoison = cible.getAttaque() / 10.0;
         if (cible.getPointsDeVie() - degatsPoison < 0) {
-            degatsPoison = 0;
-        } else {
-            cible.setPointsDeVie(cible.getPointsDeVie() - degatsPoison);
-            CombatLogger.log(cible.getNomMonstre() + " est empoisonné ! Subit " + (int)degatsPoison + " dégâts de poison.");
+            degatsPoison = cible.getPointsDeVie(); // Ne pas aller en négatif
         }
+        cible.setPointsDeVie(cible.getPointsDeVie() - degatsPoison);
+        CombatLogger.log(cible.getNomMonstre() + " est empoisonné ! Subit " + (int)degatsPoison + " dégâts de poison.");
     }
 }

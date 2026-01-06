@@ -1,6 +1,8 @@
 package com.esiea.monstre.poche.models.loader;
 
 import com.esiea.monstre.poche.models.entites.Attaque;
+import com.esiea.monstre.poche.models.affinites.Eau;
+import com.esiea.monstre.poche.models.affinites.Foudre;
 import com.esiea.monstre.poche.models.affinites.Type;
 import com.esiea.monstre.poche.models.affinites.utils.AffinitesUtils;
 import com.esiea.monstre.poche.models.entites.Monstre;
@@ -82,6 +84,11 @@ public class GameResourcesLoader {
             Integer atkMin = null, atkMax = null;
             Integer defMin = null, defMax = null;
             Integer vitMin = null, vitMax = null;
+            
+            // Probabilités spéciales pour les types
+            Double probaParalysie = null;  // Pour Foudre
+            Double probaFlood = null;       // Pour Eau
+            Double probaFall = null;        // Pour Eau
 
             boolean dansMonster = false;
 
@@ -105,6 +112,9 @@ public class GameResourcesLoader {
                         atkMin = atkMax = null;
                         defMin = defMax = null;
                         vitMin = vitMax = null;
+                        probaParalysie = null;
+                        probaFlood = null;
+                        probaFall = null;
                         break;
 
                     case "EndMonster":
@@ -122,6 +132,19 @@ public class GameResourcesLoader {
                         int attaque = valeurAleatoire(atkMin, atkMax);
                         int defense = valeurAleatoire(defMin, defMax);
                         int vitesse = valeurAleatoire(vitMin, vitMax);
+                        
+                        // Appliquer les probabilités spéciales au type
+                        if (type instanceof Foudre && probaParalysie != null) {
+                            ((Foudre) type).setChanceParalysie(probaParalysie);
+                        }
+                        if (type instanceof Eau) {
+                            if (probaFlood != null) {
+                                ((Eau) type).setProbabiliteInnondation(probaFlood);
+                            }
+                            if (probaFall != null) {
+                                ((Eau) type).setProbabiliteFaireChuter(probaFall);
+                            }
+                        }
 
                         Monstre monstre = new Monstre(
                                 nom,
@@ -175,13 +198,25 @@ public class GameResourcesLoader {
                                 vitMax = Integer.parseInt(parts[2]);
                                 break;
 
-                            // Effets spéciaux → validés mais non stockés ici
+                            // Effets spéciaux pour types spéciaux
                             case "Paralysis":
+                                probaParalysie = Double.parseDouble(parts[1]);
+                                if (probaParalysie < 0 || probaParalysie > 1) {
+                                    throw new ParseException("Probabilité Paralysis invalide ligne " + numeroLigne);
+                                }
+                                break;
+                                
                             case "Flood":
+                                probaFlood = Double.parseDouble(parts[1]);
+                                if (probaFlood < 0 || probaFlood > 1) {
+                                    throw new ParseException("Probabilité Flood invalide ligne " + numeroLigne);
+                                }
+                                break;
+                                
                             case "Fall":
-                                double proba = Double.parseDouble(parts[1]);
-                                if (proba < 0 || proba > 1) {
-                                    throw new ParseException("Probabilité invalide ligne " + numeroLigne);
+                                probaFall = Double.parseDouble(parts[1]);
+                                if (probaFall < 0 || probaFall > 1) {
+                                    throw new ParseException("Probabilité Fall invalide ligne " + numeroLigne);
                                 }
                                 break;
 

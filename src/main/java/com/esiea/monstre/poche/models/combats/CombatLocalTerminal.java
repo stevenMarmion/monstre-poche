@@ -220,22 +220,31 @@ public class CombatLocalTerminal extends Combat {
             String ppStatus = attaque.getNbUtilisations() <= 0 ? " [VIDE]" : "";
             CombatLogger.log(String.format("[%d] %s%s", index++, GameVisual.formatterAttaque(attaque), ppStatus));
         }
+        // Option mains nues toujours disponible
+        CombatLogger.log(String.format("[0] MAINS NUES            | PP:infini | Puissance: faible"));
 
         Attaque attaqueChoisie = null;
-        while (attaqueChoisie == null) {
-            String choixInput = GameVisual.demanderSaisie(this.scanner, "Attaque choisie >");
+        boolean choixValide = false;
+        while (!choixValide) {
+            String choixInput = GameVisual.demanderSaisie(this.scanner, "Attaque choisie (0 pour mains nues) >");
             try {
                 int indexChoisi = Integer.parseInt(choixInput);
+                if (indexChoisi == 0) {
+                    // Mains nues - retourne null
+                    CombatLogger.log("  [OK] Attaque à mains nues sélectionnée.");
+                    return null;
+                }
                 if (indexChoisi < 1 || indexChoisi > monstreActuel.getAttaques().size()) {
-                    GameVisual.afficherErreur("Index invalide. Veuillez choisir un nombre entre 1 et " + monstreActuel.getAttaques().size());
+                    GameVisual.afficherErreur("Index invalide. Veuillez choisir 0 ou un nombre entre 1 et " + monstreActuel.getAttaques().size());
                     continue;
                 }
                 Attaque attaqueTemp = monstreActuel.getAttaques().get(indexChoisi - 1);
                 if (attaqueTemp.getNbUtilisations() <= 0) {
-                    GameVisual.afficherErreur("Cette attaque n'a plus de PP ! Choisissez une autre attaque.");
+                    GameVisual.afficherErreur("Cette attaque n'a plus de PP ! Choisissez une autre attaque ou 0 pour mains nues.");
                     continue;
                 }
                 attaqueChoisie = attaqueTemp;
+                choixValide = true;
             } catch (NumberFormatException e) {
                 GameVisual.afficherErreur("Saisie invalide. Veuillez entrer un numero.");
             }

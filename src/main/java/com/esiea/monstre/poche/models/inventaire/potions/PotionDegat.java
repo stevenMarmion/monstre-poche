@@ -17,8 +17,10 @@ public class PotionDegat extends Potion {
 
     @Override
     public void utiliserObjet(Monstre cible) {
+        int attaqueAvant = cible.getAttaque();
         CombatLogger.log("Utilisation de " + this.nomObjet + " sur " + cible.getNomMonstre());
         cible.setAttaque(cible.getAttaque() + this.pointsDeDegat);
+        CombatLogger.log("  -> Attaque de " + cible.getNomMonstre() + " augmente: " + attaqueAvant + " -> " + cible.getAttaque());
     }
 
     @Override

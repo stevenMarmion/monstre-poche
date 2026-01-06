@@ -84,14 +84,11 @@ public class BattleController {
         if (!player1Ready) {
             // Joueur 1 choisit son attaque
             List<Attaque> attaques = view.getJoueur1().getMonstreActuel().getAttaques();
-            if (attaques == null || attaques.isEmpty()) {
-                view.updateBattleLog(view.getJoueur1().getNomJoueur() + " n'a pas d'attaques disponibles.");
-                return;
-            }
             view.displayAttackChoices(attaques, attaque -> {
-                player1Action = attaque;
+                player1Action = attaque; // null = mains nues
                 player1Ready = true;
-                view.updateBattleLog(view.getJoueur1().getNomJoueur() + " a choisi : " + attaque.getNomAttaque());
+                String nomAttaque = attaque != null ? attaque.getNomAttaque() : "Mains nues";
+                view.updateBattleLog(view.getJoueur1().getNomJoueur() + " a choisi : " + nomAttaque);
                 
                 // Si mode Bot, déclencher le tour du Bot automatiquement
                 if (view.getJoueur2() instanceof Bot) {
@@ -105,14 +102,11 @@ public class BattleController {
         } else if (!player2Ready) {
             // Joueur 2 choisit son attaque
             List<Attaque> attaques = view.getJoueur2().getMonstreActuel().getAttaques();
-            if (attaques == null || attaques.isEmpty()) {
-                view.updateBattleLog(view.getJoueur2().getNomJoueur() + " n'a pas d'attaques disponibles.");
-                return;
-            }
             view.displayAttackChoices(attaques, attaque -> {
-                player2Action = attaque;
+                player2Action = attaque; // null = mains nues
                 player2Ready = true;
-                view.updateBattleLog(view.getJoueur2().getNomJoueur() + " a choisi : " + attaque.getNomAttaque());
+                String nomAttaque = attaque != null ? attaque.getNomAttaque() : "Mains nues";
+                view.updateBattleLog(view.getJoueur2().getNomJoueur() + " a choisi : " + nomAttaque);
                 executeTurnActions();
             });
         }
@@ -207,7 +201,7 @@ public class BattleController {
     }
 
     private String formatAction(Object action) {
-        if (action == null) return "(aucune)";
+        if (action == null) return "Attaque: Mains nues";
         if (action instanceof Attaque) {
             return "Attaque: " + ((Attaque) action).getNomAttaque();
         }

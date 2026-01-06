@@ -33,20 +33,19 @@ class BruleTest {
         
         statutBrule.appliquerEffets(monstre, degats);
         
-        // Les dégâts de brûlure sont égaux à degats / 10 = 50 / 10 = 5
+        // CDC: Les dégâts de brûlure sont égaux à attaque / 10 = 50 / 10 = 5
         assertEquals(pvAvant - 5, monstre.getPointsDeVie());
     }
 
     @Test
     void testAppliquerEffetsAvecPeuDePV() {
         monstre.setPointsDeVie(3);
-        double pvAvant = monstre.getPointsDeVie();
         double degats = 50;
         
         statutBrule.appliquerEffets(monstre, degats);
         
-        // Les dégâts devraient être de 0 car les PV ne peuvent pas descendre en dessous de 0
-        // selon la logique du code
-        assertEquals(pvAvant, monstre.getPointsDeVie());
+        // CDC: Dégâts brûlure = attaque/10 = 50/10 = 5
+        // Avec 3 PV, le monstre tombe à 0 (pas en négatif)
+        assertEquals(0.0, monstre.getPointsDeVie());
     }
 }

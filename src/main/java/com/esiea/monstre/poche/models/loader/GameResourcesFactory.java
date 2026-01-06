@@ -3,7 +3,6 @@ package com.esiea.monstre.poche.models.loader;
 import com.esiea.monstre.poche.models.entites.Attaque;
 import com.esiea.monstre.poche.models.entites.Monstre;
 import com.esiea.monstre.poche.models.inventaire.Objet;
-import com.esiea.monstre.poche.models.loader.GameResourcesLoader;
 
 import java.util.*;
 import java.util.stream.Collectors;

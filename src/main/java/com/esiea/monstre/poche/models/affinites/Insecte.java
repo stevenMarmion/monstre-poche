@@ -16,11 +16,12 @@ public class Insecte extends Nature {
 
     @Override
     public void appliqueCapaciteSpeciale(Monstre cible) {
+        // CDC: empoisonne une attaque sur trois
         if ((nbTourAttaque % NB_TOUR_MAX_ATTAQUE_EMPOISONNEMENT) == 0) {
-            nbTourAttaque++;
             cible.setStatut(new Empoisonne());   
             CombatLogger.log(cible.getNomMonstre() + " est désormais empoisonné.");
         }
+        nbTourAttaque++; // Incrémenter après chaque attaque
         super.appliqueCapaciteSpeciale(cible);
     }
     

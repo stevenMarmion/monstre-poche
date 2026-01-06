@@ -16,6 +16,9 @@ public class MedicamentAntiParalysie extends Medicament {
         if (cible.getStatut().getLabelStatut().equals("Paralyse")) {
             CombatLogger.log("Utilisation de " + this.nomObjet + " sur " + cible.getNomMonstre());
             cible.setStatut(new Normal());
+            CombatLogger.log("  -> " + cible.getNomMonstre() + " n'est plus paralysé !");
+        } else {
+            CombatLogger.log("Utilisation de " + this.nomObjet + " sur " + cible.getNomMonstre() + " - Aucun effet (pas paralysé)");
         }
     }
 

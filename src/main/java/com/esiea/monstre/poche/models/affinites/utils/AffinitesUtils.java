@@ -49,25 +49,28 @@ public class AffinitesUtils {
      * Applique la capacité spéciale d'un type à un monstre cible en fonction du type
      * 
      * @param statut le type dont la capacité spéciale doit être appliquée
+     * @param monstreAttaquant le monstre qui attaque (nécessaire pour Eau)
      * @param cible le monstre cible
      * @param terrain le terrain actuel
      */
-    public static void appliqueCapaciteSpeciale(Type statut, Monstre cible, Terrain terrain) {
+    public static void appliqueCapaciteSpeciale(Type statut, Monstre monstreAttaquant, Monstre cible, Terrain terrain) {
         switch (statut.getLabelType().toLowerCase()) {
             case "feu":
                 ((Feu) statut).appliqueCapaciteSpeciale(cible);
                 break;
             case "eau":
-                ((Eau) statut).appliqueCapaciteSpeciale(terrain);
+                ((Eau) statut).appliqueCapaciteSpeciale(terrain, monstreAttaquant);
                 break;
             case "foudre":
                 ((Foudre) statut).appliqueCapaciteSpeciale(cible);
                 break;
             case "terre":
-                ((Terre) statut).appliqueCapaciteSpeciale(cible);
+                // La capacité spéciale Terre affecte le monstre attaquant lui-même
+                ((Terre) statut).appliqueCapaciteSpeciale(monstreAttaquant);
                 break;
             case "plante":
-                ((Plante) statut).appliqueCapaciteSpeciale(cible);
+                // Plante se soigne lui-même
+                ((Plante) statut).appliqueCapaciteSpeciale(monstreAttaquant);
                 break;
             case "insecte":
                 ((Insecte) statut).appliqueCapaciteSpeciale(cible);
@@ -81,21 +84,28 @@ public class AffinitesUtils {
     }
 
     /**
-     * Applique la capacité spéciale du type Nature si le terrain est Inondé
+     * Applique la capacité spéciale du type Nature si le terrain est Inondé.
+     * CDC: Les monstres de type nature (Plante, Insecte) récupèrent 1/20 de leurs PV max sur terrain inondé.
      * 
      * @param statut le type dont la capacité spéciale doit être appliquée
      * @param cible le monstre cible
      * @param terrain le terrain actuel
      */
     public static void appliqueCapaciteSpecialeNature(Type statut, Monstre cible, Terrain terrain) {
+        if (!terrain.getStatutTerrain().getLabelStatut().equals("Innonde")) {
+            return; // Pas d'effet si le terrain n'est pas inondé
+        }
+        
         switch (statut.getLabelType().toLowerCase()) {
             case "nature":
-                if (terrain.getStatutTerrain().getLabelStatut().equals("Innonde")) {
-                    ((Nature) statut).appliqueCapaciteSpeciale(cible);
-                }
+            case "plante":
+            case "insecte":
+                // Tous les types Nature bénéficient de la récupération
+                // Pour Plante et Insecte, on appelle directement la méthode de Nature
+                new Nature().appliqueCapaciteSpeciale(cible);
                 break;
             default:
-                // System.err.println(new TypeIconnuException("Type inconnu: " + statut.getLabelType()));
+                // Pas un type Nature, pas d'effet
                 break;
         }
     }

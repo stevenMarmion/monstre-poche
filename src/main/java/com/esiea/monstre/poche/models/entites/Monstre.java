@@ -151,6 +151,15 @@ public class Monstre implements Serializable {
             attaqueUtilisee.setNbUtilisations(attaqueUtilisee.getNbUtilisations() - 1);
         }
         
+        // Vérifier si l'attaque échoue (probabilité d'échec)
+        if (attaqueUtilisee != null && Math.random() < attaqueUtilisee.getProbabiliteEchec()) {
+            CombatLogger.log("=======================================");
+            CombatLogger.log(this.nomMonstre + " utilise " + attaqueUtilisee.getNomAttaque() + "...");
+            CombatLogger.log("  -> L'attaque échoue ! (probabilité d'échec: " + (int)(attaqueUtilisee.getProbabiliteEchec() * 100) + "%)");
+            CombatLogger.log("=======================================");
+            return;
+        }
+        
         // on commence par calculer les dégâts, c'est la base de tout
         double degatsAffliges;
         if (attaqueUtilisee == null || !this.attaques.contains(attaqueUtilisee)) {
@@ -165,6 +174,11 @@ public class Monstre implements Serializable {
             CombatLogger.log(this.nomMonstre + " utilise " + attaqueUtilisee.getNomAttaque() + " (PP restants: " + attaqueUtilisee.getNbUtilisations() + ") :");
         } else {
             CombatLogger.log(this.nomMonstre + " utilise ses mains nues :");
+        }
+        
+        // Log du statut actuel du monstre attaquant
+        if (!this.statut.getLabelStatut().equals("Normal")) {
+            CombatLogger.log("  [STATUT] " + this.nomMonstre + " est " + this.statut.getLabelStatut());
         }
         
         // ensuite on applique nos effets avant attaque si le pokémon est paralysé ou autre
@@ -186,7 +200,10 @@ public class Monstre implements Serializable {
             }
 
             // les effets de l'attaque spéciale du monstre si elle est pas ratée
-            AffinitesUtils.appliqueCapaciteSpeciale(typeMonstre, cible, terrain);
+            // ET si c'est une vraie attaque (pas mains nues)
+            if (attaqueUtilisee != null) {
+                AffinitesUtils.appliqueCapaciteSpeciale(typeMonstre, this, cible, terrain);
+            }
         } else {
                 CombatLogger.log(this.nomMonstre + " a raté son attaque.");
         }

@@ -17,12 +17,15 @@ public class PotionSante extends Potion {
 
     @Override
     public void utiliserObjet(Monstre cible) {
+        double pvAvant = cible.getPointsDeVie();
         CombatLogger.log("Utilisation de " + this.nomObjet + " sur " + cible.getNomMonstre());
         if (cible.getPointsDeVie() + this.pointsDeSoin > cible.getPointsDeVieMax()) {
             cible.setPointsDeVie(cible.getPointsDeVieMax());
         } else {
             cible.setPointsDeVie(cible.getPointsDeVie() + this.pointsDeSoin);
         }
+        int pvRecuperes = (int)(cible.getPointsDeVie() - pvAvant);
+        CombatLogger.log("  -> " + cible.getNomMonstre() + " récupère " + pvRecuperes + " PV (" + (int)cible.getPointsDeVie() + "/" + (int)cible.getPointsDeVieMax() + ")");
     }
 
     @Override

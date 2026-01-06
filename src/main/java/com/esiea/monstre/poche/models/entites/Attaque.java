@@ -3,6 +3,7 @@ package com.esiea.monstre.poche.models.entites;
 import java.io.Serializable;
 
 import com.esiea.monstre.poche.models.affinites.Type;
+import com.esiea.monstre.poche.models.combats.CombatLogger;
 
 public class Attaque implements Serializable {
     protected static final long serialVersionUID = 1L;
@@ -65,10 +66,18 @@ public class Attaque implements Serializable {
         int denominateur = 25 * cible.getDefense();
         double coeff = 0.85 + (1.0 - 0.85) * Math.random();
         double avantage = 1;
-        if (this.getTypeAttaque().estFaibleContre().equals(cible.getTypeMonstre().getLabelType())) {
+        
+        String typeAttaque = this.getTypeAttaque().getLabelType();
+        String typeCible = cible.getTypeMonstre().getLabelType();
+        
+        if (this.getTypeAttaque().estFaibleContre() != null && 
+            this.getTypeAttaque().estFaibleContre().equals(typeCible)) {
             avantage = 0.5;
-        } else if (this.getTypeAttaque().estFortContre().equals(cible.getTypeMonstre().getLabelType())) {
+            CombatLogger.log("  [TYPE] " + typeAttaque + " est faible contre " + typeCible + " ! Dégâts réduits de moitié.");
+        } else if (this.getTypeAttaque().estFortContre() != null && 
+                   this.getTypeAttaque().estFortContre().equals(typeCible)) {
             avantage = 2;
+            CombatLogger.log("  [TYPE] " + typeAttaque + " est fort contre " + typeCible + " ! Dégâts doublés.");
         }
         return ((numerateur/denominateur) + 2) * avantage * coeff;
     }

@@ -15,6 +15,9 @@ public class MedicamentAntiPoison extends Medicament {
         if (cible.getStatut().getLabelStatut().equals("Empoisonne")) {
             CombatLogger.log("Utilisation de " + this.nomObjet + " sur " + cible.getNomMonstre());
             cible.setStatut(new Normal());
+            CombatLogger.log("  -> " + cible.getNomMonstre() + " n'est plus empoisonné !");
+        } else {
+            CombatLogger.log("Utilisation de " + this.nomObjet + " sur " + cible.getNomMonstre() + " - Aucun effet (pas empoisonné)");
         }
     }
 
