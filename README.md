@@ -110,7 +110,7 @@ mvn install
 mvn exec:java
 
 # Exécuter une classe spécifique
-mvn exec:java -Dexec.mainClass="com.esiea.monstre.poche.loader.ExempleUtilisation"
+mvn exec:java -Dexec.mainClass="com.esiea.monstre.poche.chore.models.loader.ExempleUtilisation"
 
 # Exécuter avec des arguments
 mvn exec:java -Dexec.args="arg1 arg2"
