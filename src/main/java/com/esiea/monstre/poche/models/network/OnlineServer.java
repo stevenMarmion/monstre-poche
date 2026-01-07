@@ -5,7 +5,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Scanner;
 
-import com.esiea.monstre.poche.models.battle.CombatLogger;
+import com.esiea.monstre.poche.models.battle.logs.CombatLogger;
 import com.esiea.monstre.poche.models.battle.modes.CombatEnLigne;
 import com.esiea.monstre.poche.models.core.Joueur;
 import com.esiea.monstre.poche.models.game.GameVisual;

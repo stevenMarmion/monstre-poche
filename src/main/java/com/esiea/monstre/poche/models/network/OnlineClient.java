@@ -8,8 +8,9 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Scanner;
 
-import com.esiea.monstre.poche.models.battle.CombatLogger;
+import com.esiea.monstre.poche.models.battle.logs.CombatLogger;
 import com.esiea.monstre.poche.models.core.Joueur;
+import com.esiea.monstre.poche.models.network.enums.EnumEvent;
 
 /**
  * Client simple qui relaie les messages du serveur dans le terminal et envoie les reponses utilisateur.
@@ -34,13 +35,13 @@ public class OnlineClient {
             
             String line;
             while ((line = in.readLine()) != null) {
-                if (line.startsWith("INFO|")) {
+                if (line.startsWith(EnumEvent.INFO.toString())) {
                     CombatLogger.log(line.substring(5));
-                } else if (line.startsWith("ASK|")) {
+                } else if (line.startsWith(EnumEvent.ASK.toString())) {
                     CombatLogger.log(line.substring(4));
                     String response = scanner.nextLine().trim();
-                    out.println("ANS|" + response);
-                } else if (line.startsWith("END|")) {
+                    out.println(EnumEvent.ANSWER.toString() + response);
+                } else if (line.startsWith(EnumEvent.END.toString())) {
                     CombatLogger.log(line.substring(4));
                     break;
                 } else {

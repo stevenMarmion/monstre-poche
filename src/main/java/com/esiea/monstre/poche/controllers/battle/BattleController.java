@@ -6,8 +6,8 @@ import java.util.List;
 
 import com.esiea.monstre.poche.controllers.INavigationCallback;
 import com.esiea.monstre.poche.models.battle.Combat;
-import com.esiea.monstre.poche.models.battle.CombatLogger;
 import com.esiea.monstre.poche.models.battle.ai.Bot;
+import com.esiea.monstre.poche.models.battle.logs.CombatLogger;
 import com.esiea.monstre.poche.models.battle.modes.CombatBot;
 import com.esiea.monstre.poche.models.battle.modes.CombatLocalTerminal;
 import com.esiea.monstre.poche.models.core.Attaque;

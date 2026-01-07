@@ -1,9 +1,10 @@
-package com.esiea.monstre.poche.models.battle;
+package com.esiea.monstre.poche.models.battle.logs;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
+import com.esiea.monstre.poche.models.battle.logs.enums.LoggingMode;
 import com.esiea.monstre.poche.models.core.Joueur;
 import com.esiea.monstre.poche.models.core.Monstre;
 
@@ -15,15 +16,13 @@ import com.esiea.monstre.poche.models.core.Monstre;
 public class CombatLogger {
     private static final String SEPARATOR = "========================================";
     private static final String LIGHT_SEPARATOR = "----------------------------------------";
-    
-    /** Liste de tous les logs de la session */
     private static final List<String> logs = new ArrayList<>();
-    
-    /** Liste des logs du tour actuel uniquement */
     private static final List<String> currentTurnLogs = new ArrayList<>();
     
-    /** Callback pour envoyer les logs à l'interface graphique (si défini) */
     private static Consumer<String> guiCallback = null;
+    private static Consumer<String> networkCallback = null;
+
+    private static LoggingMode loggingMode = LoggingMode.LOCAL_ONLY;
 
     /**
      * Définit le callback pour envoyer les logs à l'interface graphique.
@@ -31,6 +30,31 @@ public class CombatLogger {
      */
     public static void setGuiCallback(Consumer<String> callback) {
         guiCallback = callback;
+    }
+
+    /**
+     * Définit le callback pour envoyer les logs à une connexion réseau.
+     * @param callback Fonction qui reçoit chaque message de log (ex: connection::sendInfo)
+     */
+    public static void setNetworkCallback(Consumer<String> callback) {
+        networkCallback = callback;
+    }
+
+    /**
+     * Définit le mode de logging.
+     * @param mode Mode de logging à utiliser
+     */
+    public static void setLoggingMode(LoggingMode mode) {
+        loggingMode = mode;
+    }
+
+    /**
+     * Réinitialise les callbacks et le mode de logging aux valeurs par défaut.
+     */
+    public static void resetCallbacks() {
+        guiCallback = null;
+        networkCallback = null;
+        loggingMode = LoggingMode.LOCAL_ONLY;
     }
     
     /**
@@ -79,14 +103,31 @@ public class CombatLogger {
     
     /**
      * Méthode interne pour ajouter un log.
+     * Respecte le mode de logging configuré pour déterminer où envoyer les logs.
      */
     private static void addLog(String message) {
         logs.add(message);
         currentTurnLogs.add(message);
-        
-        System.out.println(message);
-        
-        // Envoi à l'interface graphique si callback défini
+
+        // Envoi vers le terminal local et/ou la connexion réseau selon le mode
+        switch (loggingMode) {
+            case LOCAL_ONLY:
+                System.out.println(message);
+                break;
+            case NETWORK_ONLY:
+                if (networkCallback != null) {
+                    networkCallback.accept(message);
+                }
+                break;
+            case BOTH:
+                System.out.println(message);
+                if (networkCallback != null) {
+                    networkCallback.accept(message);
+                }
+                break;
+        }
+
+        // Envoi à l'interface graphique si callback défini (indépendant du mode de logging)
         if (guiCallback != null) {
             guiCallback.accept(message);
         }

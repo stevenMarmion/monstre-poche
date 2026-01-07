@@ -2,7 +2,7 @@ package com.esiea.monstre.poche.models.game;
 
 import java.util.Scanner;
 
-import com.esiea.monstre.poche.models.battle.CombatLogger;
+import com.esiea.monstre.poche.models.battle.logs.CombatLogger;
 import com.esiea.monstre.poche.models.core.Attaque;
 import com.esiea.monstre.poche.models.core.Monstre;
 

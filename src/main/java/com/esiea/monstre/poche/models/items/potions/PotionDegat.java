@@ -1,6 +1,6 @@
 package com.esiea.monstre.poche.models.items.potions;
 
-import com.esiea.monstre.poche.models.battle.CombatLogger;
+import com.esiea.monstre.poche.models.battle.logs.CombatLogger;
 import com.esiea.monstre.poche.models.core.Monstre;
 
 public class PotionDegat extends Potion {

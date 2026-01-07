@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
-import com.esiea.monstre.poche.models.battle.CombatLogger;
+import com.esiea.monstre.poche.models.battle.logs.CombatLogger;
 import com.esiea.monstre.poche.models.status.monster.Normal;
 import com.esiea.monstre.poche.models.status.monster.StatutMonstre;
 import com.esiea.monstre.poche.models.status.utils.StatutMonstreUtils;

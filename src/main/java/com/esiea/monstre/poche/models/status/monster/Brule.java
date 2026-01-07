@@ -1,6 +1,6 @@
 package com.esiea.monstre.poche.models.status.monster;
 
-import com.esiea.monstre.poche.models.battle.CombatLogger;
+import com.esiea.monstre.poche.models.battle.logs.CombatLogger;
 import com.esiea.monstre.poche.models.core.Monstre;
 
 public class Brule extends StatutMonstre {

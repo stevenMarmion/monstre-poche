@@ -2,7 +2,7 @@ package com.esiea.monstre.poche.models.core;
 
 import java.io.Serializable;
 
-import com.esiea.monstre.poche.models.battle.CombatLogger;
+import com.esiea.monstre.poche.models.battle.logs.CombatLogger;
 import com.esiea.monstre.poche.models.types.Type;
 
 public class Attaque implements Serializable {
