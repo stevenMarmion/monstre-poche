@@ -2,7 +2,6 @@ package com.esiea.monstre.poche.views.gui.selection;
 
 import com.esiea.monstre.poche.models.core.Joueur;
 import com.esiea.monstre.poche.models.game.resources.GameResourcesFactory;
-import com.esiea.monstre.poche.models.game.resources.GameResourcesLoader;
 import com.esiea.monstre.poche.models.items.Objet;
 import com.esiea.monstre.poche.models.items.medicaments.Medicament;
 import com.esiea.monstre.poche.models.items.potions.Potion;
@@ -46,10 +45,7 @@ public class ObjectSelectionView extends VBox {
     private List<VBox> selectedCards;
     private Label selectionCounter;
     private Joueur joueur;
-    
-    private final GameResourcesLoader resourcesLoader = new GameResourcesLoader();
-    private final GameResourcesFactory resourcesFactory = new GameResourcesFactory(resourcesLoader);
-    
+
     private static final String POTION_COLOR = "#FF6B9D";      // Rose/Magenta pour potions
     private static final String MEDICAMENT_COLOR = "#4ECDC4"; // Turquoise pour médicaments
     private static final String OBJET_COLOR = "#95A5A6";      // Gris pour autres objets
@@ -65,7 +61,7 @@ public class ObjectSelectionView extends VBox {
      * Initialise la vue de sélection des objets.
      */
     private void initializeView() {
-        List<Objet> allObjects = resourcesFactory.getTousLesObjets();
+        List<Objet> allObjects = GameResourcesFactory.getInstance().getTousLesObjets();
         
         // Configuration du conteneur principal
         this.setSpacing(15);

@@ -9,7 +9,6 @@ import com.esiea.monstre.poche.models.battle.logs.CombatLogger;
 import com.esiea.monstre.poche.models.battle.modes.CombatEnLigne;
 import com.esiea.monstre.poche.models.core.Joueur;
 import com.esiea.monstre.poche.models.game.GameVisual;
-import com.esiea.monstre.poche.models.game.resources.GameResourcesFactory;
 
 /**
  * Serveur minimal pour orchestrer un combat en ligne.
@@ -23,7 +22,7 @@ public class OnlineServer {
         this.scanner = scanner;
     }
 
-    public void lancer(GameResourcesFactory resourcesFactory) {
+    public void lancer() {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
             CombatLogger.log("Serveur en attente d'un joueur sur le port " + port + " ...");
             Socket socket = serverSocket.accept();
@@ -37,7 +36,7 @@ public class OnlineServer {
                 Joueur joueurDistant = new Joueur(nomJoueurDistant);
 
                 CombatEnLigne combat = new CombatEnLigne(joueurLocal, joueurDistant, connection);
-                combat.lancer(resourcesFactory);
+                combat.lancer();
             }
         } catch (IOException e) {
             CombatLogger.error("Problème de serveur : " + e.getMessage());

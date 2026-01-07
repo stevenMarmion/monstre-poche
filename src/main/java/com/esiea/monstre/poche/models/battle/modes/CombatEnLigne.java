@@ -5,12 +5,10 @@ import java.util.Scanner;
 
 import com.esiea.monstre.poche.models.battle.Combat;
 import com.esiea.monstre.poche.models.battle.logs.enums.LoggingMode;
-
 import com.esiea.monstre.poche.models.battle.logs.CombatLogger;
 import com.esiea.monstre.poche.models.core.Joueur;
 import com.esiea.monstre.poche.models.core.Monstre;
 import com.esiea.monstre.poche.models.game.GameVisual;
-import com.esiea.monstre.poche.models.game.resources.GameResourcesFactory;
 import com.esiea.monstre.poche.models.network.OnlineConnection;
 
 /**
@@ -89,19 +87,19 @@ public class CombatEnLigne extends Combat {
     // ========================================
 
     @Override
-    public void lancer(GameResourcesFactory resourcesFactory) {
+    public void lancer() {
         afficherTitrePourTous("Configuration de vos monstres");
 
         communicatingWithRemote = false;
-        this.selectionnerMonstre(resourcesFactory, joueur1);
-        this.selectionnerAttaque(resourcesFactory, joueur1);
-        this.selectionnerObjet(resourcesFactory, joueur1);
+        this.selectionnerMonstre(joueur1);
+        this.selectionnerAttaque(joueur1);
+        this.selectionnerObjet(joueur1);
 
         afficherTitrePourTous("Configuration adversaire");
         communicatingWithRemote = true;
-        this.selectionnerMonstre(resourcesFactory, joueur2);
-        this.selectionnerAttaque(resourcesFactory, joueur2);
-        this.selectionnerObjet(resourcesFactory, joueur2);
+        this.selectionnerMonstre(joueur2);
+        this.selectionnerAttaque(joueur2);
+        this.selectionnerObjet(joueur2);
 
         afficherTitrePourTous("COMBAT EN LIGNE LANCE !");
         this.executerTour();

@@ -9,7 +9,6 @@ import com.esiea.monstre.poche.models.core.Attaque;
 import com.esiea.monstre.poche.models.core.Joueur;
 import com.esiea.monstre.poche.models.core.Monstre;
 import com.esiea.monstre.poche.models.game.GameVisual;
-import com.esiea.monstre.poche.models.game.resources.GameResourcesFactory;
 import com.esiea.monstre.poche.models.items.Objet;
 
 /**
@@ -63,10 +62,10 @@ public class CombatBot extends Combat {
      * Lance le combat avec sélection automatique pour le Bot
      */
     @Override
-    public void lancer(GameResourcesFactory resourceFactory) {
-        this.selectionnerMonstre(resourceFactory, super.joueur1);
-        this.selectionnerAttaque(resourceFactory, super.joueur1);
-        this.selectionnerObjet(resourceFactory, super.joueur1);
+    public void lancer() {
+        this.selectionnerMonstre(super.joueur1);
+        this.selectionnerAttaque(super.joueur1);
+        this.selectionnerObjet(super.joueur1);
 
         this.afficherTitre("COMBAT LANCE !");
         this.afficherMessage("Le Bot " + bot.getNomJoueur() + " est pret au combat.");

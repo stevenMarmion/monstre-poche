@@ -8,7 +8,6 @@ import com.esiea.monstre.poche.models.core.Attaque;
 import com.esiea.monstre.poche.models.core.Joueur;
 import com.esiea.monstre.poche.models.core.Monstre;
 import com.esiea.monstre.poche.models.game.GameVisual;
-import com.esiea.monstre.poche.models.game.resources.GameResourcesFactory;
 import com.esiea.monstre.poche.models.items.Objet;
 
 /**
@@ -57,15 +56,15 @@ public class CombatLocalTerminal extends Combat {
     // ========================================
 
     @Override
-    public void lancer(GameResourcesFactory resourcesFactory) {
-        this.selectionnerMonstre(resourcesFactory, joueur1);
-        this.selectionnerMonstre(resourcesFactory, joueur2);
+    public void lancer() {
+        this.selectionnerMonstre(joueur1);
+        this.selectionnerMonstre(joueur2);
 
-        this.selectionnerAttaque(resourcesFactory, joueur1);
-        this.selectionnerAttaque(resourcesFactory, joueur2);
+        this.selectionnerAttaque(joueur1);
+        this.selectionnerAttaque(joueur2);
 
-        this.selectionnerObjet(resourcesFactory, joueur1);
-        this.selectionnerObjet(resourcesFactory, joueur2);
+        this.selectionnerObjet(joueur1);
+        this.selectionnerObjet(joueur2);
 
         this.afficherTitre("COMBAT LANCE !");
         executerTour();

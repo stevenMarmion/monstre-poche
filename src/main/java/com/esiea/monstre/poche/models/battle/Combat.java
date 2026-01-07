@@ -28,7 +28,7 @@ public abstract class Combat {
     // ========================================
     // Méthodes abstraites à implémenter par les sous-classes
     // ========================================
-    protected abstract void lancer(GameResourcesFactory resourcesFactory);
+    protected abstract void lancer();
     protected abstract void executerTour();
     protected abstract void afficherMessage(String message);
     protected abstract void afficherTitre(String titre);
@@ -45,12 +45,12 @@ public abstract class Combat {
      * Sélection des monstres pour un joueur
      * Méthode template : la logique est commune, seul l'I/O change
      */
-    public void selectionnerMonstre(GameResourcesFactory resourcesFactory, Joueur joueur) {
+    public void selectionnerMonstre(Joueur joueur) {
         afficherTitre("Selection des monstres - " + joueur.getNomJoueur());
         afficherSousTitre("Monstres disponibles");
 
         int index = 1;
-        List<Monstre> monstresDisponibles = resourcesFactory.getTousLesMonstres();
+        List<Monstre> monstresDisponibles = GameResourcesFactory.getInstance().getTousLesMonstres();
         for (Monstre monstre : monstresDisponibles) {
             afficherMessage(String.format("[%d] %s", index++, GameVisual.formatterMonstre(monstre)));
         }
@@ -82,11 +82,11 @@ public abstract class Combat {
      * Sélection des attaques pour un joueur
      * Méthode template : la logique est commune, seul l'I/O change
      */
-    public void selectionnerAttaque(GameResourcesFactory resourcesFactory, Joueur joueur) {
+    public void selectionnerAttaque(Joueur joueur) {
         afficherTitre("Selection des attaques - " + joueur.getNomJoueur());
         afficherSousTitre("Attaques disponibles");
 
-        List<Attaque> attaquesADisposition = resourcesFactory.getToutesLesAttaques();
+        List<Attaque> attaquesADisposition = GameResourcesFactory.getInstance().getToutesLesAttaques();
         for (Monstre monstre : joueur.getMonstres()) {
             afficherSousTitre("Monstre : " + monstre.getNomMonstre());
 
@@ -129,11 +129,11 @@ public abstract class Combat {
      * Sélection des objets pour un joueur
      * Méthode template : la logique est commune, seul l'I/O change
      */
-    public void selectionnerObjet(GameResourcesFactory resourcesFactory, Joueur joueur) {
+    public void selectionnerObjet(Joueur joueur) {
         afficherTitre("Selection des objets - " + joueur.getNomJoueur());
         afficherSousTitre("Objets disponibles");
 
-        List<Objet> objetsDisponibles = resourcesFactory.getTousLesObjets();
+        List<Objet> objetsDisponibles = GameResourcesFactory.getInstance().getTousLesObjets();
         int index = 1;
         for (Objet objet : objetsDisponibles) {
             afficherMessage(String.format("[%d] %s", index++, objet.getNomObjet()));

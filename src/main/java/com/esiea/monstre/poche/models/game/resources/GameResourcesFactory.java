@@ -7,13 +7,24 @@ import com.esiea.monstre.poche.models.items.Objet;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Singleton - Factory pour accéder aux ressources du jeu (monstres, attaques, objets).
+ * Les ressources sont chargées une seule fois au démarrage de l'application.
+ */
 public class GameResourcesFactory {
+
+    private static volatile GameResourcesFactory instance;
 
     private final Map<String, Attaque> attaquesTemplate;
     private final Map<String, Monstre> monstresTemplate;
     private final Map<String, Objet> objetsTemplate;
 
-    public GameResourcesFactory(GameResourcesLoader loader) {
+    /**
+     * Constructeur privé - Pattern Singleton.
+     * Charge toutes les ressources depuis les fichiers de configuration.
+     */
+    private GameResourcesFactory() {
+        GameResourcesLoader loader = new GameResourcesLoader();
 
         this.attaquesTemplate = loader.getListeAttaquesDeBase().stream()
                 .collect(Collectors.toMap(
@@ -32,6 +43,21 @@ public class GameResourcesFactory {
                         o -> o.getNomObjet().toLowerCase(),
                         o -> o
                 ));
+    }
+
+    /**
+     * Retourne l'instance unique de GameResourcesFactory.
+     * Thread-safe avec double-check locking pattern.
+     */
+    public static GameResourcesFactory getInstance() {
+        if (instance == null) {
+            synchronized (GameResourcesFactory.class) {
+                if (instance == null) {
+                    instance = new GameResourcesFactory();
+                }
+            }
+        }
+        return instance;
     }
 
     // =====================================================

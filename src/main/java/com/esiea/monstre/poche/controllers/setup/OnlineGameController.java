@@ -14,7 +14,6 @@ import com.esiea.monstre.poche.models.core.Attaque;
 import com.esiea.monstre.poche.models.core.Joueur;
 import com.esiea.monstre.poche.models.core.Monstre;
 import com.esiea.monstre.poche.models.game.resources.GameResourcesFactory;
-import com.esiea.monstre.poche.models.game.resources.GameResourcesLoader;
 import com.esiea.monstre.poche.models.network.OnlineClient;
 import com.esiea.monstre.poche.models.network.OnlineConnection;
 import com.esiea.monstre.poche.models.network.OnlineServer;
@@ -28,17 +27,12 @@ import javafx.application.Platform;
  * Gere la connexion, l'echange des donnees des joueurs et le combat en ligne.
  */
 public class OnlineGameController {
-    
+
     // ===== Phase de connexion =====
     private OnlineGameView setupView;
     private INavigationCallback navigationCallback;
     private OnlineConnection currentConnection;
     private boolean isHost = false;
-
-    // TODO gameresources factory passe, mais  plusieurs instances définies dans l'app
-    // ca devrait etre un singleton
-    private final GameResourcesLoader resourcesLoader = new GameResourcesLoader();
-    private final GameResourcesFactory resourcesFactory = new GameResourcesFactory(resourcesLoader);
 
     // ===== Phase de combat =====
     private BattleView battleView;
@@ -273,14 +267,14 @@ public class OnlineGameController {
             CombatLogger.log("Chargement monstre: " + nomMonstre + " avec " + atkNames.length + " attaques");
             
             // Trouver le monstre dans le loader
-            Monstre monstre = findMonstreByName(this.resourcesFactory, nomMonstre);
+            Monstre monstre = findMonstreByName(nomMonstre);
             if (monstre != null) {
                 // Cloner le monstre pour ne pas modifier l'original
                 Monstre clonedMonstre = monstre.copyOf();
                 
                 // Ajouter les attaques
                 for (String atkName : atkNames) {
-                    Attaque attaque = findAttaqueByName(this.resourcesFactory, atkName);
+                    Attaque attaque = findAttaqueByName(atkName);
                     if (attaque != null) {
                         clonedMonstre.ajouterAttaque(attaque);
                     } else {
@@ -313,19 +307,17 @@ public class OnlineGameController {
         return joueur;
     }
     
-    private Monstre findMonstreByName(GameResourcesFactory resourcesFactory, String name) {
-        if (resourcesFactory == null) return null;
-        for (Monstre m : resourcesFactory.getTousLesMonstres()) {
+    private Monstre findMonstreByName(String name) {
+        for (Monstre m : GameResourcesFactory.getInstance().getTousLesMonstres()) {
             if (m.getNomMonstre().equals(name)) {
                 return m;
             }
         }
         return null;
     }
-    
-    private Attaque findAttaqueByName(GameResourcesFactory resourcesFactory, String name) {
-        if (resourcesFactory == null) return null;
-        for (Attaque a : resourcesFactory.getToutesLesAttaques()) {
+
+    private Attaque findAttaqueByName(String name) {
+        for (Attaque a : GameResourcesFactory.getInstance().getToutesLesAttaques()) {
             if (a.getNomAttaque().equals(name)) {
                 return a;
             }

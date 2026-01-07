@@ -5,21 +5,15 @@ import com.esiea.monstre.poche.models.battle.ai.Bot;
 import com.esiea.monstre.poche.models.battle.logs.CombatLogger;
 import com.esiea.monstre.poche.models.core.Joueur;
 import com.esiea.monstre.poche.models.game.resources.GameResourcesFactory;
-import com.esiea.monstre.poche.models.game.resources.GameResourcesLoader;
 import com.esiea.monstre.poche.views.gui.setup.BotGameView;
 
 /**
  * Controller pour le mode de jeu contre le bot.
  */
 public class BotGameController {
-    
+
     private BotGameView view;
     private INavigationCallback INavigationCallback;
-
-    // TODO gameresources factory passe, mais  plusieurs instances définies dans l'app
-    // ca devrait etre un singleton
-    private final GameResourcesLoader resourcesLoader = new GameResourcesLoader();
-    private final GameResourcesFactory resourcesFactory = new GameResourcesFactory(resourcesLoader);
     
     public BotGameController(BotGameView view, INavigationCallback INavigationCallback) {
         this.view = view;
@@ -56,8 +50,8 @@ public class BotGameController {
         Joueur joueur = new Joueur(playerName);
 
         Bot bot = new Bot("Bot");
-        bot.chargerMonstresAutomatiquement(this.resourcesFactory);
-        bot.chargerAttaquesAutomatiquement(this.resourcesFactory);
+        bot.chargerMonstresAutomatiquement(GameResourcesFactory.getInstance());
+        bot.chargerAttaquesAutomatiquement(GameResourcesFactory.getInstance());
 
         CombatLogger.info("Démarrage du jeu - " + playerName + " VS " + bot.getNomJoueur());
         INavigationCallback.showMonsterSelectionPlayer(joueur, () -> {

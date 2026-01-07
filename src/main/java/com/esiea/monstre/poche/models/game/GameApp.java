@@ -7,7 +7,6 @@ import com.esiea.monstre.poche.models.battle.modes.CombatBot;
 import com.esiea.monstre.poche.models.battle.modes.CombatLocalTerminal;
 import com.esiea.monstre.poche.models.core.Joueur;
 import com.esiea.monstre.poche.models.game.resources.GameResourcesFactory;
-import com.esiea.monstre.poche.models.game.resources.GameResourcesLoader;
 import com.esiea.monstre.poche.models.network.OnlineClient;
 import com.esiea.monstre.poche.models.network.OnlineServer;
 import com.esiea.monstre.poche.views.MonstrePocheUI;
@@ -23,21 +22,22 @@ public class GameApp {
     private static final Scanner scanner = new Scanner(System.in);
 
     public static void startAppTerminal() {
-        GameResourcesLoader resourcesLoader = new GameResourcesLoader();
-        GameResourcesFactory resourcesFactory = new GameResourcesFactory(resourcesLoader);
+        // Initialiser le singleton GameResourcesFactory (chargement des ressources)
+        GameResourcesFactory.getInstance();
+
         int modeJeu = GameVisual.afficherMenuModeJeu(scanner);
 
         switch (modeJeu) {
             case LANCEMENT_JEU_BOT:
-                lancementJeuBot(resourcesFactory);
+                lancementJeuBot();
                 break;
-            
+
             case LANCEMENT_JEU_LOCAL:
-                lancementJeuLocal(resourcesFactory);
+                lancementJeuLocal();
                 break;
 
             case LANCEMENT_JEU_ONLINE:
-                lancementJeuOnline(resourcesFactory);
+                lancementJeuOnline();
                 break;
             default:
                 break;
@@ -50,39 +50,39 @@ public class GameApp {
         MonstrePocheUI.main(null);
     }
 
-    private static void lancementJeuLocal(GameResourcesFactory resourcesFactory) {
+    private static void lancementJeuLocal() {
         String nomJoueur1 = GameVisual.demanderSaisie(scanner, "Entrez le nom du Joueur 1 >");
         Joueur joueur1 = new Joueur(nomJoueur1);
         String nomJoueur2 = GameVisual.demanderSaisie(scanner, "Entrez le nom du Joueur 2 >");
         Joueur joueur2 = new Joueur(nomJoueur2);
-        
+
         CombatLocalTerminal combat = new CombatLocalTerminal(joueur1, joueur2);
-        combat.lancer(resourcesFactory);
+        combat.lancer();
     }
 
-    private static void lancementJeuBot(GameResourcesFactory resourcesFactory) {
+    private static void lancementJeuBot() {
         String nomJoueur1 = GameVisual.demanderSaisie(scanner, "Entrez votre nom de joueur >");
         Joueur joueur1 = new Joueur(nomJoueur1);
-        
+
         int difficulteBout = GameVisual.afficherMenuDifficulteBot(scanner);
         Bot bot = new Bot("Kylian le Bot", difficulteBout);
 
-        bot.chargerMonstresAutomatiquement(resourcesFactory);
-        bot.chargerAttaquesAutomatiquement(resourcesFactory);
-        bot.chargerObjetsAutomatiquement(resourcesFactory);
+        bot.chargerMonstresAutomatiquement(GameResourcesFactory.getInstance());
+        bot.chargerAttaquesAutomatiquement(GameResourcesFactory.getInstance());
+        bot.chargerObjetsAutomatiquement(GameResourcesFactory.getInstance());
 
         CombatBot combatBot = new CombatBot(joueur1, bot);
-        combatBot.lancer(resourcesFactory);
+        combatBot.lancer();
     }
 
-    private static void lancementJeuOnline(GameResourcesFactory resourcesFactory) {
+    private static void lancementJeuOnline() {
         int choixEnLigne = GameVisual.afficherMenuJeuEnLigne(scanner);
 
         if (choixEnLigne == DEMARRAGE_SERVEUR) {
             int port = GameVisual.demanderPortServeur(scanner);
             OnlineServer server = new OnlineServer(port, scanner);
-            server.lancer(resourcesFactory);
-        } 
+            server.lancer();
+        }
         if (choixEnLigne == CONNEXION_SERVEUR) {
             String[] config = GameVisual.demanderConfigurationServeur(scanner);
             String adresse = config[0];
