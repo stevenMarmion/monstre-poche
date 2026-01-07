@@ -40,7 +40,6 @@ public class AffinitesUtils {
             case "normal":
                 return new Normal();
             default:
-                // System.err.println(new TypeIconnuException(String.format("Type '%s' non reconnu par le parser. Type Normal appliqué par défaut.", typeStr)));
                 return new Normal();
         }
     }
@@ -65,11 +64,9 @@ public class AffinitesUtils {
                 ((Foudre) statut).appliqueCapaciteSpeciale(cible);
                 break;
             case "terre":
-                // La capacité spéciale Terre affecte le monstre attaquant lui-même
                 ((Terre) statut).appliqueCapaciteSpeciale(monstreAttaquant);
                 break;
             case "plante":
-                // Plante se soigne lui-même
                 ((Plante) statut).appliqueCapaciteSpeciale(monstreAttaquant);
                 break;
             case "insecte":
@@ -78,7 +75,6 @@ public class AffinitesUtils {
             case "normal":
                 break;
             default:
-                // System.err.println(new TypeIconnuException("Type inconnu: " + statut.getLabelType()));
                 break;
         }
     }
@@ -93,7 +89,7 @@ public class AffinitesUtils {
      */
     public static void appliqueCapaciteSpecialeNature(Type statut, Monstre cible, Terrain terrain) {
         if (!terrain.getStatutTerrain().getLabelStatut().equals("Innonde")) {
-            return; // Pas d'effet si le terrain n'est pas inondé
+            return;
         }
         
         switch (statut.getLabelType().toLowerCase()) {
@@ -105,7 +101,6 @@ public class AffinitesUtils {
                 new Nature().appliqueCapaciteSpeciale(cible);
                 break;
             default:
-                // Pas un type Nature, pas d'effet
                 break;
         }
     }

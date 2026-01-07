@@ -14,12 +14,6 @@ import com.esiea.monstre.poche.models.etats.utils.StatutTerrainUtils;
 
 public class Monstre implements Serializable {
     protected static final long serialVersionUID = 1L;
-    // private static final int COEFF_MULTIPLICATEUR_DEGATS_MAINS_NUES = 20;
-    // private static final int POINTS_DE_VIE_MINIMAL = 0;
-    // private static final int COEF_DOUBLE_DEGATS = 2;
-    // private static final int COEF_DIVISE_DEGATS = 2;
-    // private static final double COEF_QUART_DEGATS = 0.25;
-    // private static final double COEF_DIXIEME_DEGATS = 0.1;
 
     private String nomMonstre;
     private double pointsDeVieMax;
@@ -140,22 +134,21 @@ public class Monstre implements Serializable {
     }
 
     public void attaquer(Monstre cible, Terrain terrain, Attaque attaqueUtilisee) {
-        // Vérifier si l'attaque a encore des utilisations disponibles
-        if (attaqueUtilisee != null && attaqueUtilisee.getNbUtilisations() <= 0) {
+        if (attaqueUtilisee == null) {
+            CombatLogger.error("Attaque utilisee est nulle.");
+            return;
+        }
+        if (attaqueUtilisee.getNbUtilisations() <= 0) {
             CombatLogger.log(this.nomMonstre + " ne peut pas utiliser " + attaqueUtilisee.getNomAttaque() + " : plus de PP !");
             return;
         }
-        
-        // Décrémenter le nombre d'utilisations de l'attaque
-        if (attaqueUtilisee != null) {
-            attaqueUtilisee.setNbUtilisations(attaqueUtilisee.getNbUtilisations() - 1);
-        }
+        attaqueUtilisee.setNbUtilisations(attaqueUtilisee.getNbUtilisations() - 1);
         
         // Vérifier si l'attaque échoue (probabilité d'échec)
-        if (attaqueUtilisee != null && Math.random() < attaqueUtilisee.getProbabiliteEchec()) {
+        if (Math.random() < attaqueUtilisee.getProbabiliteEchec()) {
             CombatLogger.log("=======================================");
             CombatLogger.log(this.nomMonstre + " utilise " + attaqueUtilisee.getNomAttaque() + "...");
-            CombatLogger.log("  -> L'attaque échoue ! (probabilité d'échec: " + (int)(attaqueUtilisee.getProbabiliteEchec() * 100) + "%)");
+            CombatLogger.log("  --> L'attaque échoue ! (probabilité d'échec: " + (int)(attaqueUtilisee.getProbabiliteEchec() * 100) + "%)");
             CombatLogger.log("=======================================");
             return;
         }
@@ -170,16 +163,8 @@ public class Monstre implements Serializable {
 
         // Log avant attaque avec PP restants
         CombatLogger.log("=======================================");
-        if (attaqueUtilisee != null) {
-            CombatLogger.log(this.nomMonstre + " utilise " + attaqueUtilisee.getNomAttaque() + " (PP restants: " + attaqueUtilisee.getNbUtilisations() + ") :");
-        } else {
-            CombatLogger.log(this.nomMonstre + " utilise ses mains nues :");
-        }
-        
-        // Log du statut actuel du monstre attaquant
-        if (!this.statut.getLabelStatut().equals("Normal")) {
-            CombatLogger.log("  [STATUT] " + this.nomMonstre + " est " + this.statut.getLabelStatut());
-        }
+        CombatLogger.log(this.nomMonstre + " utilise " + attaqueUtilisee.getNomAttaque() + " (PP restants: " + attaqueUtilisee.getNbUtilisations() + ") :");
+        CombatLogger.log("  [STATUT] " + this.nomMonstre + " est " + this.statut.getLabelStatut());
         
         // ensuite on applique nos effets avant attaque si le pokémon est paralysé ou autre
         StatutMonstreUtils.appliquerStatutMonstre(statut, this, (int) degatsAffliges);
@@ -192,11 +177,11 @@ public class Monstre implements Serializable {
             double pvAvant = cible.getPointsDeVie();
             cible.setPointsDeVie(cible.getPointsDeVie() - (int) degatsAffliges);
             
-                CombatLogger.log(cible.getNomMonstre() + " subit " + (int) degatsAffliges + " points de dégâts.");
-                CombatLogger.log("PV: " + (int)pvAvant + " -> " + (int)cible.getPointsDeVie() + " / " + (int)cible.getPointsDeVieMax());
+            CombatLogger.log(cible.getNomMonstre() + " subit " + (int) degatsAffliges + " points de dégâts.");
+            CombatLogger.log("PV: " + (int)pvAvant + " --> " + (int)cible.getPointsDeVie() + " / " + (int)cible.getPointsDeVieMax());
 
             if (cible.getPointsDeVie() == 0) {
-                    CombatLogger.log(cible.getNomMonstre() + " est K.O.");
+                CombatLogger.log(cible.getNomMonstre() + " est K.O.");
             }
 
             // les effets de l'attaque spéciale du monstre si elle est pas ratée
@@ -205,9 +190,8 @@ public class Monstre implements Serializable {
                 AffinitesUtils.appliqueCapaciteSpeciale(typeMonstre, this, cible, terrain);
             }
         } else {
-                CombatLogger.log(this.nomMonstre + " a raté son attaque.");
+            CombatLogger.log(this.nomMonstre + " a raté son attaque.");
         }
-        
         CombatLogger.log("=======================================");
     }
 
@@ -217,31 +201,32 @@ public class Monstre implements Serializable {
         return degats;
     }
 
-    public Monstre copyOf(){
+    public Monstre copyOf() {
         ArrayList<Attaque> copiesAttaques = this.attaques.stream()
-                .map(Attaque::copyOf)
-                .collect(Collectors.toCollection(ArrayList::new));
+            .map(Attaque::copyOf)
+            .collect(Collectors.toCollection(ArrayList::new)
+        );
 
         return new Monstre(
-                this.getNomMonstre(),
-                this.getPointsDeVieMax(),
-                this.getAttaque(),
-                this.getDefense(),
-                this.getVitesse(),
-                copiesAttaques,
-                this.getTypeMonstre()
+            this.getNomMonstre(),
+            this.getPointsDeVieMax(),
+            this.getAttaque(),
+            this.getDefense(),
+            this.getVitesse(),
+            copiesAttaques,
+            this.getTypeMonstre()
         );
     }
 
     @Override
     public String toString() {
         return "Monstre (" +
-                "nomMonstre='" + nomMonstre + '\'' +
-                ", pointsDeVie=" + pointsDeVie +
-                ", attaque=" + attaque +
-                ", defense=" + defense +
-                ", vitesse=" + vitesse +
-                ')';
+            "nomMonstre='" + nomMonstre + '\'' +
+            ", pointsDeVie=" + pointsDeVie +
+            ", attaque=" + attaque +
+            ", defense=" + defense +
+            ", vitesse=" + vitesse +
+            ')';
     }
 
     @Override

@@ -14,7 +14,6 @@ public class Plante extends Nature {
     }
 
     public void appliqueCapaciteSpeciale(Monstre cible) {
-        // CDC: ~20% de chance de se soigner
         if (Math.random() < CHANCE_SOIN) {
             cible.setStatut(new Normal());
             CombatLogger.log(cible.getNomMonstre() + " est soigné et redevient normal !");

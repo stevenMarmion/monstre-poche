@@ -64,8 +64,10 @@ public class App {
     private static void lancementJeuBot(GameResourcesFactory resourcesFactory) {
         String nomJoueur1 = GameVisual.demanderSaisie(scanner, "Entrez votre nom de joueur >");
         Joueur joueur1 = new Joueur(nomJoueur1);
+        
         int difficulteBout = GameVisual.afficherMenuDifficulteBot(scanner);
         Bot bot = new Bot("Kylian le Bot", difficulteBout);
+
         bot.chargerMonstresAutomatiquement(resourcesFactory);
         bot.chargerAttaquesAutomatiquement(resourcesFactory);
         bot.chargerObjetsAutomatiquement(resourcesFactory);

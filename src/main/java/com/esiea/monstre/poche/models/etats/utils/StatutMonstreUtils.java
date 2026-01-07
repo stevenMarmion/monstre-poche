@@ -24,7 +24,6 @@ public class StatutMonstreUtils {
                 ((SousTerre) statutMonstre).appliquerEffets(cible);
                 break;
             default:
-                // System.err.println(new TypeIconnuException("Statut inconnu: " + statutMonstre.getLabelStatut()));
                 break;
         }
     }

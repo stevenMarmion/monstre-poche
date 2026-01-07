@@ -8,7 +8,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-import com.esiea.monstre.poche.models.entites.Joueur;
+import com.esiea.monstre.poche.models.online.enums.EnumEvent;
 
 /**
  * Connexion utilitaire pour envoyer/recevoir des messages simples entre le serveur et le client.
@@ -18,36 +18,30 @@ public class OnlineConnection implements Closeable {
     private final BufferedReader in;
     private final PrintWriter out;
 
-    private Joueur joueur;
-
-    public OnlineConnection(Socket socket, Joueur joueur) throws IOException {
+    public OnlineConnection(Socket socket) throws IOException {
         this.socket = socket;
         this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         this.out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true);
-        this.joueur = joueur;
     }
 
     public void sendInfo(String message) {
-        out.println("INFO|" + message);
-        // out.flush();
+        out.println(EnumEvent.INFO + message);
     }
 
     public void sendEnd(String message) {
-        out.println("END|" + message);
-        // out.flush();
+        out.println(EnumEvent.END + message);
     }
 
     public String ask(String prompt) throws IOException {
-        out.println("ASK|" + prompt);
-        // out.flush();
+        out.println(EnumEvent.ASK + prompt);
         return waitForAnswer();
     }
 
     private String waitForAnswer() throws IOException {
         String line;
         while ((line = in.readLine()) != null) {
-            if (line.startsWith("ANS|")) {
-                return line.substring(4);
+            if (line.startsWith(EnumEvent.ANSWER.toString())) {
+                return line.substring(EnumEvent.ANSWER.getLabelLength());
             }
         }
         throw new IOException("Connexion interrompue avant reponse");
@@ -60,9 +54,5 @@ public class OnlineConnection implements Closeable {
 
     public Socket getSocket() {
         return socket;
-    }
-
-    public Joueur getJoueur() {
-        return joueur;
     }
 }

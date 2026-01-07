@@ -11,6 +11,6 @@ public class Asseche extends StatutTerrain {
 
     public void appliquerEffets(Terrain terrain) {
         terrain.setStatutTerrain(new Asseche());
-        CombatLogger.logEffetTerrain(terrain.getNomTerrain() + " est maintenant asséché.");
+        CombatLogger.log(terrain.getNomTerrain() + " est maintenant asséché.");
     }
 }

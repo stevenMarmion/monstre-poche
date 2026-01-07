@@ -3,7 +3,6 @@ package com.esiea.monstre.poche.models.inventaire.medicaments;
 import com.esiea.monstre.poche.models.combats.CombatLogger;
 import com.esiea.monstre.poche.models.entites.Monstre;
 import com.esiea.monstre.poche.models.etats.Normal;
-import com.esiea.monstre.poche.models.inventaire.Objet;
 
 public class MedicamentAntiParalysie extends Medicament {
 

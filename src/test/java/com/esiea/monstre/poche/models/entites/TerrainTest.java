@@ -17,7 +17,7 @@ class TerrainTest {
     @BeforeEach
     void setUp() {
         statutAsseche = new Asseche();
-        statutInnonde = new Innonde(3);
+        statutInnonde = new Innonde(3, 0.3, null);
         terrain = new Terrain("Terrain de combat", statutAsseche);
     }
 

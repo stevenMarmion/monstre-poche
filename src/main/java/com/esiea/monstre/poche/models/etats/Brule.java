@@ -10,10 +10,9 @@ public class Brule extends StatutMonstre {
     }
 
     public void appliquerEffets(Monstre cible, double degats) {
-        // CDC: subit un dixième de son attaque
         double degatsBrule = cible.getAttaque() / 10.0;
         if (cible.getPointsDeVie() - degatsBrule < 0) {
-            degatsBrule = cible.getPointsDeVie(); // Ne pas aller en négatif
+            degatsBrule = cible.getPointsDeVie();
         }
         cible.setPointsDeVie(cible.getPointsDeVie() - degatsBrule);
         CombatLogger.log(cible.getNomMonstre() + " est brûlé ! Subit " + (int)degatsBrule + " dégâts de brûlure.");

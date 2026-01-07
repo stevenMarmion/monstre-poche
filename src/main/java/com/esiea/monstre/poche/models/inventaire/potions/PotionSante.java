@@ -4,7 +4,6 @@ import com.esiea.monstre.poche.models.combats.CombatLogger;
 import com.esiea.monstre.poche.models.entites.Monstre;
 
 public class PotionSante extends Potion {
-
     /**
      * Value en pourcentage de restoration des points de vie d'un monstre
      */

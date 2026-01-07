@@ -30,45 +30,43 @@ public class CombatBot extends Combat {
      */
     @Override
     public void lancer(GameResourcesFactory resourceFactory) {
-        // Le joueur humain sélectionne ses monstres et attaques
         this.selectionnerMonstre(resourceFactory, super.joueur1);
         this.selectionnerAttaque(resourceFactory, super.joueur1);
         this.selectionnerObjet(resourceFactory, super.joueur1);
 
-        GameVisual.afficherTitreSection("COMBAT LANCE !");
+        CombatLogger.logTitre("COMBAT LANCE !");
         CombatLogger.log("Le Bot " + bot.getNomJoueur() + " est pret au combat.");
 
-        // Exécuter les tours de combat
         this.executerTour();
     }
 
     @Override
     public void selectionnerMonstre(GameResourcesFactory resourcesFactory, Joueur joueur) {
-        GameVisual.afficherTitreSection("Selection des monstres - " + joueur.getNomJoueur());
-        GameVisual.afficherSousTitre("Monstres disponibles");
+        CombatLogger.logTitre("Selection des monstres - " + joueur.getNomJoueur());
+        CombatLogger.logSousTitre("Monstres disponibles");
 
         int index = 1;
         List<Monstre> monstres = resourcesFactory.getTousLesMonstres();
         for (Monstre monstre : monstres) {
             CombatLogger.log(String.format("[%d] %s", index++, GameVisual.formatterMonstre(monstre)));
         }
-        while (joueur.getMonstres().size() < 3) {
+        while (joueur.getMonstres().size() < Joueur.TAILLE_EQUIPE_MAX) {
             String choixInput = GameVisual.demanderSaisie(this.scanner, "Choix " + (joueur.getMonstres().size() + 1) + "/3 >");
             try {
                 int indexChoisi = Integer.parseInt(choixInput);
                 if (indexChoisi < 1 || indexChoisi > monstres.size()) {
-                    GameVisual.afficherErreur("Index invalide. Veuillez choisir un nombre entre 1 et " + monstres.size());
+                    CombatLogger.error("Index invalide. Veuillez choisir un nombre entre 1 et " + monstres.size());
                     continue;
                 }
                 Monstre monstreCharge = monstres.get(indexChoisi - 1);
                 if (joueur.getMonstres().contains(monstreCharge)) {
-                    GameVisual.afficherErreur("Ce monstre a deja ete selectionne.");
+                    CombatLogger.error("Ce monstre a deja ete selectionne.");
                     continue;
                 }
                 joueur.ajouterMonstre(monstreCharge);
                 CombatLogger.log("  [OK] Monstre ajoute : " + monstreCharge.getNomMonstre());
             } catch (NumberFormatException e) {
-                GameVisual.afficherErreur("Saisie invalide. Veuillez entrer un numero.");
+                CombatLogger.error("Saisie invalide. Veuillez entrer un numero.");
             }
         }
         joueur.setMonstreActuel(joueur.getMonstres().get(0));
@@ -77,57 +75,43 @@ public class CombatBot extends Combat {
 
     @Override
     public void selectionnerObjet(GameResourcesFactory resourceFactory, Joueur joueur) {
-        System.out.printf(
-                "Merci de choisir %d objets parmi la liste suivante :%n",
-                Joueur.TAILLE_INVENTAIRE_MAX
-        );
-        List<Objet> objetsDisponibles = resourceFactory.getTousLesObjets();
+        CombatLogger.logTitre("Selection des objets - " + joueur.getNomJoueur());
+        CombatLogger.logSousTitre("Objets disponibles");
+        
         int index = 1;
+        List<Objet> objetsDisponibles = resourceFactory.getTousLesObjets();
         for (Objet objet : objetsDisponibles) {
-            System.out.printf("[%d] %s%n", index, objet.getNomObjet());
-            index++;
+            CombatLogger.log(String.format("[%d] %s", index, objet.getNomObjet()));
         }
-        System.out.printf("Choisissez un objet (%d/%d) : ", joueur.getObjets().size(), Joueur.TAILLE_INVENTAIRE_MAX);
         while (joueur.getObjets().size() < Joueur.TAILLE_INVENTAIRE_MAX) {
             try {
                 String choixInput = GameVisual.demanderSaisie(this.scanner, "Choix " + (joueur.getObjets().size() + 1) + "/"+Joueur.TAILLE_INVENTAIRE_MAX+"> ");
                 int indexChoisi = Integer.parseInt(choixInput);
-
                 if (indexChoisi < 1 || indexChoisi > objetsDisponibles.size()) {
-                    GameVisual.afficherErreur("Index invalide. Veuillez choisir un nombre entre 1 et " + objetsDisponibles.size());
+                    CombatLogger.error("Index invalide. Veuillez choisir un nombre entre 1 et " + objetsDisponibles.size());
                     continue;
                 }
-
                 Objet objetChoisi = objetsDisponibles.get(indexChoisi - 1);
 
-                // si l'objet est déjà présent dans la liste des objets choisis, on en crée une copie qu'on ajoute
-                // car un joueur peut avoir 5x le même objet dans son inventaire ( mais en réalité c'est 5 instances différentes )
-                //TODO Vérifier ca !
-                /**if (joueur.getObjets().contains(objetChoisi)){
-                 joueur.getObjets().add(new O)
-                 }
-                 else {
-                 joueur.getObjets().add(objetChoisi);
-                 }*/
+                joueur.ajouterObjet(objetChoisi.copyOf());
 
-                joueur.getObjets().add(objetChoisi);
-                System.out.println("  [OK] Objet ajouté pour " + joueur.getNomJoueur() + " : " + objetChoisi.getNomObjet());
+                CombatLogger.log("  [OK] Objet ajouté pour " + joueur.getNomJoueur() + " : " + objetChoisi.getNomObjet());
             } catch (NumberFormatException e) {
-                GameVisual.afficherErreur("Saisie invalide. Veuillez entrer un numero.");
+                CombatLogger.error("Saisie invalide. Veuillez entrer un numero.");
             }
         }
-        System.out.println("Sélection des objets terminée !");
+        CombatLogger.log("Sélection des objets terminée !");
     }
 
     @Override
     public void selectionnerAttaque(GameResourcesFactory resourceFactory, Joueur joueur) {
-        GameVisual.afficherTitreSection("Selection des attaques - " + joueur.getNomJoueur());
+        CombatLogger.logTitre("Selection des attaques - " + joueur.getNomJoueur());
+        CombatLogger.logSousTitre("Attaques disponibles");
 
         List<Attaque> attaquesADisposition = resourceFactory.getToutesLesAttaques();
         for (Monstre monstre : joueur.getMonstres()) {
-            GameVisual.afficherSousTitre("Monstre : " + monstre.getNomMonstre());
+            CombatLogger.logSousTitre("Monstre : " + monstre.getNomMonstre());
 
-            // Créer une liste des attaques compatibles
             List<Attaque> attaquesCompatibles = new ArrayList<>();
             for (Attaque attaque : attaquesADisposition) {
                 if (monstre.getTypeMonstre().getLabelType().equals(attaque.getTypeAttaque().getLabelType())) {
@@ -135,7 +119,6 @@ public class CombatBot extends Combat {
                 }
             }
 
-            // Afficher avec index
             int index = 1;
             for (Attaque attaque : attaquesCompatibles) {
                 CombatLogger.log(String.format("[%d] %s", index++, GameVisual.formatterAttaque(attaque)));
@@ -145,18 +128,18 @@ public class CombatBot extends Combat {
                 try {
                     int indexChoisi = Integer.parseInt(choixInput);
                     if (indexChoisi < 1 || indexChoisi > attaquesCompatibles.size()) {
-                        GameVisual.afficherErreur("Index invalide. Veuillez choisir un nombre entre 1 et " + attaquesCompatibles.size());
+                        CombatLogger.error("Index invalide. Veuillez choisir un nombre entre 1 et " + attaquesCompatibles.size());
                         continue;
                     }
                     Attaque attaqueChargee = attaquesCompatibles.get(indexChoisi - 1);
                     if (monstre.getAttaques().contains(attaqueChargee)) {
-                        GameVisual.afficherErreur("Attaque deja selectionnee pour ce monstre.");
+                        CombatLogger.error("Attaque deja selectionnee pour ce monstre.");
                         continue;
                     }
                     monstre.ajouterAttaque(attaqueChargee);
                     CombatLogger.log("  [OK] Attaque ajoutee : " + attaqueChargee.getNomAttaque());
                 } catch (NumberFormatException e) {
-                    GameVisual.afficherErreur("Saisie invalide. Veuillez entrer un numero.");
+                    CombatLogger.error("Saisie invalide. Veuillez entrer un numero.");
                 }
             }
         }
@@ -165,54 +148,53 @@ public class CombatBot extends Combat {
     @Override
     public Attaque choixAttaque(Joueur joueur) {
         Monstre monstreActuel = joueur.getMonstreActuel();
-        GameVisual.afficherTitreSection("Attaques de " + monstreActuel.getNomMonstre());
+        CombatLogger.logTitre("Attaques de " + monstreActuel.getNomMonstre());
         int index = 1;
         for (Attaque attaque : monstreActuel.getAttaques()) {
             String ppStatus = attaque.getNbUtilisations() <= 0 ? " [VIDE]" : "";
             CombatLogger.log(String.format("[%d] %s%s", index++, GameVisual.formatterAttaque(attaque), ppStatus));
         }
-        // Option mains nues toujours disponible
-        CombatLogger.log(String.format("[0] MAINS NUES            | PP:infini | Puissance: faible"));
+        CombatLogger.log(String.format("[%d] %s%s | Puissance: faible", index, "MAINS NUES", "PP: illimite"));
         
         while (true) {
             String choixInput = GameVisual.demanderSaisie(this.scanner, "Attaque choisie (0 pour mains nues) >");
             try {
                 int indexChoisi = Integer.parseInt(choixInput);
                 if (indexChoisi == 0) {
-                    // Mains nues - retourne null
                     CombatLogger.log("  [OK] Attaque à mains nues sélectionnée.");
                     return null;
                 }
                 if (indexChoisi < 1 || indexChoisi > monstreActuel.getAttaques().size()) {
-                    GameVisual.afficherErreur("Index invalide. Veuillez choisir 0 ou un nombre entre 1 et " + monstreActuel.getAttaques().size());
+                    CombatLogger.error("Index invalide. Veuillez choisir 0 ou un nombre entre 1 et " + monstreActuel.getAttaques().size());
                     continue;
                 }
                 Attaque attaqueTemp = monstreActuel.getAttaques().get(indexChoisi - 1);
                 if (attaqueTemp.getNbUtilisations() <= 0) {
-                    GameVisual.afficherErreur("Cette attaque n'a plus de PP ! Choisissez une autre attaque ou 0 pour mains nues.");
+                    CombatLogger.error("Cette attaque n'a plus de PP ! Choisissez une autre attaque ou 0 pour mains nues.");
                     continue;
                 }
                 return attaqueTemp;
             } catch (NumberFormatException e) {
-                GameVisual.afficherErreur("Saisie invalide. Veuillez entrer un numero.");
+                CombatLogger.error("Saisie invalide. Veuillez entrer un numero.");
             }
         }
     }
 
     @Override
     public Objet utiliseObjet(Joueur joueur) {
-        GameVisual.afficherTitreSection("Objets de " + joueur.getNomJoueur());
+        CombatLogger.logTitre("Objets de " + joueur.getNomJoueur());
+        
         int index = 1;
         List<Objet> objets = joueur.getObjets();
         if (objets.isEmpty()) {
-            GameVisual.afficherErreur("Aucun objet disponible.");
+            CombatLogger.error("Aucun objet disponible.");
             return null;
         }
         for (Objet objet : objets) {
             CombatLogger.log(String.format("[%d] %s", index++, objet.getNomObjet()));
 
             for (int i = 0; i < objets.size(); i++) {
-                System.out.printf("[%d] %s%n", i + 1, objets.get(i).getNomObjet());
+                CombatLogger.log(String.format("[%d] %s", i + 1, objets.get(i).getNomObjet()));
             }
             while (true) {
                 String saisie = GameVisual.demanderSaisie(scanner, "Objet choisi >");
@@ -220,14 +202,12 @@ public class CombatBot extends Combat {
                 try {
                     indexChoisi = Integer.parseInt(saisie);
                 } catch (NumberFormatException e) {
-                    GameVisual.afficherErreur("Veuillez entrer un nombre valide.");
+                    CombatLogger.error("Veuillez entrer un nombre valide.");
                     continue;
                 }
 
                 if (indexChoisi < 1 || indexChoisi > objets.size()) {
-                    GameVisual.afficherErreur(
-                            "Index invalide. Choisissez un nombre entre 1 et " + objets.size()
-                    );
+                    CombatLogger.error("Index invalide. Choisissez un nombre entre 1 et " + objets.size());
                     continue;
                 }
 
@@ -239,7 +219,7 @@ public class CombatBot extends Combat {
 
     @Override
     public Monstre changeMonstre(Joueur joueur) {
-        GameVisual.afficherTitreSection("Changement de monstre - " + joueur.getNomJoueur());
+        CombatLogger.logTitre("Changement de monstre - " + joueur.getNomJoueur());
         int index = 1;
         for (Monstre monstre : joueur.getMonstres()) {
             CombatLogger.log(String.format("[%d] %s", index++, GameVisual.formatterMonstre(monstre)));
@@ -249,12 +229,12 @@ public class CombatBot extends Combat {
             try {
                 int indexChoisi = Integer.parseInt(choixInput);
                 if (indexChoisi < 1 || indexChoisi > joueur.getMonstres().size()) {
-                    GameVisual.afficherErreur("Index invalide. Veuillez choisir un nombre entre 1 et " + joueur.getMonstres().size());
+                    CombatLogger.error("Index invalide. Veuillez choisir un nombre entre 1 et " + joueur.getMonstres().size());
                     continue;
                 }
                 return joueur.getMonstres().get(indexChoisi - 1);
             } catch (NumberFormatException e) {
-                GameVisual.afficherErreur("Saisie invalide. Veuillez entrer un numero.");
+                CombatLogger.error("Saisie invalide. Veuillez entrer un numero.");
             }
         }
     }
@@ -267,7 +247,7 @@ public class CombatBot extends Combat {
         while (!joueur1.sontMonstresMorts() && !joueur2.sontMonstresMorts()) {
             Object actionJoueur = this.gereChoixAction(joueur1);
             Object actionBot = this.gereChoixActionBot();
-            Combat.gereOrdreExecutionActions(actionJoueur, actionBot);
+            this.gereOrdreExecutionActions(actionJoueur, actionBot);
         }
         this.finDePartie();
     }
@@ -276,7 +256,7 @@ public class CombatBot extends Combat {
      * Gère l'action automatique du Bot
      */
     private Object gereChoixActionBot() {
-        GameVisual.afficherTitreSection("Tour du Bot " + bot.getNomJoueur());
+        CombatLogger.logTitre("Tour du Bot " + bot.getNomJoueur());
 
         Monstre monstreActifBot = bot.getMonstreActuel();
         Monstre monstreActifJoueur = joueur1.getMonstreActuel();
@@ -287,8 +267,6 @@ public class CombatBot extends Combat {
         }
 
         CombatLogger.log("Monstre actif du Bot : " + monstreActifBot.getNomMonstre() + " | PV " + (int) monstreActifBot.getPointsDeVie() + "/" + (int) monstreActifBot.getPointsDeVieMax());
-
-        // Le Bot choisit une attaque
         Attaque attaqueBot = bot.choisirActionAutomatiquement(monstreActifJoueur);
 
         if (attaqueBot != null) {
@@ -303,12 +281,12 @@ public class CombatBot extends Combat {
      */
     @Override
     public Object gereChoixAction(Joueur joueur) {
-        GameVisual.afficherTitreSection("Tour de " + joueur.getNomJoueur());
+        CombatLogger.logTitre("Tour de " + joueur.getNomJoueur());
         Monstre actif = joueur.getMonstreActuel();
         CombatLogger.log("Monstre actif : " + actif.getNomMonstre() + " | PV " + (int) actif.getPointsDeVie() + "/" + (int) actif.getPointsDeVieMax() + " | ATK " + actif.getAttaque() + " | DEF " + actif.getDefense() + " | VIT " + actif.getVitesse());
 
         // Afficher les monstres de l'adversaire (Bot)
-        GameVisual.afficherSousTitre("Monstres du Bot adverse :");
+        CombatLogger.logSousTitre("Monstres du Bot adverse :");
         for (Monstre m : bot.getMonstres()) {
             String statut = m.getPointsDeVie() > 0 ? "Vivant" : "KO";
             CombatLogger.log("  - " + m.getNomMonstre() + " | PV " + (int) m.getPointsDeVie() + "/" + (int) m.getPointsDeVieMax() + " | " + statut);
@@ -321,7 +299,7 @@ public class CombatBot extends Combat {
 
         String choixAction = GameVisual.demanderSaisie(this.scanner, "Votre choix >");
         while (!choixAction.equals("1") && !choixAction.equals("2") && !choixAction.equals("3")) {
-            GameVisual.afficherErreur("Saisie invalide. Merci de choisir 1, 2 ou 3.");
+            CombatLogger.error("Saisie invalide. Merci de choisir 1, 2 ou 3.");
             choixAction = GameVisual.demanderSaisie(this.scanner, "Votre choix >");
         }
 
@@ -350,9 +328,9 @@ public class CombatBot extends Combat {
      * Fin du combat avec message personnalisé
      */
     public void finDePartie() {
-        if (Combat.getAWinner() != null) {
-            GameVisual.afficherTitreSection("FIN DU COMBAT");
-            CombatLogger.log("Le gagnant est : " + Combat.getAWinner().getNomJoueur() + " !");
+        if (this.getAWinner() != null) {
+            CombatLogger.logTitre("FIN DU COMBAT");
+            CombatLogger.log("Le gagnant est : " + this.getAWinner().getNomJoueur() + " !");
         }
     }
 }

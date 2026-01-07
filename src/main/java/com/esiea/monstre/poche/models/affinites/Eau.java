@@ -24,16 +24,8 @@ public class Eau extends Type {
         this.probabiliteFaireChuter = probabiliteFaireChuter;
     }
     
-    public double getProbabiliteInnondation() {
-        return this.probabiliteInnondation;
-    }
-    
     public void setProbabiliteInnondation(double probabiliteInnondation) {
         this.probabiliteInnondation = probabiliteInnondation;
-    }
-    
-    public double getProbabiliteFaireChuter() {
-        return this.probabiliteFaireChuter;
     }
     
     public void setProbabiliteFaireChuter(double probabiliteFaireChuter) {
@@ -45,18 +37,6 @@ public class Eau extends Type {
         if (innonde) {
             int nbTours = (int) (Math.random() * NB_TOURS_MAX_INNONDATION) + NB_TOURS_MIN_INNONDATION;
             terrain.setStatutTerrain(new Innonde(nbTours, this.probabiliteFaireChuter, monstreEau));
-            CombatLogger.log(terrain.getNomTerrain() + " est désormais inondé pendant " + nbTours + " tours.");
-        }
-    }
-    
-    /**
-     * Ancienne méthode pour compatibilité
-     */
-    public void appliqueCapaciteSpeciale(Terrain terrain) {
-        boolean innonde = Math.random() < this.probabiliteInnondation;
-        if (innonde) {
-            int nbTours = (int) (Math.random() * NB_TOURS_MAX_INNONDATION) + NB_TOURS_MIN_INNONDATION;
-            terrain.setStatutTerrain(new Innonde(nbTours, this.probabiliteFaireChuter, null));
             CombatLogger.log(terrain.getNomTerrain() + " est désormais inondé pendant " + nbTours + " tours.");
         }
     }

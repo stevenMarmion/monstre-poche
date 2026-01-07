@@ -8,12 +8,11 @@ import java.util.List;
 
 import com.esiea.monstre.poche.controllers.INavigationCallback;
 import com.esiea.monstre.poche.models.combats.Combat;
+import com.esiea.monstre.poche.models.combats.CombatEnLigne;
 import com.esiea.monstre.poche.models.combats.CombatLogger;
 import com.esiea.monstre.poche.models.entites.Attaque;
 import com.esiea.monstre.poche.models.entites.Joueur;
 import com.esiea.monstre.poche.models.entites.Monstre;
-import com.esiea.monstre.poche.models.entites.Terrain;
-import com.esiea.monstre.poche.models.etats.Asseche;
 import com.esiea.monstre.poche.models.loader.GameResourcesFactory;
 import com.esiea.monstre.poche.models.loader.GameResourcesLoader;
 import com.esiea.monstre.poche.models.online.OnlineClient;
@@ -43,6 +42,7 @@ public class OnlineGameController {
 
     // ===== Phase de combat =====
     private BattleView battleView;
+    private Combat combat;
     private Joueur joueurLocal;
     private Joueur joueurDistant;
     
@@ -65,17 +65,17 @@ public class OnlineGameController {
         initializeSetupEventHandlers();
     }
     
-    // ==========================================================================
-    // PHASE DE CONNEXION
-    // ==========================================================================
-    
     /**
      * Initialise les gestionnaires d'evenements pour la phase de connexion.
      */
     private void initializeSetupEventHandlers() {
-        setupView.getBtnBackToMenu().setOnAction(e -> navigationCallback.showMainMenu());
+        setupView.getBtnBackToMenu().setOnAction(e -> backToMenu());
         setupView.getBtnJoinServer().setOnAction(e -> handleJoinServer());
         setupView.getBtnCreateServer().setOnAction(e -> handleCreateServer());
+    }
+
+    private void backToMenu() {
+        navigationCallback.showMainMenu();
     }
 
     private void handleJoinServer() {
@@ -107,7 +107,7 @@ public class OnlineGameController {
             Platform.runLater(() -> {
                 if (connectionClient != null && connectionClient.getSocket().isConnected()) {
                     currentConnection = connectionClient;
-                    CombatLogger.logReseau("Connecte au serveur !");
+                    CombatLogger.log("Connecte au serveur !");
                     startSelectionFlow(joiningPlayer, connectionClient, false);
                 } else {
                     setupView.resetJoinLoading();
@@ -140,11 +140,11 @@ public class OnlineGameController {
 
         new Thread(() -> {
             OnlineServer server = new OnlineServer(port, null);
-            OnlineConnection connectionServer = server.demarrerServeur(hostPlayer);
+            OnlineConnection connectionServer = server.demarrerServeur();
             Platform.runLater(() -> {
                 if (connectionServer != null && connectionServer.getSocket().isConnected()) {
                     currentConnection = connectionServer;
-                    CombatLogger.logReseau("Client connecte !");
+                    CombatLogger.log("Client connecte !");
                     startSelectionFlow(hostPlayer, connectionServer, true);
                 } else {
                     setupView.resetHostLoading();
@@ -176,7 +176,7 @@ public class OnlineGameController {
                 // Envoyer nos donnees de joueur
                 String playerData = serializePlayer(joueurLocal);
                 connection.sendInfo("PLAYER_DATA|" + playerData);
-                CombatLogger.logReseau("Donnees envoyees, en attente de l'adversaire...");
+                CombatLogger.log("Donnees envoyees, en attente de l'adversaire...");
                 
                 // Attendre les donnees de l'adversaire
                 String line;
@@ -186,7 +186,7 @@ public class OnlineGameController {
                     if (line.startsWith("INFO|PLAYER_DATA|")) {
                         String remoteData = line.substring(17);
                         joueurDistantTemp = deserializePlayer(remoteData);
-                        CombatLogger.logReseau("Donnees de l'adversaire recues !");
+                        CombatLogger.log("Donnees de l'adversaire recues !");
                         break;
                     }
                 }
@@ -245,7 +245,7 @@ public class OnlineGameController {
      * Deserialise un joueur depuis une chaine de caracteres.
      */
     private Joueur deserializePlayer(String data) {
-        CombatLogger.logReseau("Deserialisation des donnees: " + data);
+        CombatLogger.log("Deserialisation des donnees: " + data);
         String[] parts = data.split(";");
         if (parts.length < 2) {
             CombatLogger.error("Donnees invalides: moins de 2 parties");
@@ -257,7 +257,7 @@ public class OnlineGameController {
         
         // Les dernieres parties sont les monstres, et le tout dernier est l'index
         int currentIndex = Integer.parseInt(parts[parts.length - 1]);
-        CombatLogger.logReseau("Index du monstre actuel: " + currentIndex);
+        CombatLogger.log("Index du monstre actuel: " + currentIndex);
         
         // Parser les monstres (de l'index 1 a length-2)
         for (int i = 1; i < parts.length - 1; i++) {
@@ -270,13 +270,13 @@ public class OnlineGameController {
             
             String nomMonstre = monstreData[0];
             String[] atkNames = monstreData[1].split(",");
-            CombatLogger.logReseau("Chargement monstre: " + nomMonstre + " avec " + atkNames.length + " attaques");
+            CombatLogger.log("Chargement monstre: " + nomMonstre + " avec " + atkNames.length + " attaques");
             
             // Trouver le monstre dans le loader
             Monstre monstre = findMonstreByName(this.resourcesFactory, nomMonstre);
             if (monstre != null) {
                 // Cloner le monstre pour ne pas modifier l'original
-                Monstre clonedMonstre = cloneMonstre(monstre);
+                Monstre clonedMonstre = monstre.copyOf();
                 
                 // Ajouter les attaques
                 for (String atkName : atkNames) {
@@ -289,13 +289,13 @@ public class OnlineGameController {
                 }
                 
                 joueur.ajouterMonstre(clonedMonstre);
-                CombatLogger.logReseau("Monstre ajoute: " + clonedMonstre.getNomMonstre());
+                CombatLogger.log("Monstre ajoute: " + clonedMonstre.getNomMonstre());
             } else {
                 CombatLogger.error("Monstre non trouve dans le loader: " + nomMonstre);
             }
         }
         
-        CombatLogger.logReseau("Nombre de monstres charges: " + joueur.getMonstres().size());
+        CombatLogger.log("Nombre de monstres charges: " + joueur.getMonstres().size());
         
         // Definir le monstre actuel - TOUJOURS definir un monstre actuel si la liste n'est pas vide
         if (!joueur.getMonstres().isEmpty()) {
@@ -305,7 +305,7 @@ public class OnlineGameController {
                 // Si l'index est invalide, prendre le premier monstre
                 joueur.setMonstreActuel(joueur.getMonstres().get(0));
             }
-            CombatLogger.logReseau("Monstre actuel defini: " + joueur.getMonstreActuel().getNomMonstre());
+            CombatLogger.log("Monstre actuel defini: " + joueur.getMonstreActuel().getNomMonstre());
         } else {
             CombatLogger.error("Aucun monstre charge pour le joueur " + nomJoueur);
         }
@@ -333,24 +333,6 @@ public class OnlineGameController {
         return null;
     }
     
-    private Monstre cloneMonstre(Monstre original) {
-        // Creer une copie du monstre avec les memes stats
-        Monstre clone = new Monstre(
-            original.getNomMonstre(),
-            (int) original.getPointsDeVieMax(),
-            original.getAttaque(),
-            original.getDefense(),
-            original.getVitesse(),
-            new ArrayList<>(),
-            original.getTypeMonstre()
-        );
-        return clone;
-    }
-    
-    // ==========================================================================
-    // PHASE DE COMBAT
-    // ==========================================================================
-    
     /**
      * Demarre le combat en ligne.
      */
@@ -360,16 +342,13 @@ public class OnlineGameController {
         this.currentConnection = connection;
         this.isHost = hosting;
         
-        // Initialiser les variables statiques de Combat
+        // Creer une instance de Combat
         // L'hote est toujours joueur1, le client est joueur2 pour la coherence
         if (isHost) {
-            Combat.joueur1 = joueurLocal;
-            Combat.joueur2 = joueurDistant;
+            this.combat = new CombatEnLigne(joueurLocal, joueurDistant, connection);
         } else {
-            Combat.joueur1 = joueurDistant;
-            Combat.joueur2 = joueurLocal;
+            this.combat = new CombatEnLigne(joueurDistant, joueurLocal, connection);
         }
-        Combat.terrain = new Terrain("Arene en ligne", new Asseche());
         
         // Creer la vue de combat
         battleView = new BattleView(joueurLocal, joueurDistant);
@@ -625,7 +604,7 @@ public class OnlineGameController {
         
         // Effacer uniquement les logs du tour actuel (pas tout l'historique)
         CombatLogger.clearCurrentTurn();
-        Combat.gereOrdreExecutionActions(action1, action2);
+        combat.gereOrdreExecutionActions(action1, action2);
         
         // Afficher les logs du tour actuel
         String detailed = CombatLogger.getFormattedCurrentTurnLogs();

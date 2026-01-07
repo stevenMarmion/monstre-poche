@@ -12,18 +12,6 @@ import com.esiea.monstre.poche.models.entites.Monstre;
  * Utilise CombatLogger pour centraliser tous les affichages.
  */
 public class GameVisual {
-    
-    public static void afficherTitreSection(String titre) {
-        CombatLogger.logTitre(titre);
-    }
-
-    public static void afficherSousTitre(String sousTitre) {
-        CombatLogger.logSousTitre(sousTitre);
-    }
-
-    public static void afficherErreur(String message) {
-        CombatLogger.error(message);
-    }
 
     public static String demanderSaisie(Scanner scanner, String invite) {
         System.out.print(invite + " ");
@@ -38,28 +26,13 @@ public class GameVisual {
     }
 
     public static String formatterAttaque(Attaque attaque) {
-        String ppInfo = attaque.getNbUtilisations() > 0 ? 
-            String.valueOf(attaque.getNbUtilisations()) : "VIDE";
-        return String.format("%-18s | PP:%-4s | Puissance:%-3d | Type:%s",
-                attaque.getNomAttaque(), ppInfo, attaque.getPuissanceAttaque(),
-                attaque.getTypeAttaque().getLabelType());
-    }
-
-    public static String formatterTitre(String titre) {
-        return "========================================\n  " + titre + "\n========================================";
-    }
-
-    public static String afficherSousTitrePourTous(String sousTitre) {
-        CombatLogger.log("  ► " + sousTitre);
-        return "  ► " + sousTitre;
-    }
-
-    public static String formatterErreur(String message) {
-        return "[ERREUR] " + message;
-    }
-
-    public static String formatterSousTitre(String sousTitre) {
-        return "  ► " + sousTitre;
+        String ppInfo;
+        if (attaque.getNbUtilisations() > 0) {
+            ppInfo = String.valueOf(attaque.getNbUtilisations());
+        } else {
+            ppInfo = "VIDE";
+        }
+        return String.format("%-18s | PP:%-4s | Puissance:%-3d | Type:%s", attaque.getNomAttaque(), ppInfo, attaque.getPuissanceAttaque(), attaque.getTypeAttaque().getLabelType());
     }
 
     /**
@@ -73,11 +46,10 @@ public class GameVisual {
                 "Jouer à deux joueurs (local)",
                 "Jouer en ligne");
 
-        //TODO utiliser ModeJeuENum
         String choix = demanderSaisie(scanner, "Votre choix (1, 2 ou 3) >");
         
         while (!choix.equals("1") && !choix.equals("2") && !choix.equals("3")) {
-            afficherErreur("Choix invalide. Veuillez entrer 1, 2 ou 3.");
+            CombatLogger.log("Choix invalide. Veuillez entrer 1, 2 ou 3.");
             choix = demanderSaisie(scanner, "Votre choix (1, 2 ou 3) >");
         }
         
@@ -98,7 +70,7 @@ public class GameVisual {
         String choix = demanderSaisie(scanner, "Votre choix (1, 2 ou 3) >");
         
         while (!choix.equals("1") && !choix.equals("2") && !choix.equals("3")) {
-            afficherErreur("Choix invalide. Veuillez entrer 1, 2 ou 3.");
+            CombatLogger.log("Choix invalide. Veuillez entrer 1, 2 ou 3.");
             choix = demanderSaisie(scanner, "Votre choix (1, 2 ou 3) >");
         }
         
@@ -118,7 +90,7 @@ public class GameVisual {
         String choix = demanderSaisie(scanner, "Votre choix (1 ou 2) >");
 
         while (!choix.equals("1") && !choix.equals("2")) {
-            afficherErreur("Choix invalide. Veuillez entrer 1 ou 2.");
+            CombatLogger.log("Choix invalide. Veuillez entrer 1 ou 2.");
             choix = demanderSaisie(scanner, "Votre choix (1 ou 2) >");
         }
 
@@ -138,12 +110,12 @@ public class GameVisual {
         try {
             int port = portStr.isEmpty() ? 5555 : Integer.parseInt(portStr);
             if (port < 1024 || port > 65535) {
-                afficherErreur("Port invalide. Doit être entre 1024 et 65535. Utilisation du port 5555.");
+                CombatLogger.log("Port invalide. Doit être entre 1024 et 65535. Utilisation du port 5555.");
                 return 5555;
             }
             return port;
         } catch (NumberFormatException e) {
-            afficherErreur("Port invalide. Utilisation du port 5555 par défaut.");
+            CombatLogger.log("Port invalide. Utilisation du port 5555 par défaut.");
             return 5555;
         }
     }
@@ -164,11 +136,11 @@ public class GameVisual {
         try {
             port = portStr.isEmpty() ? 5555 : Integer.parseInt(portStr);
             if (port < 1024 || port > 65535) {
-                afficherErreur("Port invalide. Utilisation du port 5555.");
+                CombatLogger.log("Port invalide. Utilisation du port 5555.");
                 port = 5555;
             }
         } catch (NumberFormatException e) {
-            afficherErreur("Port invalide. Utilisation du port 5555 par défaut.");
+            CombatLogger.log("Port invalide. Utilisation du port 5555 par défaut.");
         }
 
         return new String[]{adresse, String.valueOf(port)};
@@ -185,7 +157,7 @@ public class GameVisual {
         String choix = demanderSaisie(scanner, "Votre choix (1 ou 2) >");
 
         while (!choix.equals("1") && !choix.equals("2")) {
-            afficherErreur("Choix invalide. Veuillez entrer 1 ou 2.");
+            CombatLogger.log("Choix invalide. Veuillez entrer 1 ou 2.");
             choix = demanderSaisie(scanner, "Votre choix (1 ou 2) >");
         }
 

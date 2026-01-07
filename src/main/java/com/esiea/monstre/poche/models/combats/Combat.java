@@ -10,14 +10,14 @@ import com.esiea.monstre.poche.models.inventaire.Objet;
 import com.esiea.monstre.poche.models.loader.GameResourcesFactory;
 
 public abstract class Combat {
-    public static Joueur joueur1;
-    public static Joueur joueur2;
-    public static Terrain terrain;
+    public Joueur joueur1;
+    public Joueur joueur2;
+    public Terrain terrain;
 
     public Combat(Joueur joueur1, Joueur joueur2) {
-        Combat.joueur1 = joueur1;
-        Combat.joueur2 = joueur2;
-        Combat.terrain = new Terrain("Arène de jeu", new Asseche());
+        this.joueur1 = joueur1;
+        this.joueur2 = joueur2;
+        this.terrain = new Terrain("Arène de jeu", new Asseche());
     }
     
     public abstract void lancer(GameResourcesFactory resourcesFactory) ;
@@ -34,7 +34,7 @@ public abstract class Combat {
      * Vérifie si l'inondation doit être retirée quand un monstre quitte le terrain.
      * CDC: L'inondation est automatiquement retirée lorsque le monstre l'ayant déclenché quitte le terrain.
      */
-    private static void verifierRetraitInondation(Monstre ancienMonstre) {
+    private void verifierRetraitInondation(Monstre ancienMonstre) {
         if (terrain.getStatutTerrain() instanceof Innonde) {
             Innonde innonde = (Innonde) terrain.getStatutTerrain();
             if (innonde.getMonstreSource() != null && innonde.getMonstreSource().equals(ancienMonstre)) {
@@ -44,7 +44,7 @@ public abstract class Combat {
         }
     }
 
-    public static void gereOrdreExecutionActions(Object actionJoueur1, Object actionJoueur2) {
+    public void gereOrdreExecutionActions(Object actionJoueur1, Object actionJoueur2) {
         if (actionJoueur1 instanceof Monstre) {
             Monstre ancienMonstre = joueur1.getMonstreActuel();
             if (ancienMonstre != null) {
@@ -115,7 +115,7 @@ public abstract class Combat {
         }
     }
 
-    public static Joueur getAWinner() {
+    public Joueur getAWinner() {
         if (joueur1.sontMonstresMorts()) {
             return joueur2;
         } else if (joueur2.sontMonstresMorts()) {

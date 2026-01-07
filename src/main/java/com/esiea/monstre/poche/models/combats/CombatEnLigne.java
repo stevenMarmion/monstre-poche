@@ -30,47 +30,45 @@ public class CombatEnLigne extends Combat {
         afficherTitrePourTous("Configuration de vos monstres");
         this.selectionnerMonstre(resourcesFactory, joueur1);
         this.selectionnerAttaque(resourcesFactory, joueur1);
-
-
-        //TODO selectionner objets
+        this.selectionnerObjet(resourcesFactory, joueur1);
 
         afficherTitrePourTous("Configuration adversaire");
-        selectionnerMonstreDistant(resourcesFactory, joueur2);
-        selectionnerAttaqueDistant(resourcesFactory, joueur2);
+        this.selectionnerMonstreDistant(resourcesFactory, joueur2);
+        this.selectionnerAttaqueDistant(resourcesFactory, joueur2);
+        this.selectionnerObjetDistant(resourcesFactory, joueur2);
 
         afficherTitrePourTous("COMBAT EN LIGNE LANCE !");
         this.executerTour();
     }
 
-
-
     @Override
     public void selectionnerMonstre(GameResourcesFactory resourcesFactory, Joueur joueur) {
-        GameVisual.afficherTitreSection("Selection des monstres - " + joueur.getNomJoueur());
-        GameVisual.afficherSousTitre("Monstres disponibles");
+        CombatLogger.logTitre("Selection des monstres - " + joueur.getNomJoueur());
+        CombatLogger.logSousTitre("Monstres disponibles");
+
         int index = 1;
         List<Monstre> monstresDisponibles = resourcesFactory.getTousLesMonstres();
         for (Monstre monstre : monstresDisponibles) {
             CombatLogger.log(String.format("[%d] %s", index++, GameVisual.formatterMonstre(monstre)));
         }
 
-        while (joueur.getMonstres().size() < 3) {
+        while (joueur.getMonstres().size() < Joueur.TAILLE_EQUIPE_MAX) {
             String choixInput = GameVisual.demanderSaisie(new Scanner(System.in), "Choix " + (joueur.getMonstres().size() + 1) + "/3 >");
             try {
                 int indexChoisi = Integer.parseInt(choixInput);
                 if (indexChoisi < 1 || indexChoisi > monstresDisponibles.size()) {
-                    GameVisual.afficherErreur("Index invalide. Veuillez choisir un nombre entre 1 et " + monstresDisponibles.size());
+                    CombatLogger.error("Index invalide. Veuillez choisir un nombre entre 1 et " + monstresDisponibles.size());
                     continue;
                 }
                 Monstre monstreCharge = monstresDisponibles.get(indexChoisi - 1);
                 if (joueur.getMonstres().contains(monstreCharge)) {
-                    GameVisual.afficherErreur("Ce monstre a deja ete selectionne.");
+                    CombatLogger.error("Ce monstre a deja ete selectionne.");
                     continue;
                 }
                 joueur.ajouterMonstre(monstreCharge);
                 CombatLogger.log("  [OK] Monstre ajoute : " + monstreCharge.getNomMonstre());
             } catch (NumberFormatException e) {
-                GameVisual.afficherErreur("Saisie invalide. Veuillez entrer un numero.");
+                CombatLogger.error("Saisie invalide. Veuillez entrer un numero.");
             }
         }
         joueur.setMonstreActuel(joueur.getMonstres().get(0));
@@ -79,9 +77,11 @@ public class CombatEnLigne extends Combat {
 
     @Override
     public void selectionnerAttaque(GameResourcesFactory resourcesFactory, Joueur joueur) {
-        GameVisual.afficherTitreSection("Selection des attaques - " + joueur.getNomJoueur());
+        CombatLogger.logTitre("Selection des attaques - " + joueur.getNomJoueur());
+        CombatLogger.logSousTitre("Attaques disponibles");
+
         for (Monstre monstre : joueur.getMonstres()) {
-            GameVisual.afficherSousTitre("Monstre : " + monstre.getNomMonstre());
+            CombatLogger.logSousTitre("Monstre : " + monstre.getNomMonstre());
 
             ArrayList<Attaque> attaquesCompatibles = new ArrayList<>();
             //TODO nombres magiques dans la fonction, et éventuellement faire une fonction utilitaire pour la récupération des attaques compatibles car là on duplique le meme bout de code
@@ -91,28 +91,29 @@ public class CombatEnLigne extends Combat {
                     attaquesCompatibles.add(attaque);
                 }
             }
+
             int index = 1;
             for (Attaque attaque : attaquesCompatibles) {
                 broadcastToRemote(String.format("[%d] %s", index++, GameVisual.formatterAttaque(attaque)));
             }
 
-            while (monstre.getAttaques().size() < 4) {
+            while (monstre.getAttaques().size() < Joueur.NOMBRE_ATTAQUES_PAR_MONSTRE) {
                 String choixInput = GameVisual.demanderSaisie(new Scanner(System.in), "Choix " + (monstre.getAttaques().size() + 1) + "/4 >");
                 try {
                     int indexChoisi = Integer.parseInt(choixInput);
                     if (indexChoisi < 1 || indexChoisi > attaquesCompatibles.size()) {
-                        GameVisual.afficherErreur("Index invalide. Veuillez choisir un nombre entre 1 et " + attaquesCompatibles.size());
+                        CombatLogger.error("Index invalide. Veuillez choisir un nombre entre 1 et " + attaquesCompatibles.size());
                         continue;
                     }
                     Attaque attaqueChargee = attaquesCompatibles.get(indexChoisi - 1);
                     if (monstre.getAttaques().contains(attaqueChargee)) {
-                        GameVisual.afficherErreur("Attaque deja selectionnee pour ce monstre.");
+                        CombatLogger.error("Attaque deja selectionnee pour ce monstre.");
                         continue;
                     }
                     monstre.ajouterAttaque(attaqueChargee);
                     CombatLogger.log("  [OK] Attaque ajoutee : " + attaqueChargee.getNomAttaque());
                 } catch (NumberFormatException e) {
-                    GameVisual.afficherErreur("Saisie invalide. Veuillez entrer un numero.");
+                    CombatLogger.error("Saisie invalide. Veuillez entrer un numero.");
                 }
             }
         }
@@ -120,13 +121,36 @@ public class CombatEnLigne extends Combat {
 
     @Override
     public void selectionnerObjet(GameResourcesFactory resourcesFactory, Joueur joueur) {
-        //TODO
+        CombatLogger.logTitre("Selection des objets - " + joueur.getNomJoueur());
+        CombatLogger.logSousTitre("Objets disponibles");
+
+        List<Objet> objetsDisponibles = resourcesFactory.getTousLesObjets();
+        int index = 1;
+        for (Objet objet : objetsDisponibles) {
+            CombatLogger.log(String.format("[%d] %s", index++, objet.getNomObjet()));
+        }
+
+        while (joueur.getObjets().size() < Joueur.TAILLE_INVENTAIRE_MAX) {
+            String choixInput = GameVisual.demanderSaisie(new Scanner(System.in), "Choix " + (joueur.getObjets().size() + 1) + "/" + Joueur.TAILLE_INVENTAIRE_MAX + " >");
+            try {
+                int indexChoisi = Integer.parseInt(choixInput);
+                if (indexChoisi < 1 || indexChoisi > objetsDisponibles.size()) {
+                    CombatLogger.error("Index invalide. Veuillez choisir un nombre entre 1 et " + objetsDisponibles.size());
+                    continue;
+                }
+                Objet objetCharge = objetsDisponibles.get(indexChoisi - 1);
+                joueur.getObjets().add(objetCharge);
+                CombatLogger.log("  [OK] Objet ajoute : " + objetCharge.getNomObjet());
+            } catch (NumberFormatException e) {
+                CombatLogger.error("Saisie invalide. Veuillez entrer un numero.");
+            }
+        }
     }
 
     @Override
     public Object gereChoixAction(Joueur joueur) {
-        // Afficher localement ET envoyer au client distant
         broadcastTitre("Tour de " + joueur.getNomJoueur());
+
         Monstre actif = joueur.getMonstreActuel();
         String infoMonstre = "Monstre actif : " + actif.getNomMonstre() + " | PV " + (int) actif.getPointsDeVie() + "/" + (int) actif.getPointsDeVieMax() + " | ATK " + actif.getAttaque() + " | DEF " + actif.getDefense() + " | VIT " + actif.getVitesse();
         CombatLogger.log(infoMonstre);
@@ -148,54 +172,54 @@ public class CombatEnLigne extends Combat {
         }
         switch (choixAction) {
             case "1":
-                return choixAttaqueLocal(joueur);
+                return choixAttaque(joueur);
             case "2":
-                return utiliseObjetLocal(joueur);
+                return utiliseObjet(joueur);
             case "3":
-                return changeMonstreLocal(joueur);
+                return changeMonstre(joueur);
             default:
                 return null;
         }
     }
 
-    private Attaque choixAttaqueLocal(Joueur joueur) {
+    @Override
+    public Attaque choixAttaque(Joueur joueur) {
         Monstre monstreActuel = joueur.getMonstreActuel();
-        GameVisual.afficherTitreSection("Attaques de " + monstreActuel.getNomMonstre());
+        CombatLogger.logTitre("Attaques de " + monstreActuel.getNomMonstre());
         int index = 1;
         for (Attaque attaque : monstreActuel.getAttaques()) {
             String ppStatus = attaque.getNbUtilisations() <= 0 ? " [VIDE]" : "";
             CombatLogger.log(String.format("[%d] %s%s", index++, GameVisual.formatterAttaque(attaque), ppStatus));
         }
-        // Option mains nues toujours disponible
-        CombatLogger.log(String.format("[0] MAINS NUES            | PP:infini | Puissance: faible"));
+        CombatLogger.log(String.format("[%d] %s%s | PP:infini | Puissance: faible", index, "MAINS NUES", "PP : illimite"));
         
         while (true) {
             String choixInput = GameVisual.demanderSaisie(new Scanner(System.in), "Attaque choisie (0 pour mains nues) >");
             try {
                 int indexChoisi = Integer.parseInt(choixInput);
                 if (indexChoisi == 0) {
-                    // Mains nues - retourne null
                     CombatLogger.log("  [OK] Attaque à mains nues sélectionnée.");
                     return null;
                 }
                 if (indexChoisi < 1 || indexChoisi > monstreActuel.getAttaques().size()) {
-                    GameVisual.afficherErreur("Index invalide. Veuillez choisir 0 ou un nombre entre 1 et " + monstreActuel.getAttaques().size());
+                    CombatLogger.error("Index invalide. Veuillez choisir 0 ou un nombre entre 1 et " + monstreActuel.getAttaques().size());
                     continue;
                 }
                 Attaque attaqueTemp = monstreActuel.getAttaques().get(indexChoisi - 1);
                 if (attaqueTemp.getNbUtilisations() <= 0) {
-                    GameVisual.afficherErreur("Cette attaque n'a plus de PP ! Choisissez une autre attaque ou 0 pour mains nues.");
+                    CombatLogger.error("Cette attaque n'a plus de PP ! Choisissez une autre attaque ou 0 pour mains nues.");
                     continue;
                 }
                 return attaqueTemp;
             } catch (NumberFormatException e) {
-                GameVisual.afficherErreur("Saisie invalide. Veuillez entrer un numero.");
+                CombatLogger.error("Saisie invalide. Veuillez entrer un numero.");
             }
         }
     }
 
-    private Objet utiliseObjetLocal(Joueur joueur) {
-        GameVisual.afficherTitreSection("Objets de " + joueur.getNomJoueur());
+    @Override
+    public Objet utiliseObjet(Joueur joueur) {
+        CombatLogger.logTitre("Objets de " + joueur.getNomJoueur());
         int index = 1;
         for (Objet objet : joueur.getObjets()) {
             CombatLogger.log(String.format("[%d] %s", index++, objet.getNomObjet()));
@@ -206,12 +230,13 @@ public class CombatEnLigne extends Combat {
                 return objet;
             }
         }
-        GameVisual.afficherErreur("Objet introuvable. L'action est ignoree.");
+        CombatLogger.error("Objet introuvable. L'action est ignoree.");
         return null;
     }
 
-    private Monstre changeMonstreLocal(Joueur joueur) {
-        GameVisual.afficherTitreSection("Changement de monstre - " + joueur.getNomJoueur());
+    @Override
+    public Monstre changeMonstre(Joueur joueur) {
+        CombatLogger.logTitre("Changement de monstre - " + joueur.getNomJoueur());
         int index = 1;
         for (Monstre monstre : joueur.getMonstres()) {
             CombatLogger.log(String.format("[%d] %s", index++, GameVisual.formatterMonstre(monstre)));
@@ -221,12 +246,12 @@ public class CombatEnLigne extends Combat {
             try {
                 int indexChoisi = Integer.parseInt(choixInput);
                 if (indexChoisi < 1 || indexChoisi > joueur.getMonstres().size()) {
-                    GameVisual.afficherErreur("Index invalide. Veuillez choisir un nombre entre 1 et " + joueur.getMonstres().size());
+                    CombatLogger.error("Index invalide. Veuillez choisir un nombre entre 1 et " + joueur.getMonstres().size());
                     continue;
                 }
                 return joueur.getMonstres().get(indexChoisi - 1);
             } catch (NumberFormatException e) {
-                GameVisual.afficherErreur("Saisie invalide. Veuillez entrer un numero.");
+                CombatLogger.error("Saisie invalide. Veuillez entrer un numero.");
             }
         }
     }
@@ -244,11 +269,13 @@ public class CombatEnLigne extends Combat {
     }
 
     private void informerActions(Object actionLocal, Object actionDistant) {
-        CombatLogger.logSeparateur();
+        CombatLogger.log("----------------------------------------");
+
         String descriptionLocal = decrireAction(joueur1, actionLocal);
         String descriptionDistant = decrireAction(joueur2, actionDistant);
         CombatLogger.log(descriptionLocal);
         CombatLogger.log(descriptionDistant);
+        
         connection.sendInfo("----------------------------------------");
         connection.sendInfo(descriptionLocal);
         connection.sendInfo(descriptionDistant);
@@ -271,6 +298,7 @@ public class CombatEnLigne extends Combat {
     private void selectionnerMonstreDistant(GameResourcesFactory resourcesFactory, Joueur joueur) {
         broadcastToRemoteTitre("Selection des monstres - " + joueur.getNomJoueur());
         broadcastToRemoteSousTitre("Monstres disponibles");
+
         int index = 1;
         List<Monstre> monstresDisponibles = resourcesFactory.getTousLesMonstres();
         for (Monstre monstre : monstresDisponibles) {
@@ -309,6 +337,8 @@ public class CombatEnLigne extends Combat {
 
     private void selectionnerAttaqueDistant(GameResourcesFactory resourcesFactory, Joueur joueur) {
         broadcastToRemoteTitre("Selection des attaques - " + joueur.getNomJoueur());
+        broadcastToRemoteSousTitre("Attaques disponibles");
+
         for (Monstre monstre : joueur.getMonstres()) {
             broadcastToRemoteSousTitre("Monstre : " + monstre.getNomMonstre());
             ArrayList<Attaque> attaquesCompatibles = new ArrayList<>();
@@ -353,6 +383,38 @@ public class CombatEnLigne extends Combat {
         }
     }
 
+    private void selectionnerObjetDistant(GameResourcesFactory resourcesFactory, Joueur joueur) {
+        broadcastToRemoteTitre("Selection des objets - " + joueur.getNomJoueur());
+        broadcastToRemoteSousTitre("Objets disponibles");
+
+        List<Objet> objetsDisponibles = resourcesFactory.getTousLesObjets();
+        int index = 1;
+        for (Objet objet : objetsDisponibles) {
+            broadcastToRemote(String.format("[%d] %s", index++, objet.getNomObjet()));
+        }
+
+        while (joueur.getObjets().size() < 5) {
+            try {
+                String choixInput = connection.ask("Choix " + (joueur.getObjets().size() + 1) + "/5 >");
+                int indexChoisi = Integer.parseInt(choixInput);
+
+                if (indexChoisi < 1 || indexChoisi > objetsDisponibles.size()) {
+                    broadcastToRemoteErreur("Index invalide. Veuillez choisir un nombre entre 1 et " + objetsDisponibles.size());
+                    continue;
+                }
+
+                Objet objetCharge = objetsDisponibles.get(indexChoisi - 1);
+                joueur.getObjets().add(objetCharge);
+                broadcastToRemote("  [OK] Objet ajoute : " + objetCharge.getNomObjet());
+            } catch (NumberFormatException e) {
+                broadcastToRemoteErreur("Saisie invalide. Veuillez entrer un numero.");
+            } catch (IOException e) {
+                broadcastToRemote("Connexion fermee pendant la selection d'objets.");
+                return;
+            }
+        }
+    }
+
     private Object gereChoixActionDistant() {
         Monstre actif = joueur2.getMonstreActuel();
         broadcastToRemoteTitre("Tour de " + joueur2.getNomJoueur());
@@ -390,20 +452,19 @@ public class CombatEnLigne extends Combat {
     private Attaque choixAttaqueDistant(Joueur joueur) {
         Monstre monstreActuel = joueur.getMonstreActuel();
         broadcastToRemoteTitre("Attaques de " + monstreActuel.getNomMonstre());
+        broadcastToRemoteSousTitre("Attaques disponibles");
         int index = 1;
         for (Attaque attaque : monstreActuel.getAttaques()) {
             String ppStatus = attaque.getNbUtilisations() <= 0 ? " [VIDE]" : "";
             broadcastToRemote(String.format("[%d] %s%s", index++, GameVisual.formatterAttaque(attaque), ppStatus));
         }
-        // Option mains nues toujours disponible
-        broadcastToRemote(String.format("[0] MAINS NUES            | PP:infini | Puissance: faible"));
+        broadcastToRemote(String.format("[%d] %s%s | PP:infini | Puissance: faible", index, "MAINS NUES", "PP : illimite"));
 
         while (true) {
             try {
                 String choixInput = connection.ask("Attaque choisie (0 pour mains nues) >");
                 int indexChoisi = Integer.parseInt(choixInput);
                 if (indexChoisi == 0) {
-                    // Mains nues - retourne null
                     broadcastToRemote("  [OK] Attaque à mains nues sélectionnée.");
                     return null;
                 }
@@ -457,9 +518,7 @@ public class CombatEnLigne extends Combat {
                 }
 
                 if (indexChoisi < 1 || indexChoisi > objets.size()) {
-                    broadcastToRemoteErreur(
-                            "Index invalide. Choisissez un nombre entre 1 et " + objets.size()
-                    );
+                    broadcastToRemoteErreur("Index invalide. Choisissez un nombre entre 1 et " + objets.size() + ".");
                     continue;
                 }
 
@@ -639,23 +698,5 @@ public class CombatEnLigne extends Combat {
             connection.sendInfo("");
             connection.sendInfo(msgKO);
         }
-    }
-
-    @Override
-    public Attaque choixAttaque(Joueur joueur) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'choixAttaque'");
-    }
-
-    @Override
-    public Objet utiliseObjet(Joueur joueur) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'utiliseObjet'");
-    }
-
-    @Override
-    public Monstre changeMonstre(Joueur joueur) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'changeMonstre'");
     }
 }

@@ -10,7 +10,7 @@ class InnondeTest {
 
     @BeforeEach
     void setUp() {
-        statutInnonde = new Innonde(3);
+        statutInnonde = new Innonde(3, 0.3, null);
     }
 
     @Test

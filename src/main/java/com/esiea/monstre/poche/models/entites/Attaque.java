@@ -70,12 +70,10 @@ public class Attaque implements Serializable {
         String typeAttaque = this.getTypeAttaque().getLabelType();
         String typeCible = cible.getTypeMonstre().getLabelType();
         
-        if (this.getTypeAttaque().estFaibleContre() != null && 
-            this.getTypeAttaque().estFaibleContre().equals(typeCible)) {
+        if (this.getTypeAttaque().estFaibleContre() != null && this.getTypeAttaque().estFaibleContre().equals(typeCible)) {
             avantage = 0.5;
             CombatLogger.log("  [TYPE] " + typeAttaque + " est faible contre " + typeCible + " ! Dégâts réduits de moitié.");
-        } else if (this.getTypeAttaque().estFortContre() != null && 
-                   this.getTypeAttaque().estFortContre().equals(typeCible)) {
+        } else if (this.getTypeAttaque().estFortContre() != null && this.getTypeAttaque().estFortContre().equals(typeCible)) {
             avantage = 2;
             CombatLogger.log("  [TYPE] " + typeAttaque + " est fort contre " + typeCible + " ! Dégâts doublés.");
         }

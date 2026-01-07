@@ -4,7 +4,6 @@ import com.esiea.monstre.poche.models.combats.CombatLogger;
 import com.esiea.monstre.poche.models.entites.Monstre;
 
 public class PotionDegat extends Potion {
-
     /**
      * Value en pourcentage d'augmentation de l'attaque de base d'un monstre
      */

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import com.esiea.monstre.poche.models.affinites.Type;
 import com.esiea.monstre.poche.models.combats.CombatLogger;
 import com.esiea.monstre.poche.models.inventaire.Objet;
 import com.esiea.monstre.poche.models.loader.GameResourcesFactory;
@@ -15,29 +14,20 @@ import com.esiea.monstre.poche.models.loader.GameResourcesFactory;
  */
 public class Bot extends Joueur {
     private Random random;
+    private int niveauDifficulte;
 
-    //TODO faire une enum
-    private int niveauDifficulte; // 1 = facile, 2 = moyen, 3 = difficile
+    private static final int NIVEAU_FACILE = 1;
+    private static final int NIVEAU_MOYEN = 2;
+    private static final int NIVEAU_DIFFICILE = 3;
 
-    /**
-     * Constructeur du Bot
-     *
-     * @param nomBot           Le nom du bot
-     * @param niveauDifficulte Le niveau de difficulté (1-3)
-     */
     public Bot(String nomBot, int niveauDifficulte) {
         super(nomBot);
         this.random = new Random();
         this.niveauDifficulte = Math.min(Math.max(niveauDifficulte, 1), 3);
     }
 
-    /**
-     * Constructeur du Bot avec niveau de difficulte par défaut
-     *
-     * @param nomBot Le nom du bot
-     */
     public Bot(String nomBot) {
-        this(nomBot, 2); // Niveau moyen par défaut
+        this(nomBot, NIVEAU_MOYEN);
     }
 
     /**
@@ -51,7 +41,6 @@ public class Bot extends Joueur {
             return;
         }
 
-        // Mélanger la liste et sélectionner les N premiers monstres
         ArrayList<Monstre> monstresSelectionnes = new ArrayList<>();
         ArrayList<Integer> indicesUtilises = new ArrayList<>();
 
@@ -60,9 +49,8 @@ public class Bot extends Joueur {
 
             if (!indicesUtilises.contains(indexAleatoire)) {
                 indicesUtilises.add(indexAleatoire);
-                // Cloner le monstre pour éviter les conflits
                 Monstre monstreOriginal = monstresDisponibles.get(indexAleatoire);
-                Monstre monstreClone = this.clonnerMonstre(monstreOriginal);
+                Monstre monstreClone = monstreOriginal.copyOf();
                 monstresSelectionnes.add(monstreClone);
                 this.ajouterMonstre(monstreClone);
             }
@@ -89,16 +77,14 @@ public class Bot extends Joueur {
         for (Monstre monstre : this.getMonstres()) {
             ArrayList<Integer> indicesUtilises = new ArrayList<>();
 
-            while (monstre.getAttaques().size() < Joueur.NOMBRE_ATTAQUES_PAR_MONSTRE
-                    && monstre.getAttaques().size() < attaquesDisponibles.size()) {
+            while (monstre.getAttaques().size() < Joueur.NOMBRE_ATTAQUES_PAR_MONSTRE && monstre.getAttaques().size() < attaquesDisponibles.size()) {
                 int indexAleatoire = this.random.nextInt(attaquesDisponibles.size());
 
                 if (!indicesUtilises.contains(indexAleatoire)) {
                     Attaque attaque = attaquesDisponibles.get(indexAleatoire);
 
                     // Vérifier que l'attaque est compatible avec le type du monstre
-                    if (monstre.getTypeMonstre().getLabelType()
-                            .equals(attaque.getTypeAttaque().getLabelType())) {
+                    if (monstre.getTypeMonstre().getLabelType().equals(attaque.getTypeAttaque().getLabelType())) {
                         indicesUtilises.add(indexAleatoire);
                         monstre.ajouterAttaque(attaque);
                     }
@@ -144,13 +130,12 @@ public class Bot extends Joueur {
             return null;
         }
 
-        // Décision basée sur la difficulté
         switch (this.niveauDifficulte) {
-            case 1: // Facile
+            case NIVEAU_FACILE:
                 return this.choisirActionFacile(monstreActuel);
-            case 2: // Moyen
+            case NIVEAU_MOYEN:
                 return this.choisirActionMoyen(monstreActuel, monstreAdversaire);
-            case 3: // Difficile
+            case NIVEAU_DIFFICILE:
                 return this.choisirActionDifficile(monstreActuel, monstreAdversaire);
             default:
                 return this.choisirActionMoyen(monstreActuel, monstreAdversaire);
@@ -198,11 +183,7 @@ public class Bot extends Joueur {
 
         // Chercher les attaques qui ont un avantage de type
         for (Attaque attaque : attaques) {
-            // Vérifier si l'attaque a un avantage contre le type de l'adversaire
-            double multiplicateur = this.calculerMultiplicateurType(attaque.getTypeAttaque(),
-                    monstreAdversaire.getTypeMonstre());
-
-            if (multiplicateur > 1.0) {
+            if (attaque.getTypeAttaque().estFortContre().equals(monstre.getTypeMonstre().getLabelType())) {
                 attaquesAvantageuses.add(attaque);
             }
         }
@@ -211,20 +192,7 @@ public class Bot extends Joueur {
             return attaquesAvantageuses.get(this.random.nextInt(attaquesAvantageuses.size()));
         }
 
-        // Sinon, utiliser l'IA moyen
         return this.choisirActionMoyen(monstre, monstreAdversaire);
-    }
-
-    /**
-     * Calcule le multiplicateur de dégâts basé sur les types
-     */
-    private double calculerMultiplicateurType(Type typeAttaque, Type typeDefense) {
-        // Cette méthode peut être améliorée avec une vraie logique d'affinités
-        // Pour l'instant, retour basé sur le label du type
-        if (typeAttaque.getLabelType().equals(typeDefense.getLabelType())) {
-            return 1.0;
-        }
-        return 1.0;
     }
 
     /**
@@ -239,35 +207,5 @@ public class Bot extends Joueur {
                 return;
             }
         }
-    }
-
-    /**
-     * Clone un monstre pour éviter les conflits entre joueurs
-     */
-    private Monstre clonnerMonstre(Monstre original) {
-        ArrayList<Attaque> attaquesClonees = new ArrayList<>(original.getAttaques());
-        Monstre clone = new Monstre(
-                original.getNomMonstre(),
-                (int) original.getPointsDeVieMax(),
-                original.getAttaque(),
-                original.getDefense(),
-                original.getVitesse(),
-                attaquesClonees,
-                original.getTypeMonstre());
-        return clone;
-    }
-
-    /**
-     * Retourne le niveau de difficulté du bot
-     */
-    public int getNiveauDifficulte() {
-        return this.niveauDifficulte;
-    }
-
-    /**
-     * Définit le niveau de difficulté du bot
-     */
-    public void setNiveauDifficulte(int niveauDifficulte) {
-        this.niveauDifficulte = Math.min(Math.max(niveauDifficulte, 1), 3);
     }
 }

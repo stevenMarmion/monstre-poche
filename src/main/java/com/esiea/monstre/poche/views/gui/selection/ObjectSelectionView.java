@@ -43,14 +43,12 @@ public class ObjectSelectionView extends VBox {
     private FlowPane objectCardsContainer;
     private Map<VBox, Objet> objectCardMap;
     private List<VBox> selectedCards;
-    private int maxObjectsToSelect = Joueur.TAILLE_INVENTAIRE_MAX; // 5 objets max
     private Label selectionCounter;
     private Joueur joueur;
     
     private final GameResourcesLoader resourcesLoader = new GameResourcesLoader();
     private final GameResourcesFactory resourcesFactory = new GameResourcesFactory(resourcesLoader);
     
-    // Couleurs par type d'objet
     private static final String POTION_COLOR = "#FF6B9D";      // Rose/Magenta pour potions
     private static final String MEDICAMENT_COLOR = "#4ECDC4"; // Turquoise pour médicaments
     private static final String OBJET_COLOR = "#95A5A6";      // Gris pour autres objets
@@ -127,7 +125,7 @@ public class ObjectSelectionView extends VBox {
         HBox.setHgrow(spacer, Priority.ALWAYS);
         
         // Compteur de sélection stylisé
-        selectionCounter = new Label("0 / " + maxObjectsToSelect + " objets");
+        selectionCounter = new Label("0 / " + Joueur.TAILLE_INVENTAIRE_MAX + " objets");
         selectionCounter.getStyleClass().addAll("label-text", "selection-counter");
         selectionCounter.setStyle("-fx-background-color: rgba(0,0,0,0.5); -fx-padding: 8 15; -fx-background-radius: 20;");
         
@@ -149,7 +147,7 @@ public class ObjectSelectionView extends VBox {
         subtitle.getStyleClass().add("subtitle-text");
         subtitle.setStyle("-fx-font-size: 16px;");
         
-        Label instructions = new Label("Sélectionnez jusqu'à " + maxObjectsToSelect + " objets pour le combat");
+        Label instructions = new Label("Sélectionnez jusqu'à " + Joueur.TAILLE_INVENTAIRE_MAX + " objets pour le combat");
         instructions.getStyleClass().add("label-text");
         instructions.setStyle("-fx-font-size: 14px; -fx-opacity: 0.8;");
         
@@ -211,7 +209,7 @@ public class ObjectSelectionView extends VBox {
         // Le bouton est activé dès qu'on a au moins 1 objet (on peut avoir 0 à 5)
         btnValidate.setDisable(false);
         
-        Label hint = new Label("(Vous pouvez valider avec 0 à " + maxObjectsToSelect + " objets)");
+        Label hint = new Label("(Vous pouvez valider avec 0 à " + Joueur.TAILLE_INVENTAIRE_MAX + " objets)");
         hint.setTextFill(Color.web("#888"));
         hint.setFont(Font.font("System", 12));
         
@@ -428,7 +426,7 @@ public class ObjectSelectionView extends VBox {
                 c.setDisable(false);
                 c.setOpacity(1.0);
             });
-        } else if (selectedCards.size() < maxObjectsToSelect) {
+        } else if (selectedCards.size() < Joueur.TAILLE_INVENTAIRE_MAX) {
             // Sélectionner
             selectedCards.add(card);
             selectionIndicator.setVisible(true);
@@ -459,7 +457,7 @@ public class ObjectSelectionView extends VBox {
             card.setEffect(glow);
             
             // Désactiver les autres cartes si on a atteint le max
-            if (selectedCards.size() >= maxObjectsToSelect) {
+            if (selectedCards.size() >= Joueur.TAILLE_INVENTAIRE_MAX) {
                 objectCardMap.keySet().forEach(c -> {
                     if (!selectedCards.contains(c)) {
                         c.setDisable(true);
@@ -478,7 +476,7 @@ public class ObjectSelectionView extends VBox {
     private void updateValidateButton() {
         int selectedCount = selectedCards.size();
         
-        selectionCounter.setText(selectedCount + " / " + maxObjectsToSelect + " objets");
+        selectionCounter.setText(selectedCount + " / " + Joueur.TAILLE_INVENTAIRE_MAX + " objets");
         
         if (selectedCount > 0) {
             selectionCounter.setStyle(
@@ -498,7 +496,7 @@ public class ObjectSelectionView extends VBox {
         }
         
         // Réactiver les cartes non sélectionnées si on n'a pas atteint le max
-        if (selectedCount < maxObjectsToSelect) {
+        if (selectedCount < Joueur.TAILLE_INVENTAIRE_MAX) {
             objectCardMap.keySet().forEach(c -> {
                 if (!selectedCards.contains(c)) {
                     c.setDisable(false);

@@ -25,11 +25,11 @@ public class OnlineServer {
 
     public void lancer(GameResourcesFactory resourcesFactory) {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
-            CombatLogger.logReseau("Serveur en attente d'un joueur sur le port " + port + " ...");
+            CombatLogger.log("Serveur en attente d'un joueur sur le port " + port + " ...");
             Socket socket = serverSocket.accept();
-            CombatLogger.logReseau("Joueur connecté depuis " + socket.getInetAddress());
+            CombatLogger.log("Joueur connecté depuis " + socket.getInetAddress());
 
-            try (OnlineConnection connection = new OnlineConnection(socket, null)) {
+            try (OnlineConnection connection = new OnlineConnection(socket)) {
                 String nomJoueurLocal = GameVisual.demanderSaisie(scanner, "Entrez votre nom de joueur >");
                 String nomJoueurDistant = connection.ask("Entrez votre nom de joueur >");
 
@@ -46,13 +46,13 @@ public class OnlineServer {
 
     /** Fonctions pour le mode interface */
 
-    public OnlineConnection demarrerServeur(Joueur hostPlayer) {
+    public OnlineConnection demarrerServeur() {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
-            CombatLogger.logReseau("Serveur en attente d'un joueur sur le port " + port + " ...");
+            CombatLogger.log("Serveur en attente d'un joueur sur le port " + port + " ...");
             Socket socket = serverSocket.accept();
-            CombatLogger.logReseau("Joueur connecté depuis " + socket.getInetAddress());
+            CombatLogger.log("Joueur connecté depuis " + socket.getInetAddress());
 
-            OnlineConnection connection = new OnlineConnection(socket, hostPlayer);
+            OnlineConnection connection = new OnlineConnection(socket);
             return connection;
         } catch (Exception e) {
             CombatLogger.error("Problème de serveur : " + e.getMessage());
