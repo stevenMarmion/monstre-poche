@@ -2,8 +2,8 @@ package com.esiea.monstre.poche;
 
 import java.util.Scanner;
 
-import com.esiea.monstre.poche.models.App;
-import com.esiea.monstre.poche.models.visual.GameVisual;
+import com.esiea.monstre.poche.models.game.GameApp;
+import com.esiea.monstre.poche.models.game.GameVisual;
 
 public class MonstrePoche {
     private static final int LANCEMENT_PAR_INTERFACE = 1;
@@ -18,10 +18,10 @@ public class MonstrePoche {
     public static void gereModeLancement(int modeLancement) {
         switch (modeLancement) {
             case LANCEMENT_PAR_INTERFACE:
-                App.startAppInterface();
+                GameApp.startAppInterface();
                 break;
             case LANCEMENT_PAR_TERMINAL:
-                App.startAppTerminal();
+                GameApp.startAppTerminal();
                 break;
             default:
                 break;

@@ -3,9 +3,10 @@ package com.esiea.monstre.poche.models.inventaire.potions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.esiea.monstre.poche.models.affinites.Normal;
-import com.esiea.monstre.poche.models.entites.Attaque;
-import com.esiea.monstre.poche.models.entites.Monstre;
+import com.esiea.monstre.poche.models.core.Attaque;
+import com.esiea.monstre.poche.models.core.Monstre;
+import com.esiea.monstre.poche.models.items.potions.PotionVitesse;
+import com.esiea.monstre.poche.models.types.Normal;
 
 import static org.junit.jupiter.api.Assertions.*;
 

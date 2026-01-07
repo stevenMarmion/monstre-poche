@@ -5,15 +5,15 @@ import javafx.application.Platform;
 import java.util.List;
 
 import com.esiea.monstre.poche.controllers.INavigationCallback;
-import com.esiea.monstre.poche.models.combats.Combat;
-import com.esiea.monstre.poche.models.combats.CombatBot;
-import com.esiea.monstre.poche.models.combats.CombatLocalTerminal;
-import com.esiea.monstre.poche.models.combats.CombatLogger;
-import com.esiea.monstre.poche.models.entites.Attaque;
-import com.esiea.monstre.poche.models.entites.Bot;
-import com.esiea.monstre.poche.models.entites.Joueur;
-import com.esiea.monstre.poche.models.entites.Monstre;
-import com.esiea.monstre.poche.models.inventaire.Objet;
+import com.esiea.monstre.poche.models.battle.Combat;
+import com.esiea.monstre.poche.models.battle.CombatLogger;
+import com.esiea.monstre.poche.models.battle.ai.Bot;
+import com.esiea.monstre.poche.models.battle.modes.CombatBot;
+import com.esiea.monstre.poche.models.battle.modes.CombatLocalTerminal;
+import com.esiea.monstre.poche.models.core.Attaque;
+import com.esiea.monstre.poche.models.core.Joueur;
+import com.esiea.monstre.poche.models.core.Monstre;
+import com.esiea.monstre.poche.models.items.Objet;
 import com.esiea.monstre.poche.views.gui.battle.BattleView;
 
 /**

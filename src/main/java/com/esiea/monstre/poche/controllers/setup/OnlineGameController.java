@@ -7,17 +7,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.esiea.monstre.poche.controllers.INavigationCallback;
-import com.esiea.monstre.poche.models.combats.Combat;
-import com.esiea.monstre.poche.models.combats.CombatEnLigne;
-import com.esiea.monstre.poche.models.combats.CombatLogger;
-import com.esiea.monstre.poche.models.entites.Attaque;
-import com.esiea.monstre.poche.models.entites.Joueur;
-import com.esiea.monstre.poche.models.entites.Monstre;
-import com.esiea.monstre.poche.models.loader.GameResourcesFactory;
-import com.esiea.monstre.poche.models.loader.GameResourcesLoader;
-import com.esiea.monstre.poche.models.online.OnlineClient;
-import com.esiea.monstre.poche.models.online.OnlineConnection;
-import com.esiea.monstre.poche.models.online.OnlineServer;
+import com.esiea.monstre.poche.models.battle.Combat;
+import com.esiea.monstre.poche.models.battle.CombatLogger;
+import com.esiea.monstre.poche.models.battle.modes.CombatEnLigne;
+import com.esiea.monstre.poche.models.core.Attaque;
+import com.esiea.monstre.poche.models.core.Joueur;
+import com.esiea.monstre.poche.models.core.Monstre;
+import com.esiea.monstre.poche.models.game.resources.GameResourcesFactory;
+import com.esiea.monstre.poche.models.game.resources.GameResourcesLoader;
+import com.esiea.monstre.poche.models.network.OnlineClient;
+import com.esiea.monstre.poche.models.network.OnlineConnection;
+import com.esiea.monstre.poche.models.network.OnlineServer;
 import com.esiea.monstre.poche.views.gui.battle.BattleView;
 import com.esiea.monstre.poche.views.gui.setup.OnlineGameView;
 
@@ -54,7 +54,7 @@ public class OnlineGameController {
     
     // Thread d'ecoute reseau
     private Thread networkListenerThread;
-    private volatile boolean running = true;
+    private boolean running = true;
     
     /**
      * Constructeur pour la phase de connexion.

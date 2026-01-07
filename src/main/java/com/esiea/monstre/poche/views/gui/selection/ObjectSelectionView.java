@@ -1,11 +1,12 @@
 package com.esiea.monstre.poche.views.gui.selection;
 
-import com.esiea.monstre.poche.models.entites.Joueur;
-import com.esiea.monstre.poche.models.inventaire.Objet;
-import com.esiea.monstre.poche.models.inventaire.medicaments.Medicament;
-import com.esiea.monstre.poche.models.inventaire.potions.Potion;
-import com.esiea.monstre.poche.models.loader.GameResourcesFactory;
-import com.esiea.monstre.poche.models.loader.GameResourcesLoader;
+import com.esiea.monstre.poche.models.core.Joueur;
+import com.esiea.monstre.poche.models.game.resources.GameResourcesFactory;
+import com.esiea.monstre.poche.models.game.resources.GameResourcesLoader;
+import com.esiea.monstre.poche.models.items.Objet;
+import com.esiea.monstre.poche.models.items.medicaments.Medicament;
+import com.esiea.monstre.poche.models.items.potions.Potion;
+
 import javafx.animation.ScaleTransition;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;

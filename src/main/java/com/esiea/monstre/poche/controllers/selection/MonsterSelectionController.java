@@ -3,9 +3,9 @@ package com.esiea.monstre.poche.controllers.selection;
 import java.util.List;
 
 import com.esiea.monstre.poche.controllers.INavigationCallback;
-import com.esiea.monstre.poche.models.combats.CombatLogger;
-import com.esiea.monstre.poche.models.entites.Joueur;
-import com.esiea.monstre.poche.models.entites.Monstre;
+import com.esiea.monstre.poche.models.battle.CombatLogger;
+import com.esiea.monstre.poche.models.core.Joueur;
+import com.esiea.monstre.poche.models.core.Monstre;
 import com.esiea.monstre.poche.views.gui.selection.MonsterSelectionView;
 
 /**

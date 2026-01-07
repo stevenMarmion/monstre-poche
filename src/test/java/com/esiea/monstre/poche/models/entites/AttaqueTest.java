@@ -3,10 +3,12 @@ package com.esiea.monstre.poche.models.entites;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.esiea.monstre.poche.models.affinites.Eau;
-import com.esiea.monstre.poche.models.affinites.Feu;
-import com.esiea.monstre.poche.models.affinites.Normal;
-import com.esiea.monstre.poche.models.affinites.Terre;
+import com.esiea.monstre.poche.models.core.Attaque;
+import com.esiea.monstre.poche.models.core.Monstre;
+import com.esiea.monstre.poche.models.types.Eau;
+import com.esiea.monstre.poche.models.types.Feu;
+import com.esiea.monstre.poche.models.types.Normal;
+import com.esiea.monstre.poche.models.types.Terre;
 
 import static org.junit.jupiter.api.Assertions.*;
 

@@ -1,7 +1,11 @@
 package com.esiea.monstre.poche.views.gui.selection;
 
-import com.esiea.monstre.poche.models.loader.GameResourcesFactory;
-import com.esiea.monstre.poche.models.loader.GameResourcesLoader;
+import com.esiea.monstre.poche.models.core.Attaque;
+import com.esiea.monstre.poche.models.core.Joueur;
+import com.esiea.monstre.poche.models.core.Monstre;
+import com.esiea.monstre.poche.models.game.resources.GameResourcesFactory;
+import com.esiea.monstre.poche.models.game.resources.GameResourcesLoader;
+
 import javafx.animation.ScaleTransition;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -27,10 +31,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.esiea.monstre.poche.models.entites.Attaque;
-import com.esiea.monstre.poche.models.entites.Joueur;
-import com.esiea.monstre.poche.models.entites.Monstre;
 
 /**
  * Vue pour la sélection des attaques - Style Pokémon Combat amélioré.

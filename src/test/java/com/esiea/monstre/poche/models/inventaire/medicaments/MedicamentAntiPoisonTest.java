@@ -3,10 +3,11 @@ package com.esiea.monstre.poche.models.inventaire.medicaments;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.esiea.monstre.poche.models.affinites.Normal;
-import com.esiea.monstre.poche.models.entites.Attaque;
-import com.esiea.monstre.poche.models.entites.Monstre;
-import com.esiea.monstre.poche.models.etats.Empoisonne;
+import com.esiea.monstre.poche.models.core.Attaque;
+import com.esiea.monstre.poche.models.core.Monstre;
+import com.esiea.monstre.poche.models.items.medicaments.MedicamentAntiPoison;
+import com.esiea.monstre.poche.models.status.monster.Empoisonne;
+import com.esiea.monstre.poche.models.types.Normal;
 
 import static org.junit.jupiter.api.Assertions.*;
 
