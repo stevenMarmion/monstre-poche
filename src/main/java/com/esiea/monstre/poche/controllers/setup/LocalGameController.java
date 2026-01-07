@@ -1,8 +1,8 @@
 package com.esiea.monstre.poche.controllers.setup;
 
 import com.esiea.monstre.poche.controllers.INavigationCallback;
-import com.esiea.monstre.poche.models.combats.CombatLogger;
-import com.esiea.monstre.poche.models.entites.Joueur;
+import com.esiea.monstre.poche.models.battle.logs.CombatLogger;
+import com.esiea.monstre.poche.models.core.Joueur;
 import com.esiea.monstre.poche.views.gui.setup.LocalGameView;
 
 /**

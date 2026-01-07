@@ -3,6 +3,8 @@ package com.esiea.monstre.poche.models.affinites;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.esiea.monstre.poche.models.types.Foudre;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class FoudreTest {

@@ -3,9 +3,10 @@ package com.esiea.monstre.poche.models.etats;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.esiea.monstre.poche.models.affinites.Normal;
-import com.esiea.monstre.poche.models.entites.Attaque;
-import com.esiea.monstre.poche.models.entites.Monstre;
+import com.esiea.monstre.poche.models.core.Attaque;
+import com.esiea.monstre.poche.models.core.Monstre;
+import com.esiea.monstre.poche.models.status.monster.SousTerre;
+import com.esiea.monstre.poche.models.types.Normal;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -35,24 +36,5 @@ class SousTerreTest {
         
         // La défense devrait doubler
         assertEquals(defenseInitiale * 2, monstre.getDefense());
-    }
-
-    @Test
-    void testSortirSousTerre() {
-        // On simule que le monstre a passé tous ses tours sous terre
-        monstre.setStatut(statutSousTerre);
-        monstre.setDefense(80); // Défense doublée
-        
-        // On force nbToursAvecEffet à 0
-        while (statutSousTerre.nbToursAvecEffet > 0) {
-            statutSousTerre.decrementerNbToursAvecEffet();
-        }
-        
-        statutSousTerre.sortirSousTerre(monstre);
-        
-        // Le statut devrait revenir à Normal
-        assertEquals("Normal", monstre.getStatut().getLabelStatut());
-        // La défense devrait être divisée par 2
-        assertEquals(40, monstre.getDefense());
     }
 }

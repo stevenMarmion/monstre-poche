@@ -5,15 +5,15 @@ import javafx.application.Platform;
 import java.util.List;
 
 import com.esiea.monstre.poche.controllers.INavigationCallback;
-import com.esiea.monstre.poche.models.combats.Combat;
-import com.esiea.monstre.poche.models.combats.CombatBot;
-import com.esiea.monstre.poche.models.combats.CombatLocalTerminal;
-import com.esiea.monstre.poche.models.combats.CombatLogger;
-import com.esiea.monstre.poche.models.entites.Attaque;
-import com.esiea.monstre.poche.models.entites.Bot;
-import com.esiea.monstre.poche.models.entites.Joueur;
-import com.esiea.monstre.poche.models.entites.Monstre;
-import com.esiea.monstre.poche.models.inventaire.Objet;
+import com.esiea.monstre.poche.models.battle.Combat;
+import com.esiea.monstre.poche.models.battle.ai.Bot;
+import com.esiea.monstre.poche.models.battle.logs.CombatLogger;
+import com.esiea.monstre.poche.models.battle.modes.CombatBot;
+import com.esiea.monstre.poche.models.battle.modes.CombatLocalTerminal;
+import com.esiea.monstre.poche.models.core.Attaque;
+import com.esiea.monstre.poche.models.core.Joueur;
+import com.esiea.monstre.poche.models.core.Monstre;
+import com.esiea.monstre.poche.models.items.Objet;
 import com.esiea.monstre.poche.views.gui.battle.BattleView;
 
 /**
@@ -172,7 +172,7 @@ public class BattleController {
         CombatLogger.clearCurrentTurn();
 
         // Utiliser la logique d'ordre d'exécution
-        Combat.gereOrdreExecutionActions(player1Action, player2Action);
+        combat.gereOrdreExecutionActions(player1Action, player2Action);
 
         // Récupérer et afficher les logs du tour actuel
         String detailed = CombatLogger.getFormattedCurrentTurnLogs();
@@ -184,7 +184,7 @@ public class BattleController {
         view.updatePokemonDisplay();
         
         // Vérifier fin de combat
-        Joueur winner = Combat.getAWinner();
+        Joueur winner = combat.getAWinner();
         if (winner != null) {
             INavigationCallback.showWinnerView(winner);
             return;
@@ -235,7 +235,7 @@ public class BattleController {
                 objet.utiliserObjet(cible);
                 currentPlayer.getObjets().remove(objet);
                 
-                CombatLogger.logUtilisationObjet(currentPlayer, objet.getNomObjet(), cible);
+                CombatLogger.log("  " + currentPlayer.getNomJoueur() + " utilise " + objet.getNomObjet() + " sur " + cible.getNomMonstre());
                 view.updateBattleLog(currentPlayer.getNomJoueur() + " utilise " + objet.getNomObjet() + " sur " + cible.getNomMonstre() + " !");
                 
                 // L'objet compte comme action du tour
@@ -257,7 +257,7 @@ public class BattleController {
                 objet.utiliserObjet(cible);
                 currentPlayer.getObjets().remove(objet);
                 
-                CombatLogger.logUtilisationObjet(currentPlayer, objet.getNomObjet(), cible);
+                CombatLogger.log("  " + currentPlayer.getNomJoueur() + " utilise " + objet.getNomObjet() + " sur " + cible.getNomMonstre());
                 view.updateBattleLog(currentPlayer.getNomJoueur() + " utilise " + objet.getNomObjet() + " sur " + cible.getNomMonstre() + " !");
                 
                 player2Action = objet;

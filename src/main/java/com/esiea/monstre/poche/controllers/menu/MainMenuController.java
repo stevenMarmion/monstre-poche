@@ -1,7 +1,7 @@
 package com.esiea.monstre.poche.controllers.menu;
 
 import com.esiea.monstre.poche.controllers.INavigationCallback;
-import com.esiea.monstre.poche.models.combats.CombatLogger;
+import com.esiea.monstre.poche.models.battle.logs.CombatLogger;
 import com.esiea.monstre.poche.views.gui.menu.MainMenuView;
 
 /**

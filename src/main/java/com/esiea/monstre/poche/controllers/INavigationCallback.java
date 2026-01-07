@@ -1,7 +1,7 @@
 package com.esiea.monstre.poche.controllers;
 
-import com.esiea.monstre.poche.models.entites.Bot;
-import com.esiea.monstre.poche.models.entites.Joueur;
+import com.esiea.monstre.poche.models.battle.ai.Bot;
+import com.esiea.monstre.poche.models.core.Joueur;
 import com.esiea.monstre.poche.views.gui.battle.BattleView;
 
 /**

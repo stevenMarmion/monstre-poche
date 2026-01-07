@@ -3,9 +3,10 @@ package com.esiea.monstre.poche.models.entites;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.esiea.monstre.poche.models.etats.Asseche;
-import com.esiea.monstre.poche.models.etats.Innonde;
-import com.esiea.monstre.poche.models.etats.StatutTerrain;
+import com.esiea.monstre.poche.models.core.Terrain;
+import com.esiea.monstre.poche.models.status.monster.Asseche;
+import com.esiea.monstre.poche.models.status.terrain.Innonde;
+import com.esiea.monstre.poche.models.status.terrain.StatutTerrain;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -17,7 +18,7 @@ class TerrainTest {
     @BeforeEach
     void setUp() {
         statutAsseche = new Asseche();
-        statutInnonde = new Innonde(3);
+        statutInnonde = new Innonde(3, 0.3, null);
         terrain = new Terrain("Terrain de combat", statutAsseche);
     }
 

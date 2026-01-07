@@ -1,7 +1,10 @@
 package com.esiea.monstre.poche.views.gui.selection;
 
-import com.esiea.monstre.poche.models.loader.GameResourcesFactory;
-import com.esiea.monstre.poche.models.loader.GameResourcesLoader;
+import com.esiea.monstre.poche.models.core.Attaque;
+import com.esiea.monstre.poche.models.core.Joueur;
+import com.esiea.monstre.poche.models.core.Monstre;
+import com.esiea.monstre.poche.models.game.resources.GameResourcesFactory;
+
 import javafx.animation.ScaleTransition;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -28,10 +31,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.esiea.monstre.poche.models.entites.Attaque;
-import com.esiea.monstre.poche.models.entites.Joueur;
-import com.esiea.monstre.poche.models.entites.Monstre;
-
 /**
  * Vue pour la sélection des attaques - Style Pokémon Combat amélioré.
  */
@@ -49,9 +48,6 @@ public class AttackSelectionView extends VBox {
     private Joueur joueur;
     private Monstre currentMonstre;
 
-    private final GameResourcesLoader resourcesLoader = new GameResourcesLoader();
-    private final GameResourcesFactory resourcesFactory = new GameResourcesFactory(resourcesLoader);
-    
     // Couleurs par type (style Pokémon)
     private static final Map<String, String> TYPE_COLORS = Map.ofEntries(
         Map.entry("Feu", "#F08030"),
@@ -80,7 +76,7 @@ public class AttackSelectionView extends VBox {
     private void initializeView(Joueur joueur) {
         // Filtrer les attaques par type du monstre
         List<Attaque> filteredAttacks = new ArrayList<>();
-        for (Attaque attaque : resourcesFactory.getToutesLesAttaques()) {
+        for (Attaque attaque : GameResourcesFactory.getInstance().getToutesLesAttaques()) {
             if (attaque.getTypeAttaque().getLabelType().equals(currentMonstre.getTypeMonstre().getLabelType())) {
                 filteredAttacks.add(attaque);
             }

@@ -10,10 +10,9 @@ import com.esiea.monstre.poche.controllers.selection.ObjectSelectionController;
 import com.esiea.monstre.poche.controllers.setup.BotGameController;
 import com.esiea.monstre.poche.controllers.setup.LocalGameController;
 import com.esiea.monstre.poche.controllers.setup.OnlineGameController;
-import com.esiea.monstre.poche.models.entites.Bot;
-import com.esiea.monstre.poche.models.entites.Joueur;
-import com.esiea.monstre.poche.models.loader.GameResourcesFactory;
-import com.esiea.monstre.poche.models.loader.GameResourcesLoader;
+import com.esiea.monstre.poche.models.battle.ai.Bot;
+import com.esiea.monstre.poche.models.core.Joueur;
+import com.esiea.monstre.poche.models.game.resources.GameResourcesFactory;
 import com.esiea.monstre.poche.views.gui.battle.BattleView;
 import com.esiea.monstre.poche.views.gui.battle.WinnerView;
 import com.esiea.monstre.poche.views.gui.menu.MainMenuView;
@@ -37,11 +36,6 @@ public class MonstrePocheUI extends Application implements INavigationCallback {
     private Stage stage;
     private Scene scene;
 
-    // TODO gameresources factory passe, mais  plusieurs instances définies dans l'app
-    // ca devrait etre un singleton
-    private final GameResourcesLoader resourcesLoader = new GameResourcesLoader();
-    private final GameResourcesFactory resourcesFactory = new GameResourcesFactory(resourcesLoader);
-
     public static void main(String[] args) {
         launch();
     }
@@ -49,9 +43,10 @@ public class MonstrePocheUI extends Application implements INavigationCallback {
     @Override
     public void start(Stage stage) {
         this.stage = stage;
-        
+
+        GameResourcesFactory.getInstance();
         showMainMenu();
-        
+
         stage.setTitle("Monstre Poche");
         stage.setResizable(true);
         stage.setMaximized(true);
@@ -94,7 +89,7 @@ public class MonstrePocheUI extends Application implements INavigationCallback {
     
     @Override
     public void showMonsterSelectionPlayer(Joueur joueur, Runnable onComplete) {
-        MonsterSelectionView monsterSelectionView = new MonsterSelectionView(this.resourcesFactory, joueur);
+        MonsterSelectionView monsterSelectionView = new MonsterSelectionView(GameResourcesFactory.getInstance(), joueur);
         new MonsterSelectionController(monsterSelectionView, this, joueur, onComplete);
 
         scene.setRoot(monsterSelectionView);

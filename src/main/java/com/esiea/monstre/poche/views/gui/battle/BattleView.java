@@ -24,10 +24,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import com.esiea.monstre.poche.models.entites.Attaque;
-import com.esiea.monstre.poche.models.entites.Joueur;
-import com.esiea.monstre.poche.models.entites.Monstre;
-import com.esiea.monstre.poche.models.inventaire.Objet;
+import com.esiea.monstre.poche.models.core.Attaque;
+import com.esiea.monstre.poche.models.core.Joueur;
+import com.esiea.monstre.poche.models.core.Monstre;
+import com.esiea.monstre.poche.models.items.Objet;
 
 /**
  * Vue de combat style Pokémon - Design moderne inspiré des jeux GBA/DS.
@@ -458,15 +458,6 @@ public class BattleView extends StackPane {
 
         panel.getChildren().addAll(title, logScrollPane);
         return panel;
-    }
-
-    /**
-     * Crée le panneau inférieur (logs + actions).
-     * @deprecated Remplacé par createActionBottomPanel() et createLogPanel()
-     */
-    @Deprecated
-    private VBox createBottomPanel() {
-        return createActionBottomPanel();
     }
 
     /**
