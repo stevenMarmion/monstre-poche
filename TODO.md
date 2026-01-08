@@ -5,14 +5,13 @@ TODO
 - Faire README complet
 - Corriger entrée pour client quand lancement online par terminal
 - Refactoring controllers
-- Refactoring views
+- Refactoring views -- fait
 - Note spéciale pour objectSelectionView qui pue sa mère, à refaire, on doit faire comme le reste des vues, c-a-dire on met dans le constructeur un controller (voir monstrePocheUI.java)
-- Corriger singleton, demander pourquoi volatile en attribut et pourquoi synchronized en fonction getInstance ???
-- Mettre en image docker la dernière version de monstre poche pour la faire tester à tout le monde (mettre sur un repo docker hub, ajouter Dockerfile, ajouter README étape pour publication)
+- Corriger singleton, demander pourquoi volatile en attribut et pourquoi synchronized en fonction getInstance ??? -- fait
 - Ajouter images monstre
-- Regénérer fichier attacks et monsters avec les vrais pokémons
+- Regénérer fichier attacks et monsters avec les vrais pokémons -- fait
 - Ajouter exception personnalisés
 - Régler bug interface changement type de monstre quand on switch, le type ne change pas
-- Régler bug models : 
-    - Si on applique potion ou capacité spéciale --> vérifier si monstre mort car sinon pour monstre plante --> régénération infinie
-    - Si on attaque un monstre est qu'il est mort, son attaque nous touche pas
+- Régler bug models : -- fait
+    - Si on applique potion ou capacité spéciale --> vérifier si monstre mort car sinon pour monstre plante --> régénération infinie -- fait
+    - Si on attaque un monstre est qu'il est mort, son attaque nous touche pas -- fait
