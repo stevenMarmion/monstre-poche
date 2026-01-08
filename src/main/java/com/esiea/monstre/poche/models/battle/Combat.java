@@ -159,13 +159,11 @@ public abstract class Combat {
         afficherTitre("Attaques de " + monstreActuel.getNomMonstre());
 
         int index = 1;
-        boolean attaquesSpeNonDisponibles = false;
+        boolean attaquesSpeNonDisponibles = true;
         for (Attaque attaque : monstreActuel.getAttaques()) {
             String ppStatus = attaque.getNbUtilisations() <= 0 ? " [VIDE]" : "";
             afficherMessage(String.format("[%d] %s%s", index++, GameVisual.formatterAttaque(attaque), ppStatus));
-            if (attaque.getNbUtilisations() <= 0) {
-                attaquesSpeNonDisponibles = true;
-            } else {
+            if (attaque.getNbUtilisations() > 0) {
                 attaquesSpeNonDisponibles = false;
             }
         }
@@ -176,20 +174,21 @@ public abstract class Combat {
         }
 
         while (true) {
-            String choixInput = demanderSaisie("Attaque choisie (0 pour mains nues) >");
+            String message = attaquesSpeNonDisponibles ? "Choix de l'attaque (0 pour mains nues) >" : "Choix de l'attaque >";
+            String choixInput = demanderSaisie(message);
             try {
                 int indexChoisi = Integer.parseInt(choixInput);
-                if (indexChoisi == 0) {
+                if (attaquesSpeNonDisponibles && indexChoisi == 0) {
                     afficherMessage("[OK] Attaque a mains nues selectionnee.");
                     return null;
                 }
                 if (indexChoisi < 1 || indexChoisi > monstreActuel.getAttaques().size()) {
-                    afficherErreur("Index invalide. Veuillez choisir 0 ou un nombre entre 1 et " + monstreActuel.getAttaques().size());
+                    afficherErreur("Index invalide. Veuillez choisir un nombre entre 1 et " + monstreActuel.getAttaques().size());
                     continue;
                 }
                 Attaque attaqueTemp = monstreActuel.getAttaques().get(indexChoisi - 1);
                 if (attaqueTemp.getNbUtilisations() <= 0) {
-                    afficherErreur("Cette attaque n'a plus de PP ! Choisissez une autre attaque ou 0 pour mains nues.");
+                    afficherErreur("Cette attaque n'a plus de PP ! Choisissez une autre attaque");
                     continue;
                 }
                 return attaqueTemp;
