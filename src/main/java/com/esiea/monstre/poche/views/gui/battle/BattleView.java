@@ -27,6 +27,7 @@ import com.esiea.monstre.poche.models.core.Attaque;
 import com.esiea.monstre.poche.models.core.Joueur;
 import com.esiea.monstre.poche.models.core.Monstre;
 import com.esiea.monstre.poche.models.items.Objet;
+import com.esiea.monstre.poche.views.gui.components.UIComponentFactory;
 import com.esiea.monstre.poche.views.gui.config.ColorConfig;
 import com.esiea.monstre.poche.views.gui.config.FontConfig;
 
@@ -35,6 +36,15 @@ import com.esiea.monstre.poche.views.gui.config.FontConfig;
  * Image de fond en plein écran avec interface overlay.
  */
 public class BattleView extends StackPane {
+    public static final int ATTACK_BUTTON_WIDTH = 165;
+    public static final int ATTACK_BUTTON_HEIGHT = 48;
+    public static final int MONSTER_CARD_WIDTH = 110;
+    public static final double HP_BAR_MAX_WIDTH = 160.0;
+    public static final int ATTACK_GRID_COLUMNS = 2;
+    public static final double HP_RATIO_HIGH_THRESHOLD = 0.5;
+    public static final double HP_RATIO_MEDIUM_THRESHOLD = 0.2;
+    public static final int MAX_LOG_BLOCKS = 50;
+
     private VBox enemySpriteBox;
 
     // Éléments d'interface - Monstre Joueur
@@ -58,7 +68,6 @@ public class BattleView extends StackPane {
     private VBox logBox;
     private ScrollPane logScrollPane;
     private List<String> battleLogBlocks = new ArrayList<>();
-    private static final int MAX_LOG_BLOCKS = 50;
 
     // Panneaux de choix
     private HBox actionButtonsContainer;
@@ -82,7 +91,6 @@ public class BattleView extends StackPane {
     private void initializeView() {
         this.setAlignment(Pos.CENTER);
 
-        // === IMAGE DE FOND EN PLEIN ÉCRAN ===
         try {
             Image bgImage = new Image(getClass().getResource("/images/exemple_combat.png").toExternalForm());
             ImageView bgView = new ImageView(bgImage);
@@ -225,7 +233,7 @@ public class BattleView extends StackPane {
         HBox hpRow = createHpBar(m, isPlayer);
 
         // Valeur PV
-        Label hpTextLabel = new Label(String.format("%.0f / %.0f PV", m.getPointsDeVie(), m.getPointsDeVieMax()));
+        Label hpTextLabel = new Label(UIComponentFactory.formatHpText(m.getPointsDeVie(), m.getPointsDeVieMax()));
         hpTextLabel.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 12));
         hpTextLabel.setTextFill(Color.web("#404040"));
 
@@ -254,7 +262,7 @@ public class BattleView extends StackPane {
         StackPane barContainer = new StackPane();
         barContainer.setAlignment(Pos.CENTER_LEFT);
 
-        double maxWidth = 160;
+        double maxWidth = HP_BAR_MAX_WIDTH;
         double ratio = Math.max(0, m.getPointsDeVie() / m.getPointsDeVieMax());
 
         Rectangle bg = new Rectangle(maxWidth, 12);
@@ -265,9 +273,7 @@ public class BattleView extends StackPane {
         Rectangle fill = new Rectangle(maxWidth * ratio, 12);
         fill.setArcWidth(8);
         fill.setArcHeight(8);
-        if (ratio > 0.5) fill.setFill(Color.web("#48d048"));
-        else if (ratio > 0.2) fill.setFill(Color.web("#f8c800"));
-        else fill.setFill(Color.web("#f85858"));
+        fill.setFill(Color.web(UIComponentFactory.getHpColor(ratio)));
 
         barContainer.getChildren().addAll(bg, fill);
 
@@ -420,10 +426,10 @@ public class BattleView extends StackPane {
         grid.setVgap(10);
         grid.setAlignment(Pos.CENTER);
 
-        btnAttack = createActionButton("ATTAQUE", "#e85858", "#c84848");
-        btnItem = createActionButton("SAC", "#58b858", "#48a848");
-        btnSwitch = createActionButton("POKEMON", "#5898e8", "#4888d8");
-        btnFlee = createActionButton("FUITE", "#888898", "#707080");
+        btnAttack = UIComponentFactory.createActionButton("ATTAQUE", ColorConfig.ACTION_ATTACK_COLOR.getColorCode(), ColorConfig.ACTION_ATTACK_DARK.getColorCode());
+        btnItem = UIComponentFactory.createActionButton("SAC", ColorConfig.ACTION_ITEM_COLOR.getColorCode(), ColorConfig.ACTION_ITEM_DARK.getColorCode());
+        btnSwitch = UIComponentFactory.createActionButton("POKEMON", ColorConfig.ACTION_SWITCH_COLOR.getColorCode(), ColorConfig.ACTION_SWITCH_DARK.getColorCode());
+        btnFlee = UIComponentFactory.createActionButton("FUITE", ColorConfig.ACTION_FLEE_COLOR.getColorCode(), ColorConfig.ACTION_FLEE_DARK.getColorCode());
 
         grid.add(btnAttack, 0, 0);
         grid.add(btnItem, 1, 0);
@@ -434,55 +440,6 @@ public class BattleView extends StackPane {
         return panel;
     }
 
-    /**
-     * Crée un bouton d'action stylisé.
-     */
-    private Button createActionButton(String text, String color, String darkColor) {
-        Button btn = new Button(text);
-        btn.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 12));
-        btn.setPrefWidth(105);
-        btn.setPrefHeight(42);
-
-        String normalStyle = String.format(
-            "-fx-background-color: %s; " +
-            "-fx-text-fill: white; " +
-            "-fx-background-radius: 10; " +
-            "-fx-border-color: %s; " +
-            "-fx-border-width: 0 0 4 0; " +
-            "-fx-border-radius: 10; " +
-            "-fx-cursor: hand;",
-            color, darkColor
-        );
-        btn.setStyle(normalStyle);
-
-        btn.setOnMouseEntered(e -> btn.setStyle(String.format(
-            "-fx-background-color: derive(%s, 12%%); " +
-            "-fx-text-fill: white; " +
-            "-fx-background-radius: 10; " +
-            "-fx-border-color: %s; " +
-            "-fx-border-width: 0 0 4 0; " +
-            "-fx-border-radius: 10; " +
-            "-fx-cursor: hand;",
-            color, darkColor
-        )));
-
-        btn.setOnMouseExited(e -> btn.setStyle(normalStyle));
-
-        btn.setOnMousePressed(e -> btn.setStyle(String.format(
-            "-fx-background-color: %s; " +
-            "-fx-text-fill: white; " +
-            "-fx-background-radius: 10; " +
-            "-fx-border-color: %s; " +
-            "-fx-border-width: 4 0 0 0; " +
-            "-fx-border-radius: 10; " +
-            "-fx-cursor: hand;",
-            darkColor, darkColor
-        )));
-
-        btn.setOnMouseReleased(e -> btn.setStyle(normalStyle));
-
-        return btn;
-    }
 
     /**
      * Rafraîchit l'affichage des logs.
@@ -607,13 +564,11 @@ public class BattleView extends StackPane {
                 lblPlayerName.setText(monstre.getNomMonstre());
             }
             if (lblPlayerHpText != null) {
-                lblPlayerHpText.setText(String.format("%.0f / %.0f PV", monstre.getPointsDeVie(), monstre.getPointsDeVieMax()));
+                lblPlayerHpText.setText(UIComponentFactory.formatHpText(monstre.getPointsDeVie(), monstre.getPointsDeVieMax()));
             }
             if (hpBarPlayerFill != null) {
-                hpBarPlayerFill.setWidth(160 * ratio);
-                if (ratio > 0.5) hpBarPlayerFill.setFill(Color.web("#48d048"));
-                else if (ratio > 0.2) hpBarPlayerFill.setFill(Color.web("#f8c800"));
-                else hpBarPlayerFill.setFill(Color.web("#f85858"));
+                hpBarPlayerFill.setWidth(HP_BAR_MAX_WIDTH * ratio);
+                hpBarPlayerFill.setFill(Color.web(UIComponentFactory.getHpColor(ratio)));
             }
             updateSpriteBox(playerSpriteBox, monstre, true);
         } else {
@@ -622,13 +577,11 @@ public class BattleView extends StackPane {
                 lblEnemyName.setText(monstre.getNomMonstre());
             }
             if (lblEnemyHpText != null) {
-                lblEnemyHpText.setText(String.format("%.0f / %.0f PV", monstre.getPointsDeVie(), monstre.getPointsDeVieMax()));
+                lblEnemyHpText.setText(UIComponentFactory.formatHpText(monstre.getPointsDeVie(), monstre.getPointsDeVieMax()));
             }
             if (hpBarEnemyFill != null) {
-                hpBarEnemyFill.setWidth(160 * ratio);
-                if (ratio > 0.5) hpBarEnemyFill.setFill(Color.web("#48d048"));
-                else if (ratio > 0.2) hpBarEnemyFill.setFill(Color.web("#f8c800"));
-                else hpBarEnemyFill.setFill(Color.web("#f85858"));
+                hpBarEnemyFill.setWidth(HP_BAR_MAX_WIDTH * ratio);
+                hpBarEnemyFill.setFill(Color.web(UIComponentFactory.getHpColor(ratio)));
             }
             updateSpriteBox(enemySpriteBox, monstre, false);
         }
@@ -685,60 +638,34 @@ public class BattleView extends StackPane {
                 boolean hasNoPP = a.getNbUtilisations() <= 0;
 
                 Button btn = new Button();
-                btn.setPrefWidth(165);
-                btn.setPrefHeight(48);
-
-                VBox content = new VBox(2);
-                content.setAlignment(Pos.CENTER_LEFT);
-                content.setPadding(new Insets(0, 8, 0, 8));
-
-                Label nameLabel = new Label(a.getNomAttaque().replace("_", " "));
-                nameLabel.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 12));
-                nameLabel.setTextFill(hasNoPP ? Color.GRAY : Color.WHITE);
+                btn.setPrefWidth(ATTACK_BUTTON_WIDTH);
+                btn.setPrefHeight(ATTACK_BUTTON_HEIGHT);
 
                 String ppText = hasNoPP ? "PP VIDE" : ("PP " + a.getNbUtilisations());
-                Label infoLabel = new Label(a.getTypeAttaque().getLabelType() + " | " + ppText + " | PWR " + a.getPuissanceAttaque());
-                infoLabel.setFont(Font.font(FontConfig.SYSTEM.getFontName(), 9));
-                infoLabel.setTextFill(hasNoPP ? Color.DARKGRAY : Color.web("#ddd"));
-
-                content.getChildren().addAll(nameLabel, infoLabel);
+                String infoText = a.getTypeAttaque().getLabelType() + " | " + ppText + " | PWR " + a.getPuissanceAttaque();
+                VBox content = UIComponentFactory.createButtonContent(a.getNomAttaque().replace("_", " "), infoText, hasNoPP);
                 btn.setGraphic(content);
 
-                String normalStyle;
                 if (hasNoPP) {
                     // Style grisé pour les attaques sans PP
-                    normalStyle = "-fx-background-color: #444; " +
-                        "-fx-background-radius: 8; " +
-                        "-fx-border-color: #333; " +
-                        "-fx-border-width: 0 0 3 0; " +
-                        "-fx-border-radius: 8; " +
-                        "-fx-opacity: 0.6;";
+                    btn.setStyle(UIComponentFactory.createButtonStyle(
+                        ColorConfig.NO_PP_BG_COLOR.getColorCode(), ColorConfig.NO_PP_BORDER_COLOR.getColorCode(), "0 0 3 0", 8) + "-fx-opacity: 0.6;");
                     btn.setDisable(true);
                 } else {
-                    normalStyle = String.format(
-                        "-fx-background-color: %s; " +
-                        "-fx-background-radius: 8; " +
-                        "-fx-border-color: derive(%s, -30%%); " +
-                        "-fx-border-width: 0 0 3 0; " +
-                        "-fx-border-radius: 8; " +
-                        "-fx-cursor: hand;",
-                        typeColor, typeColor
+                    // Utiliser UIComponentFactory pour les effets hover
+                    String normalStyle = UIComponentFactory.createCardStyle(
+                        typeColor,
+                        UIComponentFactory.deriveColor(typeColor, -30),
+                        "0 0 3 0",
+                        8
                     );
-                }
-                btn.setStyle(normalStyle);
-
-                if (!hasNoPP) {
-                    btn.setOnMouseEntered(e -> btn.setStyle(String.format(
-                        "-fx-background-color: derive(%s, 15%%); " +
-                        "-fx-background-radius: 8; " +
-                        "-fx-border-color: derive(%s, -30%%); " +
-                        "-fx-border-width: 0 0 3 0; " +
-                        "-fx-border-radius: 8; " +
-                        "-fx-cursor: hand;",
-                        typeColor, typeColor
-                    )));
-                    final String savedStyle = normalStyle;
-                    btn.setOnMouseExited(e -> btn.setStyle(savedStyle));
+                    String hoverStyle = UIComponentFactory.createCardStyle(
+                        UIComponentFactory.deriveColor(typeColor, 15),
+                        UIComponentFactory.deriveColor(typeColor, -30),
+                        "0 0 3 0",
+                        8
+                    );
+                    UIComponentFactory.addHoverEffect(btn, normalStyle, hoverStyle);
 
                     btn.setOnAction(e -> {
                         onSelect.accept(a);
@@ -748,48 +675,23 @@ public class BattleView extends StackPane {
 
                 attackGrid.add(btn, col, row);
                 col++;
-                if (col >= 2) { col = 0; row++; }
+                if (col >= ATTACK_GRID_COLUMNS) { col = 0; row++; }
             }
         }
         
         // Bouton "Mains nues" toujours disponible
         Button btnBareHands = new Button();
-        btnBareHands.setPrefWidth(165);
-        btnBareHands.setPrefHeight(48);
-        
-        VBox bareHandsContent = new VBox(2);
-        bareHandsContent.setAlignment(Pos.CENTER_LEFT);
-        bareHandsContent.setPadding(new Insets(0, 8, 0, 8));
-        
-        Label bareHandsName = new Label("MAINS NUES");
-        bareHandsName.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 12));
-        bareHandsName.setTextFill(Color.WHITE);
-        
-        Label bareHandsInfo = new Label("Normal | PP infini | PWR faible");
-        bareHandsInfo.setFont(Font.font(FontConfig.SYSTEM.getFontName(), 9));
-        bareHandsInfo.setTextFill(Color.web("#ddd"));
-        
-        bareHandsContent.getChildren().addAll(bareHandsName, bareHandsInfo);
-        btnBareHands.setGraphic(bareHandsContent);
-        
-        String bareHandsStyle = "-fx-background-color: #8B4513; " +
-            "-fx-background-radius: 8; " +
-            "-fx-border-color: #654321; " +
-            "-fx-border-width: 0 0 3 0; " +
-            "-fx-border-radius: 8; " +
-            "-fx-cursor: hand;";
-        btnBareHands.setStyle(bareHandsStyle);
+        btnBareHands.setPrefWidth(ATTACK_BUTTON_WIDTH);
+        btnBareHands.setPrefHeight(ATTACK_BUTTON_HEIGHT);
 
-        btnBareHands.setOnMouseEntered(e -> btnBareHands.setStyle(
-            "-fx-background-color: #A0522D; " +
-            "-fx-background-radius: 8; " +
-            "-fx-border-color: #654321; " +
-            "-fx-border-width: 0 0 3 0; " +
-            "-fx-border-radius: 8; " +
-            "-fx-cursor: hand;"
-        ));
-        btnBareHands.setOnMouseExited(e -> btnBareHands.setStyle(bareHandsStyle));
-        
+        VBox bareHandsContent = UIComponentFactory.createButtonContent("MAINS NUES", "Normal | PP infini | PWR faible", false);
+        btnBareHands.setGraphic(bareHandsContent);
+
+        // Utiliser UIComponentFactory pour les effets hover
+        String bareHandsNormalStyle = UIComponentFactory.createCardStyle(ColorConfig.BARE_HANDS_COLOR.getColorCode(), ColorConfig.BARE_HANDS_BORDER.getColorCode(), "0 0 3 0", 8);
+        String bareHandsHoverStyle = UIComponentFactory.createCardStyle(ColorConfig.BARE_HANDS_COLOR_HOVER.getColorCode(), ColorConfig.BARE_HANDS_BORDER.getColorCode(), "0 0 3 0", 8);
+        UIComponentFactory.addHoverEffect(btnBareHands, bareHandsNormalStyle, bareHandsHoverStyle);
+
         btnBareHands.setOnAction(e -> {
             onSelect.accept(null); // null représente l'attaque à mains nues
             hideAllChoices();
@@ -797,10 +699,10 @@ public class BattleView extends StackPane {
         
         attackGrid.add(btnBareHands, col, row);
         col++;
-        if (col >= 2) { col = 0; row++; }
+        if (col >= ATTACK_GRID_COLUMNS) { col = 0; row++; }
 
         // Bouton retour
-        Button btnBack = createBackButton();
+        Button btnBack = UIComponentFactory.createBackButton();
         btnBack.setOnAction(e -> hideAllChoices());
         attackGrid.add(btnBack, col, row);
 
@@ -827,45 +729,18 @@ public class BattleView extends StackPane {
 
         for (Monstre m : monstres) {
             String typeColor = ColorConfig.fromString(m.getTypeMonstre().getLabelType()).getColorCode();
-            double hpRatio = Math.max(0, m.getPointsDeVie() / m.getPointsDeVieMax());
-
-            VBox card = new VBox(4);
-            card.setAlignment(Pos.CENTER);
-            card.setPadding(new Insets(8, 12, 8, 12));
-            card.setPrefWidth(110);
-
-            String normalStyle = String.format(
-                "-fx-background-color: %s; " +
-                "-fx-background-radius: 10; " +
-                "-fx-border-color: derive(%s, -30%%); " +
-                "-fx-border-width: 0 0 3 0; " +
-                "-fx-border-radius: 10; " +
-                "-fx-cursor: hand;",
-                typeColor, typeColor
+            double hpRatio   = Math.max(0, m.getPointsDeVie() / m.getPointsDeVieMax());
+            VBox card        = UIComponentFactory.createTypeCard(typeColor, MONSTER_CARD_WIDTH);
+            Label nameLabel  = UIComponentFactory.createLabel(m.getNomMonstre(), 11, FontWeight.BOLD, Color.WHITE);
+            String hpColor   = UIComponentFactory.getHpColor(hpRatio);
+            Label hpLabel    = UIComponentFactory.createLabel(
+                UIComponentFactory.formatHpText(m.getPointsDeVie(), m.getPointsDeVieMax()),
+                10,
+                FontWeight.BOLD,
+                Color.web(hpColor)
             );
-            card.setStyle(normalStyle);
-
-            Label nameLabel = new Label(m.getNomMonstre());
-            nameLabel.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 11));
-            nameLabel.setTextFill(Color.WHITE);
-
-            String hpColor = hpRatio > 0.5 ? "#48d048" : hpRatio > 0.2 ? "#f8c800" : "#f85858";
-            Label hpLabel = new Label(String.format("%.0f/%.0f PV", m.getPointsDeVie(), m.getPointsDeVieMax()));
-            hpLabel.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 10));
-            hpLabel.setTextFill(Color.web(hpColor));
 
             card.getChildren().addAll(nameLabel, hpLabel);
-
-            card.setOnMouseEntered(e -> card.setStyle(String.format(
-                "-fx-background-color: derive(%s, 15%%); " +
-                "-fx-background-radius: 10; " +
-                "-fx-border-color: derive(%s, -30%%); " +
-                "-fx-border-width: 0 0 3 0; " +
-                "-fx-border-radius: 10; " +
-                "-fx-cursor: hand;",
-                typeColor, typeColor
-            )));
-            card.setOnMouseExited(e -> card.setStyle(normalStyle));
 
             card.setOnMouseClicked(e -> {
                 onSelect.accept(m);
@@ -875,7 +750,7 @@ public class BattleView extends StackPane {
             monsterChoicePanel.getChildren().add(card);
         }
 
-        Button btnBack = createBackButton();
+        Button btnBack = UIComponentFactory.createBackButton();
         btnBack.setOnAction(e -> hideAllChoices());
         monsterChoicePanel.getChildren().add(btnBack);
 
@@ -901,47 +776,9 @@ public class BattleView extends StackPane {
         refreshLogDisplay();
 
         for (Objet obj : objets) {
-            String objName = obj.getNomObjet();
-            final String objColor;
-
-            if (objName.toLowerCase().contains("medicament") || objName.toLowerCase().contains("anti")) {
-                objColor = "#e88848";
-            } else if (objName.toLowerCase().contains("degat")) {
-                objColor = "#e85858";
-            } else if (objName.toLowerCase().contains("vitesse")) {
-                objColor = "#5898e8";
-            } else {
-                objColor = "#58b858";
-            }
-
-            Button btn = new Button(objName.replace("_", " "));
-            btn.setPrefWidth(120);
-            btn.setPrefHeight(40);
-            btn.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 10));
-
-            String normalStyle = String.format(
-                "-fx-background-color: %s; " +
-                "-fx-text-fill: white; " +
-                "-fx-background-radius: 8; " +
-                "-fx-border-color: derive(%s, -30%%); " +
-                "-fx-border-width: 0 0 3 0; " +
-                "-fx-border-radius: 8; " +
-                "-fx-cursor: hand;",
-                objColor, objColor
-            );
-            btn.setStyle(normalStyle);
-
-            btn.setOnMouseEntered(e -> btn.setStyle(String.format(
-                "-fx-background-color: derive(%s, 15%%); " +
-                "-fx-text-fill: white; " +
-                "-fx-background-radius: 8; " +
-                "-fx-border-color: derive(%s, -30%%); " +
-                "-fx-border-width: 0 0 3 0; " +
-                "-fx-border-radius: 8; " +
-                "-fx-cursor: hand;",
-                objColor, objColor
-            )));
-            btn.setOnMouseExited(e -> btn.setStyle(normalStyle));
+            String objName  = obj.getNomObjet();
+            String objColor = UIComponentFactory.getItemColor(objName);
+            Button btn      = UIComponentFactory.createTypeButton(objName.replace("_", " "), objColor, 120, 40, 10);
 
             btn.setOnAction(e -> {
                 onSelect.accept(obj);
@@ -951,7 +788,7 @@ public class BattleView extends StackPane {
             itemChoicePanel.getChildren().add(btn);
         }
 
-        Button btnBack = createBackButton();
+        Button btnBack = UIComponentFactory.createBackButton();
         btnBack.setOnAction(e -> hideAllChoices());
         itemChoicePanel.getChildren().add(btnBack);
 
@@ -961,25 +798,6 @@ public class BattleView extends StackPane {
         actionButtonsContainer.setManaged(false);
     }
 
-    /**
-     * Crée un bouton retour standard.
-     */
-    private Button createBackButton() {
-        Button btn = new Button("RETOUR");
-        btn.setPrefWidth(80);
-        btn.setPrefHeight(32);
-        btn.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 10));
-        btn.setStyle(
-            "-fx-background-color: #606070; " +
-            "-fx-text-fill: white; " +
-            "-fx-background-radius: 6; " +
-            "-fx-border-color: #505060; " +
-            "-fx-border-width: 0 0 2 0; " +
-            "-fx-border-radius: 6; " +
-            "-fx-cursor: hand;"
-        );
-        return btn;
-    }
 
     /**
      * Cache tous les panneaux de choix.
@@ -1001,11 +819,6 @@ public class BattleView extends StackPane {
         actionButtonsContainer.setManaged(true);
 
         clearBattleLog();
-    }
-
-    // Alias pour compatibilité
-    public void hideAttackChoices() {
-        hideAllChoices();
     }
 
     public void setTurn(boolean player1Turn) {

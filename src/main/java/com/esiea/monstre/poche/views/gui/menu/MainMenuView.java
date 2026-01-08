@@ -27,7 +27,6 @@ public class MainMenuView extends VBox {
      * Initialise la vue du menu principal.
      */
     private void initializeView() {
-        // Configuration du conteneur principal
         this.setSpacing(40);
         this.setAlignment(Pos.CENTER);
         this.setPadding(new Insets(60));

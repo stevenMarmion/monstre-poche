@@ -18,8 +18,9 @@ import javafx.scene.text.FontWeight;
 
 /**
  * Vue pour le mode de jeu en ligne.
+ * Hérite de AbstractGameSetupView mais avec une structure plus complexe (host/join).
  */
-public class OnlineGameView extends VBox {
+public class OnlineGameView extends AbstractGameSetupView {
 
     private TextField hostPlayerName;
     private TextField hostPort;
@@ -29,7 +30,6 @@ public class OnlineGameView extends VBox {
 
     private Button btnCreateServer;
     private Button btnJoinServer;
-    private Button btnBackToMenu;
 
     private ToggleButton toggleHost;
     private ToggleButton toggleJoin;
@@ -42,34 +42,21 @@ public class OnlineGameView extends VBox {
     private Label hostLoadingLabel;
 
     public OnlineGameView() {
+        super();
         initializeView();
     }
 
-    /**
-     * Initialise la vue du jeu en ligne : choix entre creer ou rejoindre une partie.
-     */
-    private void initializeView() {
-        // Configuration du conteneur principal
-        this.setSpacing(30);
-        this.setAlignment(Pos.TOP_CENTER);
-        this.setPadding(new Insets(20));
-        this.getStyleClass().add("main-container");
+    @Override
+    protected String getTitle() {
+        return "Jouer en ligne";
+    }
 
-        // Barre superieure avec retour au menu
-        HBox topBar = new HBox();
-        topBar.setAlignment(Pos.TOP_LEFT);
-        topBar.setPadding(new Insets(10));
+    @Override
+    protected VBox createCustomContent() {
+        VBox container = new VBox(20);
+        container.setAlignment(Pos.CENTER);
 
-        btnBackToMenu = new Button("Revenir au menu");
-        btnBackToMenu.setFont(Font.font(FontConfig.SYSTEM.getFontName(), 14));
-        btnBackToMenu.getStyleClass().add("back-button");
-        topBar.getChildren().add(btnBackToMenu);
-
-        // Titre et sous-titre
-        Label title = new Label("Jouer en ligne");
-        title.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 36));
-        title.getStyleClass().add("main-title");
-
+        // Sous-titre
         Label subtitle = new Label("Choisissez votre role pour lancer une partie moderne et rapide");
         subtitle.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.NORMAL, 16));
         subtitle.getStyleClass().add("subtitle-text");
@@ -88,11 +75,30 @@ public class OnlineGameView extends VBox {
         toggleContainer.setAlignment(Pos.CENTER);
         toggleContainer.getChildren().addAll(toggleHost, toggleJoin);
 
-        // Section creation de serveur
-        hostBox = new VBox(14);
-        hostBox.setAlignment(Pos.CENTER_LEFT);
-        hostBox.setPadding(new Insets(20));
-        hostBox.getStyleClass().add("card-container");
+        hostBox = createHostSection();
+        joinBox = createJoinSection();
+
+        // Conteneur horizontal pour juxtaposer les deux cartes
+        HBox cardsContainer = new HBox(30);
+        cardsContainer.setAlignment(Pos.CENTER);
+        cardsContainer.getStyleClass().add("cards-wrapper");
+        cardsContainer.getChildren().addAll(hostBox, joinBox);
+
+        container.getChildren().addAll(subtitle, toggleContainer, cardsContainer);
+
+        // Toggle behavior to show only the selected form
+        toggleHost.setOnAction(e -> switchToHost());
+        toggleJoin.setOnAction(e -> switchToJoin());
+        switchToHost();
+
+        return container;
+    }
+
+    private VBox createHostSection() {
+        VBox box = new VBox(14);
+        box.setAlignment(Pos.CENTER_LEFT);
+        box.setPadding(new Insets(20));
+        box.getStyleClass().add("card-container");
 
         Label hostTitle = new Label("Creer une partie");
         hostTitle.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 20));
@@ -105,8 +111,8 @@ public class OnlineGameView extends VBox {
         hostHeader.setAlignment(Pos.CENTER_LEFT);
         hostHeader.getChildren().addAll(hostBadge, hostTitle);
 
-        hostPlayerName = createTextField("Nom du joueur");
-        hostPort = createTextField("Port (ex: 5000)");
+        hostPlayerName = createTextFieldWithCustomWidth("Nom du joueur", 280);
+        hostPort = createTextFieldWithCustomWidth("Port (ex: 5000)", 280);
 
         btnCreateServer = new Button("Lancer le serveur");
         btnCreateServer.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 16));
@@ -127,13 +133,16 @@ public class OnlineGameView extends VBox {
         hostLoadingBox.setVisible(false);
         hostLoadingBox.setManaged(false);
 
-        hostBox.getChildren().addAll(hostHeader, hostPlayerName, hostPort, btnCreateServer, hostLoadingBox);
+        box.getChildren().addAll(hostHeader, hostPlayerName, hostPort, btnCreateServer, hostLoadingBox);
 
-        // Section rejoindre serveur
-        joinBox = new VBox(14);
-        joinBox.setAlignment(Pos.CENTER_LEFT);
-        joinBox.setPadding(new Insets(20));
-        joinBox.getStyleClass().add("card-container");
+        return box;
+    }
+
+    private VBox createJoinSection() {
+        VBox box = new VBox(14);
+        box.setAlignment(Pos.CENTER_LEFT);
+        box.setPadding(new Insets(20));
+        box.getStyleClass().add("card-container");
 
         Label joinTitle = new Label("Rejoindre une partie");
         joinTitle.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 20));
@@ -146,30 +155,28 @@ public class OnlineGameView extends VBox {
         joinHeader.setAlignment(Pos.CENTER_LEFT);
         joinHeader.getChildren().addAll(joinBadge, joinTitle);
 
-        joinPlayerName = createTextField("Nom du joueur");
-        joinHost = createTextField("Adresse du serveur (ex: 127.0.0.1)");
-        joinPort = createTextField("Port (ex: 5000)");
+        joinPlayerName = createTextFieldWithCustomWidth("Nom du joueur", 280);
+        joinHost = createTextFieldWithCustomWidth("Adresse du serveur (ex: 127.0.0.1)", 280);
+        joinPort = createTextFieldWithCustomWidth("Port (ex: 5000)", 280);
 
         btnJoinServer = new Button("Rejoindre");
         btnJoinServer.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 16));
         btnJoinServer.setPrefWidth(260);
         btnJoinServer.getStyleClass().add("menu-button");
 
-        joinBox.getChildren().addAll(joinHeader, joinPlayerName, joinHost, joinPort, btnJoinServer);
+        box.getChildren().addAll(joinHeader, joinPlayerName, joinHost, joinPort, btnJoinServer);
 
-        // Conteneur horizontal pour juxtaposer les deux cartes
-        HBox cardsContainer = new HBox(30);
-        cardsContainer.setAlignment(Pos.CENTER);
-        cardsContainer.getStyleClass().add("cards-wrapper");
-        cardsContainer.getChildren().addAll(hostBox, joinBox);
+        return box;
+    }
 
-        // Ajout des elements au conteneur principal
-        this.getChildren().addAll(topBar, title, subtitle, toggleContainer, cardsContainer);
-
-        // Toggle behavior to show only the selected form
-        toggleHost.setOnAction(e -> switchToHost());
-        toggleJoin.setOnAction(e -> switchToJoin());
-        switchToHost();
+    private TextField createTextFieldWithCustomWidth(String promptText, int width) {
+        TextField textField = new TextField();
+        textField.setPromptText(promptText);
+        textField.setPrefWidth(width);
+        textField.setMaxWidth(width + 40);
+        textField.setFont(Font.font(FontConfig.SYSTEM.getFontName(), 14));
+        textField.getStyleClass().add("text-field");
+        return textField;
     }
 
     private void switchToHost() {
@@ -192,51 +199,6 @@ public class OnlineGameView extends VBox {
         joinBox.setManaged(true);
         toggleJoin.getStyleClass().add("segment-toggle-active");
         toggleHost.getStyleClass().remove("segment-toggle-active");
-    }
-
-    /**
-     * Crée un champ de texte stylise.
-     */
-    private TextField createTextField(String promptText) {
-        TextField textField = new TextField();
-        textField.setPromptText(promptText);
-        textField.setPrefWidth(280);
-        textField.setMaxWidth(320);
-        textField.setFont(Font.font(FontConfig.SYSTEM.getFontName(), 14));
-        textField.getStyleClass().add("text-field");
-        return textField;
-    }
-
-    public TextField getHostPlayerName() {
-        return hostPlayerName;
-    }
-
-    public TextField getHostPort() {
-        return hostPort;
-    }
-
-    public TextField getJoinPlayerName() {
-        return joinPlayerName;
-    }
-
-    public TextField getJoinHost() {
-        return joinHost;
-    }
-
-    public TextField getJoinPort() {
-        return joinPort;
-    }
-
-    public Button getBtnCreateServer() {
-        return btnCreateServer;
-    }
-
-    public Button getBtnJoinServer() {
-        return btnJoinServer;
-    }
-
-    public Button getBtnBackToMenu() {
-        return btnBackToMenu;
     }
 
     /**
@@ -290,5 +252,33 @@ public class OnlineGameView extends VBox {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    public TextField getHostPlayerName() {
+        return hostPlayerName;
+    }
+
+    public TextField getHostPort() {
+        return hostPort;
+    }
+
+    public TextField getJoinPlayerName() {
+        return joinPlayerName;
+    }
+
+    public TextField getJoinHost() {
+        return joinHost;
+    }
+
+    public TextField getJoinPort() {
+        return joinPort;
+    }
+
+    public Button getBtnCreateServer() {
+        return btnCreateServer;
+    }
+
+    public Button getBtnJoinServer() {
+        return btnJoinServer;
     }
 }
