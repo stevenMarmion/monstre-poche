@@ -12,3 +12,4 @@ TODO
 - Mettre en image docker la dernière version de monstre poche pour la faire tester à tout le monde (mettre sur un repo docker hub, ajouter Dockerfile, ajouter README étape pour publication)
 - Ajouter images monstre
 - Regénérer fichier attacks et monsters avec les vrais pokémons
+- Ajouter exception personnalisés
