@@ -17,7 +17,7 @@ public class SousTerre extends StatutMonstre {
         if (this.nbToursEffet > 0) {
             if (this.nbToursAvecEffet == nbToursEffet) {
                 cible.setDefense(cible.getDefense() * 2);
-                CombatLogger.log(cible.getNomMonstre() + " est maintenant sous terre, sa défense double !");
+                CombatLogger.info(cible.getNomMonstre() + " est maintenant sous terre, sa défense double !");
             }
             this.decrementerNbToursAvecEffet();
             sortirSousTerre(cible);
@@ -28,7 +28,7 @@ public class SousTerre extends StatutMonstre {
         if (this.nbToursAvecEffet == 0) {
             cible.setStatut(new Normal());
             cible.setDefense(cible.getDefense() / 2);
-            CombatLogger.log(cible.getNomMonstre() + " sort de sous terre, sa défense revient à la normale !");
+            CombatLogger.info(cible.getNomMonstre() + " sort de sous terre, sa défense revient à la normale !");
         }
     }
 }

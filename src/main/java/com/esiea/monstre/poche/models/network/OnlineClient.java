@@ -30,22 +30,22 @@ public class OnlineClient {
              PrintWriter out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true);
              Scanner scanner = new Scanner(System.in)) {
 
-            CombatLogger.log("Connecte au serveur " + host + ":" + port);
+            CombatLogger.network("Connecte au serveur " + host + ":" + port);
             CombatLogger.log("");
             
             String line;
             while ((line = in.readLine()) != null) {
                 if (line.startsWith(EnumEvent.INFO.toString())) {
-                    CombatLogger.log(line.substring(5));
+                    CombatLogger.network(line.substring(5));
                 } else if (line.startsWith(EnumEvent.ASK.toString())) {
-                    CombatLogger.log(line.substring(4));
+                    CombatLogger.network(line.substring(4));
                     String response = scanner.nextLine().trim();
                     out.println(EnumEvent.ANSWER.toString() + response);
                 } else if (line.startsWith(EnumEvent.END.toString())) {
-                    CombatLogger.log(line.substring(4));
+                    CombatLogger.network(line.substring(4));
                     break;
                 } else {
-                    CombatLogger.log(line);
+                    CombatLogger.network(line);
                 }
             }
         } catch (IOException e) {
@@ -61,7 +61,7 @@ public class OnlineClient {
             OnlineConnection connection = new OnlineConnection(socket);
             connection.sendInfo("Le joueur " + joueur.getNomJoueur() + " s'est connecte au serveur.");
             if (socket.isConnected()) {
-                CombatLogger.log("Connecté au serveur " + host + ":" + port);
+                CombatLogger.network("Connecté au serveur " + host + ":" + port);
                 return connection;
             }
             CombatLogger.error("Échec de la connexion au serveur " + host + ":" + port);

@@ -18,7 +18,7 @@ class ParalyseTest {
 
     @BeforeEach
     void setUp() {
-        statutParalyse = new Paralyse();
+        statutParalyse = new Paralyse((int)(Math.random() * 6));
         monstre = new Monstre("Pikachu", 100, 50, 40, 90, new ArrayList<Attaque>(), new Normal());
     }
 

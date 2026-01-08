@@ -16,10 +16,10 @@ public class Paralyse extends StatutMonstre {
     public void rateAttaque(Monstre cible) {
         if (Math.random() < CHANCE_RATER_ATTAQUE) {
             cible.setRateAttaque(true);
-            CombatLogger.log(cible.getNomMonstre() + " est paralysé et ne peut pas attaquer !");
+            CombatLogger.info(cible.getNomMonstre() + " est paralysé et ne peut pas attaquer !");
         } else {
             cible.setRateAttaque(false);
-            CombatLogger.log(cible.getNomMonstre() + " surmonte la paralysie et peut attaquer !");
+            CombatLogger.info(cible.getNomMonstre() + " surmonte la paralysie et peut attaquer !");
         }
     }
 
@@ -27,7 +27,7 @@ public class Paralyse extends StatutMonstre {
         double chanceSortie = (double) this.nbToursAvecEffet / (double) this.nbToursEffet;
         if (Math.random() < chanceSortie) {
             cible.setStatut(new Normal());
-            CombatLogger.log(cible.getNomMonstre() + " n'est plus paralysé après " + this.nbToursAvecEffet + " tours !");
+            CombatLogger.info(cible.getNomMonstre() + " n'est plus paralysé après " + this.nbToursAvecEffet + " tours !");
         }
     }
 

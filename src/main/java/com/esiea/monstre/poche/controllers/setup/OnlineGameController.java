@@ -101,7 +101,7 @@ public class OnlineGameController {
             Platform.runLater(() -> {
                 if (connectionClient != null && connectionClient.getSocket().isConnected()) {
                     currentConnection = connectionClient;
-                    CombatLogger.log("Connecte au serveur !");
+                    CombatLogger.network("Connecte au serveur !");
                     startSelectionFlow(joiningPlayer, connectionClient, false);
                 } else {
                     setupView.resetJoinLoading();
@@ -138,7 +138,7 @@ public class OnlineGameController {
             Platform.runLater(() -> {
                 if (connectionServer != null && connectionServer.getSocket().isConnected()) {
                     currentConnection = connectionServer;
-                    CombatLogger.log("Client connecte !");
+                    CombatLogger.network("Client connecte !");
                     startSelectionFlow(hostPlayer, connectionServer, true);
                 } else {
                     setupView.resetHostLoading();
@@ -170,7 +170,7 @@ public class OnlineGameController {
                 // Envoyer nos donnees de joueur
                 String playerData = serializePlayer(joueurLocal);
                 connection.sendInfo("PLAYER_DATA|" + playerData);
-                CombatLogger.log("Donnees envoyees, en attente de l'adversaire...");
+                CombatLogger.network("Donnees envoyees, en attente de l'adversaire...");
                 
                 // Attendre les donnees de l'adversaire
                 String line;
@@ -180,7 +180,7 @@ public class OnlineGameController {
                     if (line.startsWith("INFO|PLAYER_DATA|")) {
                         String remoteData = line.substring(17);
                         joueurDistantTemp = deserializePlayer(remoteData);
-                        CombatLogger.log("Donnees de l'adversaire recues !");
+                        CombatLogger.network("Donnees de l'adversaire recues !");
                         break;
                     }
                 }
@@ -239,7 +239,7 @@ public class OnlineGameController {
      * Deserialise un joueur depuis une chaine de caracteres.
      */
     private Joueur deserializePlayer(String data) {
-        CombatLogger.log("Deserialisation des donnees: " + data);
+        CombatLogger.info("Deserialisation des donnees: " + data);
         String[] parts = data.split(";");
         if (parts.length < 2) {
             CombatLogger.error("Donnees invalides: moins de 2 parties");
@@ -251,7 +251,6 @@ public class OnlineGameController {
         
         // Les dernieres parties sont les monstres, et le tout dernier est l'index
         int currentIndex = Integer.parseInt(parts[parts.length - 1]);
-        CombatLogger.log("Index du monstre actuel: " + currentIndex);
         
         // Parser les monstres (de l'index 1 a length-2)
         for (int i = 1; i < parts.length - 1; i++) {
@@ -264,7 +263,7 @@ public class OnlineGameController {
             
             String nomMonstre = monstreData[0];
             String[] atkNames = monstreData[1].split(",");
-            CombatLogger.log("Chargement monstre: " + nomMonstre + " avec " + atkNames.length + " attaques");
+            CombatLogger.info("Chargement monstre: " + nomMonstre + " avec " + atkNames.length + " attaques");
             
             // Trouver le monstre dans le loader
             Monstre monstre = findMonstreByName(nomMonstre);
@@ -283,13 +282,13 @@ public class OnlineGameController {
                 }
                 
                 joueur.ajouterMonstre(clonedMonstre);
-                CombatLogger.log("Monstre ajoute: " + clonedMonstre.getNomMonstre());
+                CombatLogger.info("Monstre ajoute: " + clonedMonstre.getNomMonstre());
             } else {
                 CombatLogger.error("Monstre non trouve dans le loader: " + nomMonstre);
             }
         }
         
-        CombatLogger.log("Nombre de monstres charges: " + joueur.getMonstres().size());
+        CombatLogger.info("Nombre de monstres charges: " + joueur.getMonstres().size());
         
         // Definir le monstre actuel - TOUJOURS definir un monstre actuel si la liste n'est pas vide
         if (!joueur.getMonstres().isEmpty()) {
@@ -299,7 +298,7 @@ public class OnlineGameController {
                 // Si l'index est invalide, prendre le premier monstre
                 joueur.setMonstreActuel(joueur.getMonstres().get(0));
             }
-            CombatLogger.log("Monstre actuel defini: " + joueur.getMonstreActuel().getNomMonstre());
+            CombatLogger.info("Monstre actuel defini: " + joueur.getMonstreActuel().getNomMonstre());
         } else {
             CombatLogger.error("Aucun monstre charge pour le joueur " + nomJoueur);
         }

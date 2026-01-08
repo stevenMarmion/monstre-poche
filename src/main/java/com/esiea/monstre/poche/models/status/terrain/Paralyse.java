@@ -9,19 +9,19 @@ public class Paralyse extends StatutMonstre {
     private static final double CHANCE_RATER_ATTAQUE = 0.75;
     private static final int NB_TOURS_MAX_PARALYSIE = 6;
 
-    public Paralyse() {
+    public Paralyse(int nbToursAvecEffet) {
         this.labelStatut = "Paralyse";
         this.nbToursEffet = NB_TOURS_MAX_PARALYSIE;
-        this.nbToursAvecEffet = 0;
+        this.nbToursAvecEffet = NB_TOURS_MAX_PARALYSIE - nbToursAvecEffet;
     }
 
     public void rateAttaque(Monstre cible) {
         if (Math.random() < CHANCE_RATER_ATTAQUE) {
             cible.setRateAttaque(true);
-            CombatLogger.log(cible.getNomMonstre() + " est paralysé et ne peut pas attaquer !");
+            CombatLogger.info(cible.getNomMonstre() + " est paralysé et ne peut pas attaquer !");
         } else {
             cible.setRateAttaque(false);
-            CombatLogger.log(cible.getNomMonstre() + " surmonte la paralysie et peut attaquer !");
+            CombatLogger.info(cible.getNomMonstre() + " surmonte la paralysie et peut attaquer !");
         }
     }
 
@@ -29,7 +29,7 @@ public class Paralyse extends StatutMonstre {
         double chanceSortie = (double) this.nbToursAvecEffet / (double) this.nbToursEffet;
         if (Math.random() < chanceSortie) {
             cible.setStatut(new Normal());
-            CombatLogger.log(cible.getNomMonstre() + " n'est plus paralysé après " + this.nbToursAvecEffet + " tours !");
+            CombatLogger.info(cible.getNomMonstre() + " n'est plus paralysé après " + this.nbToursAvecEffet + " tours !");
         }
     }
 

@@ -17,9 +17,9 @@ public class PotionVitesse  extends Potion {
     @Override
     public void utiliserObjet(Monstre cible) {
         int vitesseAvant = cible.getVitesse();
-        CombatLogger.log("Utilisation de " + this.nomObjet + " sur " + cible.getNomMonstre());
+        CombatLogger.info("Utilisation de " + this.nomObjet + " sur " + cible.getNomMonstre());
         cible.setVitesse(cible.getVitesse() + this.pointsDeVitesse);
-        CombatLogger.log("  -> Vitesse de " + cible.getNomMonstre() + " augmente: " + vitesseAvant + " -> " + cible.getVitesse());
+        CombatLogger.info("-> Vitesse de " + cible.getNomMonstre() + " augmente: " + vitesseAvant + " -> " + cible.getVitesse());
     }
 
     @Override

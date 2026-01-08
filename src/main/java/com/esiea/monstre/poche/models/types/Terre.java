@@ -17,7 +17,7 @@ public class Terre extends Type {
         boolean fuite = Math.random() < CHANCE_FUITE;
         if (fuite) {
             cible.setStatut(new SousTerre());
-            CombatLogger.log(cible.getNomMonstre() + " s'enfuit sous terre !");
+            CombatLogger.info(cible.getNomMonstre() + " s'enfuit sous terre !");
             ((SousTerre) cible.getStatut()).appliquerEffets(cible);
         }
     }

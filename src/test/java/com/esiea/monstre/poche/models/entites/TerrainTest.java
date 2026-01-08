@@ -4,7 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.esiea.monstre.poche.models.core.Terrain;
-import com.esiea.monstre.poche.models.status.monster.Asseche;
+import com.esiea.monstre.poche.models.status.terrain.Asseche;
 import com.esiea.monstre.poche.models.status.terrain.Innonde;
 import com.esiea.monstre.poche.models.status.terrain.StatutTerrain;
 

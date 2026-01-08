@@ -36,7 +36,7 @@ public class CombatEnLigne extends Combat {
     @Override
     protected void afficherMessage(String message) {
         setLoggingModeBasedOnContext();
-        CombatLogger.log(message);
+        CombatLogger.info(message);
     }
 
     @Override
@@ -127,10 +127,7 @@ public class CombatEnLigne extends Combat {
         String infoMonstre = "Monstre actif : " + actif.getNomMonstre() + " | PV " + (int) actif.getPointsDeVie() + "/" + (int) actif.getPointsDeVieMax() + " | ATK " + actif.getAttaque() + " | DEF " + actif.getDefense() + " | VIT " + actif.getVitesse();
         afficherMessage(infoMonstre);
 
-        afficherMessage("Actions disponibles :");
-        afficherMessage("  1) Attaquer");
-        afficherMessage("  2) Utiliser un objet");
-        afficherMessage("  3) Changer de monstre");
+        CombatLogger.afficherActionsDisponibles();
 
         String choixAction = demanderSaisie("Votre choix >");
         while (!choixAction.equals("1") && !choixAction.equals("2") && !choixAction.equals("3")) {

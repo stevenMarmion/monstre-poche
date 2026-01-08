@@ -236,7 +236,7 @@ public class BattleController {
                 objet.utiliserObjet(cible);
                 currentPlayer.getObjets().remove(objet);
                 
-                CombatLogger.log("  " + currentPlayer.getNomJoueur() + " utilise " + objet.getNomObjet() + " sur " + cible.getNomMonstre());
+                CombatLogger.info(currentPlayer.getNomJoueur() + " utilise " + objet.getNomObjet() + " sur " + cible.getNomMonstre());
                 view.updateBattleLog(currentPlayer.getNomJoueur() + " utilise " + objet.getNomObjet() + " sur " + cible.getNomMonstre() + " !");
                 
                 // L'objet compte comme action du tour
@@ -259,7 +259,7 @@ public class BattleController {
                 objet.utiliserObjet(cible);
                 currentPlayer.getObjets().remove(objet);
                 
-                CombatLogger.log("  " + currentPlayer.getNomJoueur() + " utilise " + objet.getNomObjet() + " sur " + cible.getNomMonstre());
+                CombatLogger.info(currentPlayer.getNomJoueur() + " utilise " + objet.getNomObjet() + " sur " + cible.getNomMonstre());
                 view.updateBattleLog(currentPlayer.getNomJoueur() + " utilise " + objet.getNomObjet() + " sur " + cible.getNomMonstre() + " !");
                 
                 player2Action = objet;

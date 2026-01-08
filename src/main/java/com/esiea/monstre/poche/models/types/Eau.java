@@ -13,7 +13,7 @@ public class Eau extends Type {
     private double probabiliteFaireChuter;
 
     public Eau() {
-        this(0.4, 0.3); // Valeurs par défaut
+        this(0.4, 0.3);
     }
     
     public Eau(double probabiliteInnondation, double probabiliteFaireChuter) {
@@ -37,7 +37,7 @@ public class Eau extends Type {
         if (innonde) {
             int nbTours = (int) (Math.random() * NB_TOURS_MAX_INNONDATION) + NB_TOURS_MIN_INNONDATION;
             terrain.setStatutTerrain(new Innonde(nbTours, this.probabiliteFaireChuter, monstreEau));
-            CombatLogger.log(terrain.getNomTerrain() + " est désormais inondé pendant " + nbTours + " tours.");
+            CombatLogger.info(terrain.getNomTerrain() + " est désormais inondé pendant " + nbTours + " tours.");
         }
     }
 }
