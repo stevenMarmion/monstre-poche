@@ -222,7 +222,9 @@ public abstract class Combat {
                     afficherErreur("Index invalide. Choisissez un nombre entre 1 et " + objets.size());
                     continue;
                 }
-                return objets.get(indexChoisi - 1);
+                Objet objetChoisi = objets.get(indexChoisi - 1);
+                joueur.retirerObjet(objetChoisi);
+                return objetChoisi;
             } catch (NumberFormatException e) {
                 afficherErreur("Veuillez entrer un nombre valide.");
             }

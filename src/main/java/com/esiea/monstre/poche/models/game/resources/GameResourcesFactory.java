@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
  */
 public class GameResourcesFactory {
 
+    // depuis java5, utilisation de volatile et synchronized pour gérer la création thread-safe de l'instance
     private static volatile GameResourcesFactory instance;
 
     private final Map<String, Attaque> attaquesTemplate;

@@ -86,6 +86,10 @@ public class Joueur implements Serializable {
         }
     }
 
+    public void retirerObjet(Objet objet) {
+        this.objets.remove(objet);
+    }
+
     public boolean sontMonstresMorts() {
         for (Monstre m : monstres) {
             if (m.getPointsDeVie() > 0) {

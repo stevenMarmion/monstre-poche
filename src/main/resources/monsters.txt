@@ -8,37 +8,103 @@ Defense 50 82
 Paralysis 0.2
 EndMonster
 Monster
-Name Cerapuca
-Type Eau
-HP 119 150
-Attack 68 99
-Speed 63 94
-Defense 85 116
-Flood 0.25
-Fall 0.35
-EndMonster
-Monster
-Name Flamby
-Type Feu
-HP 100 130
-Attack 90 120
-Speed 80 110
-Defense 70 100
-EndMonster
-Monster
-Name Voltix
-Type Foudre
-HP 105 135
-Attack 85 115
-Speed 95 125
-Defense 65 95
-Paralysis 0.25
-EndMonster
-Monster
-Name Leafling
+Name Bulbizarre
 Type Plante
+HP 100 130
+Attack 70 100
+Speed 65 95
+Defense 75 105
+EndMonster
+Monster
+Name Herbizarre
+Type Plante
+HP 115 145
+Attack 85 115
+Speed 80 110
+Defense 90 120
+EndMonster
+Monster
+Name Salamèche
+Type Feu
 HP 95 125
-Attack 75 105
-Speed 70 100
+Attack 80 110
+Speed 90 120
+Defense 65 95
+EndMonster
+Monster
+Name Reptincel
+Type Feu
+HP 110 140
+Attack 95 125
+Speed 100 130
 Defense 80 110
+EndMonster
+Monster
+Name Carapuce
+Type Eau
+HP 105 135
+Attack 70 100
+Speed 60 90
+Defense 90 120
+Flood 0.20
+EndMonster
+Monster
+Name Carabaffe
+Type Eau
+HP 120 150
+Attack 85 115
+Speed 75 105
+Defense 105 135
+Flood 0.25
+EndMonster
+Monster
+Name Raichu
+Type Foudre
+HP 120 150
+Attack 95 125
+Speed 110 140
+Defense 70 100
+Paralysis 0.30
+EndMonster
+Monster
+Name Florizarre
+Type Plante
+HP 140 170
+Attack 95 125
+Speed 80 110
+Defense 100 130
+EndMonster
+Monster
+Name Dracaufeu
+Type Feu
+HP 135 165
+Attack 110 140
+Speed 115 145
+Defense 85 115
+EndMonster
+Monster
+Name Tortank
+Type Eau
+HP 145 175
+Attack 105 135
+Speed 80 110
+Defense 120 150
+Flood 0.35
+EndMonster
+Monster
+Name Lucario
+Type Normal
+HP 120 150
+Attack 110 140
+Speed 100 130
+Defense 85 115
+EndMonster
+Monster
+Name Carchacrok
+Type Terre
+HP 150 180
+Attack 130 160
+Speed 110 140
+Defense 95 125
+Fall 0.35
 EndMonster

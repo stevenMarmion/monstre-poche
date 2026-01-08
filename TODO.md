@@ -1,10 +1,9 @@
 TODO
 
 - Gérer utilisation objet par interface (pas implémenté)
+- corriger combatlocal gereChoixAction , avec gestion d'erreur. Actuellement si erreur ca passe le tour. Pas obligé de fix !!!
 - Faire README complet
-- Faire tous les cas de tests
 - Corriger entrée pour client quand lancement online par terminal
-- Corriger affichage objet par terminal (si utilisation item alors disparition de la liste)
 - Refactoring controllers
 - Refactoring views
 - Note spéciale pour objectSelectionView qui pue sa mère, à refaire, on doit faire comme le reste des vues, c-a-dire on met dans le constructeur un controller (voir monstrePocheUI.java)
