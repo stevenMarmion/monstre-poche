@@ -2,7 +2,10 @@ package com.esiea.monstre.poche.views.gui.selection;
 
 import com.esiea.monstre.poche.models.core.Joueur;
 import com.esiea.monstre.poche.models.core.Monstre;
+import com.esiea.monstre.poche.models.game.GameVisual;
 import com.esiea.monstre.poche.models.game.resources.GameResourcesFactory;
+import com.esiea.monstre.poche.views.gui.config.ColorConfig;
+import com.esiea.monstre.poche.views.gui.config.FontConfig;
 
 import javafx.animation.ScaleTransition;
 import javafx.geometry.Insets;
@@ -42,20 +45,7 @@ public class MonsterSelectionView extends VBox {
     private FlowPane monsterCardsContainer;
     private Map<VBox, Monstre> monsterCardMap;
     private List<VBox> selectedCards;
-    private int maxMonstersToSelect = 3;
     private Label selectionCounter;
-    
-    // Couleurs par type (style Pokémon)
-    private static final Map<String, String> TYPE_COLORS = Map.ofEntries(
-        Map.entry("Feu", "#F08030"),
-        Map.entry("Eau", "#6890F0"),
-        Map.entry("Plante", "#78C850"),
-        Map.entry("Foudre", "#F8D030"),
-        Map.entry("Terre", "#E0C068"),
-        Map.entry("Normal", "#A8A878"),
-        Map.entry("Insecte", "#A8B820"),
-        Map.entry("Nature", "#228B22")
-    );
     
     // Pas d'icônes - on utilise uniquement les couleurs et le texte
     
@@ -75,10 +65,7 @@ public class MonsterSelectionView extends VBox {
         this.setPadding(new Insets(15, 25, 25, 25));
         this.getStyleClass().add("main-container");
         
-        // Barre supérieure avec bouton retour et compteur
         HBox topBar = createTopBar(joueur);
-        
-        // Titre principal stylisé
         VBox titleBox = createTitleSection(joueur);
         
         // Container pour les cartes de monstres (grille fluide)
@@ -102,8 +89,6 @@ public class MonsterSelectionView extends VBox {
         scrollPane.getStyleClass().add("scroll-pane");
         scrollPane.setStyle("-fx-background-color: transparent;");
         VBox.setVgrow(scrollPane, Priority.ALWAYS);
-        
-        // Section de validation avec bouton amélioré
         VBox validationSection = createValidationSection();
         
         // Ajout des éléments au conteneur principal
@@ -118,14 +103,14 @@ public class MonsterSelectionView extends VBox {
         topBar.setAlignment(Pos.CENTER_LEFT);
         topBar.setPadding(new Insets(5, 10, 5, 10));
         
-        btnBackToMenu = new Button("◀ Menu");
+        btnBackToMenu = new Button("Menu");
         btnBackToMenu.getStyleClass().add("back-button");
         
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
         
         // Compteur de sélection stylisé
-        selectionCounter = new Label("0 / " + maxMonstersToSelect + " sélectionnés");
+        selectionCounter = new Label("0 / " + Joueur.TAILLE_EQUIPE_MAX + " sélectionnés");
         selectionCounter.getStyleClass().addAll("label-text", "selection-counter");
         selectionCounter.setStyle("-fx-background-color: rgba(0,0,0,0.5); -fx-padding: 8 15; -fx-background-radius: 20;");
         
@@ -147,7 +132,7 @@ public class MonsterSelectionView extends VBox {
         subtitle.getStyleClass().add("subtitle-text");
         subtitle.setStyle("-fx-font-size: 16px;");
         
-        Label instructions = new Label("Cliquez sur " + maxMonstersToSelect + " monstres pour les ajouter à votre équipe");
+        Label instructions = new Label("Cliquez sur " + Joueur.TAILLE_EQUIPE_MAX + " monstres pour les ajouter à votre équipe");
         instructions.getStyleClass().add("label-text");
         instructions.setStyle("-fx-font-size: 14px; -fx-opacity: 0.8;");
         
@@ -179,7 +164,7 @@ public class MonsterSelectionView extends VBox {
      */
     private VBox createMonsterCard(Monstre monstre) {
         String typeLabel = monstre.getTypeMonstre().getLabelType();
-        String typeColor = TYPE_COLORS.getOrDefault(typeLabel, "#A8A878");
+        String typeColor = ColorConfig.fromString(typeLabel).getColorCode();
         
         // Carte principale
         VBox card = new VBox(8);
@@ -202,28 +187,23 @@ public class MonsterSelectionView extends VBox {
         header.setAlignment(Pos.CENTER);
         
         Label nameLabel = new Label(monstre.getNomMonstre());
-        nameLabel.setFont(Font.font("System", FontWeight.BOLD, 16));
+        nameLabel.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 16));
         nameLabel.setTextFill(Color.WHITE);
         nameLabel.setStyle("-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.8), 3, 0, 0, 1);");
         
         header.getChildren().add(nameLabel);
         
-        // Badge de type stylisé
         HBox typeBadge = createTypeBadge(typeLabel, typeColor);
-        
-        // Avatar du monstre (cercle avec initiale)
         StackPane avatar = createMonsterAvatar(monstre, typeColor);
-        
-        // Section des stats avec barres de progression
         VBox statsSection = createStatsSection(monstre, typeColor);
         
         // Points de vie affichés
         Label hpLabel = new Label(String.format("PV: %.0f", monstre.getPointsDeVieMax()));
         hpLabel.setTextFill(Color.web("#ff6b6b"));
-        hpLabel.setFont(Font.font("System", FontWeight.BOLD, 13));
+        hpLabel.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 13));
         
         // Indicateur de sélection
-        Label selectionIndicator = new Label("✓ SÉLECTIONNÉ");
+        Label selectionIndicator = new Label("SÉLECTIONNÉ");
         selectionIndicator.setVisible(false);
         selectionIndicator.setStyle(
             "-fx-background-color: #4CAF50; " +
@@ -237,26 +217,23 @@ public class MonsterSelectionView extends VBox {
         card.getChildren().addAll(header, typeBadge, avatar, hpLabel, statsSection, selectionIndicator);
         
         // Tooltip avec plus de détails
-        Tooltip tooltip = new Tooltip(String.format(
-            "%s\nType: %s\nPV: %.0f | ATK: %d | DEF: %d | VIT: %d\n\nCliquez pour sélectionner !",
-            monstre.getNomMonstre(), typeLabel,
-            monstre.getPointsDeVieMax(), monstre.getAttaque(),
-            monstre.getDefense(), monstre.getVitesse()
-        ));
+        // Tooltip tooltip = new Tooltip(String.format(
+        //     "%s\nType: %s\nPV: %.0f | ATK: %d | DEF: %d | VIT: %d\n\nCliquez pour sélectionner !",
+        //     monstre.getNomMonstre(), typeLabel,
+        //     monstre.getPointsDeVieMax(), monstre.getAttaque(),
+        //     monstre.getDefense(), monstre.getVitesse()
+        // ));
+        Tooltip tooltip = new Tooltip(GameVisual.formatterMonstre(monstre));
         tooltip.setStyle("-fx-font-size: 12px;");
         Tooltip.install(card, tooltip);
         
-        // Gestion du clic sur la carte
         card.setOnMouseClicked(e -> handleCardClick(card, monstre, selectionIndicator));
-        
-        // Effet de survol
         card.setOnMouseEntered(e -> {
             if (!selectedCards.contains(card)) {
                 card.setStyle(card.getStyle() + "-fx-scale-x: 1.03; -fx-scale-y: 1.03;");
                 card.setEffect(new DropShadow(20, Color.web(typeColor)));
             }
         });
-        
         card.setOnMouseExited(e -> {
             if (!selectedCards.contains(card)) {
                 card.setStyle(String.format(
@@ -292,7 +269,7 @@ public class MonsterSelectionView extends VBox {
         ));
         
         Label typeText = new Label(typeLabel.toUpperCase());
-        typeText.setFont(Font.font("System", FontWeight.BOLD, 11));
+        typeText.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 11));
         typeText.setTextFill(Color.WHITE);
         
         badge.getChildren().add(typeText);
@@ -314,7 +291,7 @@ public class MonsterSelectionView extends VBox {
         
         // Initiales du monstre (2 premières lettres)
         Label initialLabel = new Label(monstre.getNomMonstre().substring(0, Math.min(2, monstre.getNomMonstre().length())).toUpperCase());
-        initialLabel.setFont(Font.font("System", FontWeight.BOLD, 24));
+        initialLabel.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 24));
         initialLabel.setTextFill(Color.WHITE);
         initialLabel.setStyle("-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.7), 3, 0, 0, 1);");
         
@@ -351,7 +328,7 @@ public class MonsterSelectionView extends VBox {
         statRow.setAlignment(Pos.CENTER_LEFT);
         
         Label nameLabel = new Label(statName);
-        nameLabel.setFont(Font.font("System", FontWeight.BOLD, 10));
+        nameLabel.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 10));
         nameLabel.setTextFill(Color.web("#aaa"));
         nameLabel.setPrefWidth(30);
         
@@ -367,7 +344,7 @@ public class MonsterSelectionView extends VBox {
         ));
         
         Label valueLabel = new Label(String.valueOf(value));
-        valueLabel.setFont(Font.font("System", FontWeight.BOLD, 10));
+        valueLabel.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 10));
         valueLabel.setTextFill(Color.web(color));
         valueLabel.setPrefWidth(25);
         
@@ -380,7 +357,7 @@ public class MonsterSelectionView extends VBox {
      */
     private void handleCardClick(VBox card, Monstre monstre, Label selectionIndicator) {
         String typeLabel = monstre.getTypeMonstre().getLabelType();
-        String typeColor = TYPE_COLORS.getOrDefault(typeLabel, "#A8A878");
+        String typeColor = ColorConfig.fromString(typeLabel).getColorCode();
         
         if (selectedCards.contains(card)) {
             // Désélectionner
@@ -398,7 +375,7 @@ public class MonsterSelectionView extends VBox {
             
             // Réactiver toutes les cartes
             monsterCardMap.keySet().forEach(c -> c.setDisable(false));
-        } else if (selectedCards.size() < maxMonstersToSelect) {
+        } else if (selectedCards.size() < Joueur.TAILLE_EQUIPE_MAX) {
             // Sélectionner
             selectedCards.add(card);
             selectionIndicator.setVisible(true);
@@ -428,7 +405,7 @@ public class MonsterSelectionView extends VBox {
             card.setEffect(glow);
             
             // Désactiver les autres cartes si on a atteint le max
-            if (selectedCards.size() >= maxMonstersToSelect) {
+            if (selectedCards.size() >= Joueur.TAILLE_EQUIPE_MAX) {
                 monsterCardMap.keySet().forEach(c -> {
                     if (!selectedCards.contains(c)) {
                         c.setDisable(true);
@@ -447,11 +424,11 @@ public class MonsterSelectionView extends VBox {
     private void updateValidateButton() {
         int selectedCount = selectedCards.size();
         
-        selectionCounter.setText(selectedCount + " / " + maxMonstersToSelect + " sélectionnés");
+        selectionCounter.setText(selectedCount + " / " + Joueur.TAILLE_EQUIPE_MAX + " sélectionnés");
         
-        if (selectedCount == maxMonstersToSelect) {
+        if (selectedCount == Joueur.TAILLE_EQUIPE_MAX) {
             btnValidate.setDisable(false);
-            btnValidate.setText("LANCER LE COMBAT (" + selectedCount + "/" + maxMonstersToSelect + ")");
+            btnValidate.setText("LANCER LE COMBAT (" + selectedCount + "/" + Joueur.TAILLE_EQUIPE_MAX + ")");
             selectionCounter.setStyle(
                 "-fx-background-color: #4CAF50; " +
                 "-fx-padding: 8 15; " +
@@ -460,7 +437,7 @@ public class MonsterSelectionView extends VBox {
             );
         } else {
             btnValidate.setDisable(true);
-            btnValidate.setText("Sélectionnez " + (maxMonstersToSelect - selectedCount) + " monstre(s) de plus");
+            btnValidate.setText("Sélectionnez " + (Joueur.TAILLE_EQUIPE_MAX - selectedCount) + " monstre(s) de plus");
             selectionCounter.setStyle(
                 "-fx-background-color: rgba(0,0,0,0.5); " +
                 "-fx-padding: 8 15; " +
@@ -469,7 +446,7 @@ public class MonsterSelectionView extends VBox {
         }
         
         // Réactiver les cartes non sélectionnées si on n'a pas atteint le max
-        if (selectedCount < maxMonstersToSelect) {
+        if (selectedCount < Joueur.TAILLE_EQUIPE_MAX) {
             monsterCardMap.keySet().forEach(c -> {
                 if (!selectedCards.contains(c)) {
                     c.setDisable(false);

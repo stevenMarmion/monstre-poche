@@ -1,5 +1,7 @@
 package com.esiea.monstre.poche.views.gui.setup;
 
+import com.esiea.monstre.poche.views.gui.config.FontConfig;
+
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -27,7 +29,6 @@ public class BotGameView extends VBox {
      * Initialise la vue du jeu contre le bot.
      */
     private void initializeView() {
-        // Configuration du conteneur principal
         this.setSpacing(30);
         this.setAlignment(Pos.TOP_CENTER);
         this.setPadding(new Insets(20));
@@ -39,13 +40,13 @@ public class BotGameView extends VBox {
         topBar.setPadding(new Insets(10));
         
         btnBackToMenu = new Button("Revenir au menu");
-        btnBackToMenu.setFont(Font.font("System", 14));
+        btnBackToMenu.setFont(Font.font(FontConfig.SYSTEM.getFontName(), 14));
         btnBackToMenu.getStyleClass().add("back-button");
         topBar.getChildren().add(btnBackToMenu);
         
         // Titre
         Label title = new Label("Jouer contre le bot");
-        title.setFont(Font.font("System", FontWeight.BOLD, 36));
+        title.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 36));
         title.getStyleClass().add("main-title");
         
         // Conteneur pour le champ de saisie
@@ -55,7 +56,7 @@ public class BotGameView extends VBox {
         
         // Champ pour le joueur
         Label lblPlayer = new Label("Nom du Joueur :");
-        lblPlayer.setFont(Font.font("System", FontWeight.BOLD, 16));
+        lblPlayer.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 16));
         lblPlayer.getStyleClass().add("label-text");
         
         txtPlayerName = createTextField("Entrez votre nom");
@@ -64,7 +65,7 @@ public class BotGameView extends VBox {
         
         // Bouton pour commencer le jeu
         btnStartGame = new Button("Commencer le jeu");
-        btnStartGame.setFont(Font.font("System", FontWeight.BOLD, 18));
+        btnStartGame.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 18));
         btnStartGame.setPrefWidth(300);
         btnStartGame.getStyleClass().add("menu-button");
         
@@ -80,7 +81,7 @@ public class BotGameView extends VBox {
         textField.setPromptText(promptText);
         textField.setPrefWidth(300);
         textField.setMaxWidth(300);
-        textField.setFont(Font.font("System", 14));
+        textField.setFont(Font.font(FontConfig.SYSTEM.getFontName(), 14));
         textField.getStyleClass().add("text-field");
         return textField;
     }

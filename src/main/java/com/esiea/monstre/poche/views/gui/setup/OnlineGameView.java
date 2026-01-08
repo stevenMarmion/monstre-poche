@@ -1,5 +1,7 @@
 package com.esiea.monstre.poche.views.gui.setup;
 
+import com.esiea.monstre.poche.views.gui.config.FontConfig;
+
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
@@ -59,17 +61,17 @@ public class OnlineGameView extends VBox {
         topBar.setPadding(new Insets(10));
 
         btnBackToMenu = new Button("Revenir au menu");
-        btnBackToMenu.setFont(Font.font("System", 14));
+        btnBackToMenu.setFont(Font.font(FontConfig.SYSTEM.getFontName(), 14));
         btnBackToMenu.getStyleClass().add("back-button");
         topBar.getChildren().add(btnBackToMenu);
 
         // Titre et sous-titre
         Label title = new Label("Jouer en ligne");
-        title.setFont(Font.font("System", FontWeight.BOLD, 36));
+        title.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 36));
         title.getStyleClass().add("main-title");
 
         Label subtitle = new Label("Choisissez votre role pour lancer une partie moderne et rapide");
-        subtitle.setFont(Font.font("System", FontWeight.NORMAL, 16));
+        subtitle.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.NORMAL, 16));
         subtitle.getStyleClass().add("subtitle-text");
 
         // Segmented controls to toggle host / join
@@ -93,7 +95,7 @@ public class OnlineGameView extends VBox {
         hostBox.getStyleClass().add("card-container");
 
         Label hostTitle = new Label("Creer une partie");
-        hostTitle.setFont(Font.font("System", FontWeight.BOLD, 20));
+        hostTitle.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 20));
         hostTitle.getStyleClass().add("label-text");
 
         Label hostBadge = new Label("Hote");
@@ -107,7 +109,7 @@ public class OnlineGameView extends VBox {
         hostPort = createTextField("Port (ex: 5000)");
 
         btnCreateServer = new Button("Lancer le serveur");
-        btnCreateServer.setFont(Font.font("System", FontWeight.BOLD, 16));
+        btnCreateServer.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 16));
         btnCreateServer.setPrefWidth(260);
         btnCreateServer.getStyleClass().add("menu-button");
 
@@ -116,7 +118,7 @@ public class OnlineGameView extends VBox {
         hostLoadingIndicator.setPrefSize(28, 28);
 
         hostLoadingLabel = new Label("En attente d'un joueur...");
-        hostLoadingLabel.setFont(Font.font("System", FontWeight.NORMAL, 13));
+        hostLoadingLabel.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.NORMAL, 13));
         hostLoadingLabel.getStyleClass().add("subtitle-text");
 
         hostLoadingBox = new HBox(10);
@@ -134,7 +136,7 @@ public class OnlineGameView extends VBox {
         joinBox.getStyleClass().add("card-container");
 
         Label joinTitle = new Label("Rejoindre une partie");
-        joinTitle.setFont(Font.font("System", FontWeight.BOLD, 20));
+        joinTitle.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 20));
         joinTitle.getStyleClass().add("label-text");
 
         Label joinBadge = new Label("Invité");
@@ -149,7 +151,7 @@ public class OnlineGameView extends VBox {
         joinPort = createTextField("Port (ex: 5000)");
 
         btnJoinServer = new Button("Rejoindre");
-        btnJoinServer.setFont(Font.font("System", FontWeight.BOLD, 16));
+        btnJoinServer.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 16));
         btnJoinServer.setPrefWidth(260);
         btnJoinServer.getStyleClass().add("menu-button");
 
@@ -200,7 +202,7 @@ public class OnlineGameView extends VBox {
         textField.setPromptText(promptText);
         textField.setPrefWidth(280);
         textField.setMaxWidth(320);
-        textField.setFont(Font.font("System", 14));
+        textField.setFont(Font.font(FontConfig.SYSTEM.getFontName(), 14));
         textField.getStyleClass().add("text-field");
         return textField;
     }

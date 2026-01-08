@@ -181,7 +181,8 @@ public class BattleController {
         }
         
         // Mise à jour de l'affichage
-        view.updatePokemonDisplay();
+        view.updatePokemonDisplay(view.getJoueur1());
+        view.updatePokemonDisplay(view.getJoueur2());
         
         // Vérifier fin de combat
         Joueur winner = combat.getAWinner();
@@ -242,7 +243,8 @@ public class BattleController {
                 player1Action = objet;
                 player1Ready = true;
                 
-                view.updatePokemonDisplay();
+                view.updatePokemonDisplay(view.getJoueur1());
+                view.updatePokemonDisplay(view.getJoueur2());
                 
                 // Si mode Bot, déclencher le tour du Bot automatiquement
                 if (view.getJoueur2() instanceof Bot) {
@@ -263,7 +265,8 @@ public class BattleController {
                 player2Action = objet;
                 player2Ready = true;
                 
-                view.updatePokemonDisplay();
+                view.updatePokemonDisplay(view.getJoueur1());
+                view.updatePokemonDisplay(view.getJoueur2());
                 executeTurnActions();
             }
         });

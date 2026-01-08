@@ -5,6 +5,8 @@ import com.esiea.monstre.poche.models.game.resources.GameResourcesFactory;
 import com.esiea.monstre.poche.models.items.Objet;
 import com.esiea.monstre.poche.models.items.medicaments.Medicament;
 import com.esiea.monstre.poche.models.items.potions.Potion;
+import com.esiea.monstre.poche.views.gui.config.ColorConfig;
+import com.esiea.monstre.poche.views.gui.config.FontConfig;
 
 import javafx.animation.ScaleTransition;
 import javafx.geometry.Insets;
@@ -45,10 +47,6 @@ public class ObjectSelectionView extends VBox {
     private List<VBox> selectedCards;
     private Label selectionCounter;
     private Joueur joueur;
-
-    private static final String POTION_COLOR = "#FF6B9D";      // Rose/Magenta pour potions
-    private static final String MEDICAMENT_COLOR = "#4ECDC4"; // Turquoise pour médicaments
-    private static final String OBJET_COLOR = "#95A5A6";      // Gris pour autres objets
     
     public ObjectSelectionView(Joueur joueur) {
         this.objectCardMap = new HashMap<>();
@@ -69,13 +67,8 @@ public class ObjectSelectionView extends VBox {
         this.setPadding(new Insets(15, 25, 25, 25));
         this.getStyleClass().add("main-container");
         
-        // Barre supérieure avec bouton retour et compteur
         HBox topBar = createTopBar();
-        
-        // Titre principal stylisé
         VBox titleBox = createTitleSection();
-        
-        // Légende des types d'objets
         HBox legend = createLegend();
         
         // Container pour les cartes d'objets (grille fluide)
@@ -115,7 +108,7 @@ public class ObjectSelectionView extends VBox {
         topBar.setAlignment(Pos.CENTER_LEFT);
         topBar.setPadding(new Insets(5, 10, 5, 10));
         
-        btnBackToMenu = new Button("◀ Menu");
+        btnBackToMenu = new Button("Menu");
         btnBackToMenu.getStyleClass().add("back-button");
         
         Region spacer = new Region();
@@ -160,11 +153,8 @@ public class ObjectSelectionView extends VBox {
         legend.setAlignment(Pos.CENTER);
         legend.setPadding(new Insets(10, 0, 5, 0));
         
-        // Légende Potions
-        HBox potionLegend = createLegendItem("POTIONS", POTION_COLOR);
-        
-        // Légende Médicaments
-        HBox medicamentLegend = createLegendItem("MEDICAMENTS", MEDICAMENT_COLOR);
+        HBox potionLegend = createLegendItem("POTIONS", ColorConfig.POTION.getColorCode());
+        HBox medicamentLegend = createLegendItem("MEDICAMENTS", ColorConfig.MEDICAMENT.getColorCode());
         
         legend.getChildren().addAll(potionLegend, medicamentLegend);
         return legend;
@@ -183,7 +173,7 @@ public class ObjectSelectionView extends VBox {
         colorDot.setStrokeWidth(1);
         
         Label label = new Label(text);
-        label.setFont(Font.font("System", FontWeight.BOLD, 12));
+        label.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 12));
         label.setTextFill(Color.web(color));
         
         item.getChildren().addAll(colorDot, label);
@@ -203,12 +193,11 @@ public class ObjectSelectionView extends VBox {
         btnValidate.setPrefWidth(350);
         btnValidate.setPrefHeight(50);
         btnValidate.setStyle("-fx-font-size: 20px;");
-        // Le bouton est activé dès qu'on a au moins 1 objet (on peut avoir 0 à 5)
         btnValidate.setDisable(false);
         
         Label hint = new Label("(Vous pouvez valider avec 0 à " + Joueur.TAILLE_INVENTAIRE_MAX + " objets)");
         hint.setTextFill(Color.web("#888"));
-        hint.setFont(Font.font("System", 12));
+        hint.setFont(Font.font(FontConfig.SYSTEM.getFontName(), 12));
         
         section.getChildren().addAll(btnValidate, hint);
         return section;
@@ -218,22 +207,21 @@ public class ObjectSelectionView extends VBox {
      * Crée une carte stylisée Pokémon pour un objet.
      */
     private VBox createObjectCard(Objet objet) {
-        // Déterminer le type et la couleur de l'objet
         String objectType;
         String typeColor;
         String description;
         
         if (objet instanceof Potion) {
             objectType = "POTION";
-            typeColor = POTION_COLOR;
+            typeColor = ColorConfig.POTION.getColorCode();
             description = getDescriptionPotion(objet);
         } else if (objet instanceof Medicament) {
             objectType = "MEDICAMENT";
-            typeColor = MEDICAMENT_COLOR;
+            typeColor = ColorConfig.MEDICAMENT.getColorCode();
             description = getDescriptionMedicament(objet);
         } else {
             objectType = "OBJET";
-            typeColor = OBJET_COLOR;
+            typeColor = ColorConfig.OBJET.getColorCode();
             description = "Objet spécial";
         }
         
@@ -264,13 +252,13 @@ public class ObjectSelectionView extends VBox {
         // Initiales de l'objet
         String initials = getInitials(objet.getNomObjet());
         Label initialLabel = new Label(initials);
-        initialLabel.setFont(Font.font("System", FontWeight.BOLD, 18));
+        initialLabel.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 18));
         initialLabel.setTextFill(Color.WHITE);
         iconContainer.getChildren().addAll(circle, initialLabel);
         
         // Nom de l'objet
         Label nameLabel = new Label(formatObjectName(objet.getNomObjet()));
-        nameLabel.setFont(Font.font("System", FontWeight.BOLD, 14));
+        nameLabel.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 14));
         nameLabel.setTextFill(Color.WHITE);
         nameLabel.setWrapText(true);
         nameLabel.setAlignment(Pos.CENTER);
@@ -278,7 +266,7 @@ public class ObjectSelectionView extends VBox {
         
         // Badge de type
         Label typeBadge = new Label(objectType);
-        typeBadge.setFont(Font.font("System", FontWeight.BOLD, 10));
+        typeBadge.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 10));
         typeBadge.setTextFill(Color.WHITE);
         typeBadge.setStyle(String.format(
             "-fx-background-color: %s; " +
@@ -289,13 +277,13 @@ public class ObjectSelectionView extends VBox {
         
         // Description courte
         Label descLabel = new Label(description);
-        descLabel.setFont(Font.font("System", 11));
+        descLabel.setFont(Font.font(FontConfig.SYSTEM.getFontName(), 11));
         descLabel.setTextFill(Color.web("#aaa"));
         descLabel.setWrapText(true);
         descLabel.setAlignment(Pos.CENTER);
         
         // Indicateur de sélection
-        Label selectionIndicator = new Label("✓ SELECTIONNE");
+        Label selectionIndicator = new Label("SELECTIONNE");
         selectionIndicator.setVisible(false);
         selectionIndicator.setStyle(
             "-fx-background-color: rgba(0,0,0,0.6); " +
@@ -318,10 +306,7 @@ public class ObjectSelectionView extends VBox {
         tooltip.setStyle("-fx-font-size: 12px;");
         Tooltip.install(card, tooltip);
         
-        // Gestion du clic
         card.setOnMouseClicked(e -> handleCardClick(card, objet, selectionIndicator, typeColor));
-        
-        // Effet de survol
         card.setOnMouseEntered(e -> {
             if (!selectedCards.contains(card)) {
                 card.setScaleX(1.05);
@@ -329,7 +314,6 @@ public class ObjectSelectionView extends VBox {
                 card.setEffect(new DropShadow(15, Color.WHITE));
             }
         });
-        
         card.setOnMouseExited(e -> {
             if (!selectedCards.contains(card)) {
                 card.setScaleX(1.0);
@@ -337,8 +321,7 @@ public class ObjectSelectionView extends VBox {
                 card.setEffect(null);
             }
         });
-        
-        // Association de la carte avec l'objet
+
         objectCardMap.put(card, objet);
         
         return card;

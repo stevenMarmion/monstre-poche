@@ -22,7 +22,6 @@ public class GameApp {
     private static final Scanner scanner = new Scanner(System.in);
 
     public static void startAppTerminal() {
-        // Initialiser le singleton GameResourcesFactory (chargement des ressources)
         GameResourcesFactory.getInstance();
 
         int modeJeu = GameVisual.afficherMenuModeJeu(scanner);
@@ -45,8 +44,6 @@ public class GameApp {
     }
 
     public static void startAppInterface() {
-//        Loaders.chargeLoaders();
-        //TODO A voir
         MonstrePocheUI.main(null);
     }
 

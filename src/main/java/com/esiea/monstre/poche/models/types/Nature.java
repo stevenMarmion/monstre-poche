@@ -18,10 +18,10 @@ public class Nature extends Type {
         
         if (nouveauxPV > cible.getPointsDeVieMax()) {
             cible.setPointsDeVie(cible.getPointsDeVieMax());
-            CombatLogger.log(cible.getNomMonstre() + " récupère ses points de vie au maximum grâce au terrain inondé !");
+            CombatLogger.log(cible.getNomMonstre() + " récupère ses points de vie au maximum !");
         } else {
             cible.setPointsDeVie(nouveauxPV);
-            CombatLogger.log(cible.getNomMonstre() + " récupère " + (int)recuperation + " PV grâce au terrain inondé.");
+            CombatLogger.log(cible.getNomMonstre() + " récupère " + (int)recuperation + " PV !");
         }
     }
 }

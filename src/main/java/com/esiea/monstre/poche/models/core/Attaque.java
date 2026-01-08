@@ -77,7 +77,7 @@ public class Attaque implements Serializable {
             avantage = 2;
             CombatLogger.log("  [TYPE] " + typeAttaque + " est fort contre " + typeCible + " ! Dégâts doublés.");
         }
-        return ((numerateur/denominateur) + 2) * avantage * coeff;
+        return (int)(((numerateur/denominateur) + 2) * avantage * coeff);
     }
 
     /**

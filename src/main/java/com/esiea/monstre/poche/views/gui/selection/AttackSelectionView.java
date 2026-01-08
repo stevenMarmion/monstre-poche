@@ -3,7 +3,10 @@ package com.esiea.monstre.poche.views.gui.selection;
 import com.esiea.monstre.poche.models.core.Attaque;
 import com.esiea.monstre.poche.models.core.Joueur;
 import com.esiea.monstre.poche.models.core.Monstre;
+import com.esiea.monstre.poche.models.game.GameVisual;
 import com.esiea.monstre.poche.models.game.resources.GameResourcesFactory;
+import com.esiea.monstre.poche.views.gui.config.ColorConfig;
+import com.esiea.monstre.poche.views.gui.config.FontConfig;
 
 import javafx.animation.ScaleTransition;
 import javafx.geometry.Insets;
@@ -43,24 +46,9 @@ public class AttackSelectionView extends VBox {
     private FlowPane attackCardsContainer;
     private Map<VBox, Attaque> attackCardMap;
     private List<VBox> selectedCards;
-    private int maxAttacksToSelect = 4;
     private Label selectionCounter;
     private Joueur joueur;
     private Monstre currentMonstre;
-
-    // Couleurs par type (style Pokémon)
-    private static final Map<String, String> TYPE_COLORS = Map.ofEntries(
-        Map.entry("Feu", "#F08030"),
-        Map.entry("Eau", "#6890F0"),
-        Map.entry("Plante", "#78C850"),
-        Map.entry("Foudre", "#F8D030"),
-        Map.entry("Terre", "#E0C068"),
-        Map.entry("Normal", "#A8A878"),
-        Map.entry("Insecte", "#A8B820"),
-        Map.entry("Nature", "#228B22")
-    );
-    
-    // Pas d'icônes - on utilise uniquement les couleurs et le texte
     
     public AttackSelectionView(Joueur joueur) {
         this.attackCardMap = new HashMap<>();
@@ -77,7 +65,7 @@ public class AttackSelectionView extends VBox {
         // Filtrer les attaques par type du monstre
         List<Attaque> filteredAttacks = new ArrayList<>();
         for (Attaque attaque : GameResourcesFactory.getInstance().getToutesLesAttaques()) {
-            if (attaque.getTypeAttaque().getLabelType().equals(currentMonstre.getTypeMonstre().getLabelType())) {
+            if (attaque.getTypeAttaque().getLabelType().equals(currentMonstre.getTypeMonstre().getLabelType()) || attaque.getTypeAttaque().getLabelType().equals("Normal")) {
                 filteredAttacks.add(attaque);
             }
         }
@@ -88,13 +76,8 @@ public class AttackSelectionView extends VBox {
         this.setPadding(new Insets(15, 25, 25, 25));
         this.getStyleClass().add("main-container");
         
-        // Barre supérieure
         HBox topBar = createTopBar();
-        
-        // Section d'information du monstre actuel
         VBox monsterInfoSection = createMonsterInfoSection();
-        
-        // Titre des attaques
         VBox attackTitleSection = createAttackTitleSection(filteredAttacks.size());
         
         // Container pour les cartes d'attaques (grille fluide style combat Pokémon)
@@ -134,14 +117,14 @@ public class AttackSelectionView extends VBox {
         topBar.setAlignment(Pos.CENTER_LEFT);
         topBar.setPadding(new Insets(5, 10, 5, 10));
         
-        btnBackToMenu = new Button("◀ Menu");
+        btnBackToMenu = new Button("Menu");
         btnBackToMenu.getStyleClass().add("back-button");
         
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
         
         // Compteur de sélection stylisé
-        selectionCounter = new Label("0 / " + maxAttacksToSelect + " attaques");
+        selectionCounter = new Label("0 / " + Joueur.NOMBRE_ATTAQUES_PAR_MONSTRE + " attaques");
         selectionCounter.getStyleClass().addAll("label-text", "selection-counter");
         selectionCounter.setStyle("-fx-background-color: rgba(0,0,0,0.5); -fx-padding: 8 15; -fx-background-radius: 20;");
         
@@ -154,7 +137,7 @@ public class AttackSelectionView extends VBox {
      */
     private VBox createMonsterInfoSection() {
         String typeLabel = currentMonstre.getTypeMonstre().getLabelType();
-        String typeColor = TYPE_COLORS.getOrDefault(typeLabel, "#A8A878");
+        String typeColor = ColorConfig.fromString(typeLabel).getColorCode();
         
         VBox section = new VBox(8);
         section.setAlignment(Pos.CENTER);
@@ -185,7 +168,7 @@ public class AttackSelectionView extends VBox {
         circle.setStrokeWidth(2);
         
         Label initialLabel = new Label(currentMonstre.getNomMonstre().substring(0, Math.min(2, currentMonstre.getNomMonstre().length())).toUpperCase());
-        initialLabel.setFont(Font.font("System", FontWeight.BOLD, 16));
+        initialLabel.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 16));
         initialLabel.setTextFill(Color.WHITE);
         avatar.getChildren().addAll(circle, initialLabel);
         
@@ -194,7 +177,7 @@ public class AttackSelectionView extends VBox {
         nameBox.setAlignment(Pos.CENTER_LEFT);
         
         lblMonsterName = new Label(currentMonstre.getNomMonstre());
-        lblMonsterName.setFont(Font.font("System", FontWeight.BOLD, 22));
+        lblMonsterName.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 22));
         lblMonsterName.setTextFill(Color.WHITE);
         
         HBox typeBadge = createTypeBadge(typeLabel, typeColor);
@@ -208,7 +191,7 @@ public class AttackSelectionView extends VBox {
             currentMonstre.getVitesse()
         ));
         statsLabel.setTextFill(Color.web("#ccc"));
-        statsLabel.setFont(Font.font("System", 12));
+        statsLabel.setFont(Font.font(FontConfig.SYSTEM.getFontName(), 12));
         
         nameBox.getChildren().addAll(lblMonsterName, typeBadge, statsLabel);
         monsterInfo.getChildren().addAll(avatar, nameBox);
@@ -243,7 +226,7 @@ public class AttackSelectionView extends VBox {
         ));
         
         Label text = new Label(typeLabel.toUpperCase());
-        text.setFont(Font.font("System", FontWeight.BOLD, 10));
+        text.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 10));
         text.setTextFill(Color.WHITE);
         
         badge.getChildren().add(text);
@@ -258,12 +241,12 @@ public class AttackSelectionView extends VBox {
         section.setAlignment(Pos.CENTER);
         
         Label title = new Label("Choisissez vos attaques");
-        title.setFont(Font.font("System", FontWeight.BOLD, 18));
+        title.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 18));
         title.setTextFill(Color.web("#f8eec7"));
         
-        Label subtitle = new Label("Sélectionnez " + maxAttacksToSelect + " attaques parmi les " + nbAttacks + " disponibles");
+        Label subtitle = new Label("Sélectionnez " + Joueur.NOMBRE_ATTAQUES_PAR_MONSTRE + " attaques parmi les " + nbAttacks + " disponibles");
         subtitle.setTextFill(Color.web("#aaa"));
-        subtitle.setFont(Font.font("System", 13));
+        subtitle.setFont(Font.font(FontConfig.SYSTEM.getFontName(), 13));
         
         section.getChildren().addAll(title, subtitle);
         return section;
@@ -293,7 +276,7 @@ public class AttackSelectionView extends VBox {
      */
     private VBox createAttackCard(Attaque attaque) {
         String typeLabel = attaque.getTypeAttaque().getLabelType();
-        String typeColor = TYPE_COLORS.getOrDefault(typeLabel, "#A8A878");
+        String typeColor = ColorConfig.fromString(typeLabel).getColorCode();
         
         // Carte principale
         VBox card = new VBox(6);
@@ -317,7 +300,7 @@ public class AttackSelectionView extends VBox {
         nameRow.setAlignment(Pos.CENTER);
         
         Label nameLabel = new Label(attaque.getNomAttaque().replace("_", " "));
-        nameLabel.setFont(Font.font("System", FontWeight.BOLD, 15));
+        nameLabel.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 15));
         nameLabel.setTextFill(Color.WHITE);
         nameLabel.setStyle("-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.7), 3, 0, 0, 1);");
         
@@ -328,7 +311,7 @@ public class AttackSelectionView extends VBox {
         typeBadgeRow.setAlignment(Pos.CENTER);
         
         Label typeBadge = new Label(typeLabel.toUpperCase());
-        typeBadge.setFont(Font.font("System", FontWeight.BOLD, 9));
+        typeBadge.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 9));
         typeBadge.setTextFill(Color.WHITE);
         typeBadge.setStyle(
             "-fx-background-color: rgba(0,0,0,0.4); " +
@@ -342,20 +325,15 @@ public class AttackSelectionView extends VBox {
         statsRow.setAlignment(Pos.CENTER);
         statsRow.setPadding(new Insets(5, 0, 0, 0));
         
-        // Puissance
         VBox powerBox = createStatBox("PWR", String.valueOf(attaque.getPuissanceAttaque()), "#ff6b6b");
-        
-        // Utilisations
         VBox usesBox = createStatBox("PP", String.valueOf(attaque.getNbUtilisations()), "#4dabf7");
-        
-        // Précision
         int precision = (int) ((1 - attaque.getProbabiliteEchec()) * 100);
         VBox precisionBox = createStatBox("ACC", precision + "%", "#69db7c");
         
         statsRow.getChildren().addAll(powerBox, usesBox, precisionBox);
         
         // Indicateur de sélection
-        Label selectionIndicator = new Label("✓ SÉLECTIONNÉE");
+        Label selectionIndicator = new Label("SÉLECTIONNÉE");
         selectionIndicator.setVisible(false);
         selectionIndicator.setStyle(
             "-fx-background-color: rgba(0,0,0,0.6); " +
@@ -369,20 +347,18 @@ public class AttackSelectionView extends VBox {
         card.getChildren().addAll(nameRow, typeBadgeRow, statsRow, selectionIndicator);
         
         // Tooltip avec plus de détails
-        Tooltip tooltip = new Tooltip(String.format(
-            "%s\n\nPuissance: %d\nUtilisations: %d\nPrécision: %d%%\n\nCliquez pour sélectionner",
-            attaque.getNomAttaque().replace("_", " "),
-            attaque.getPuissanceAttaque(),
-            attaque.getNbUtilisations(),
-            precision
-        ));
+        // Tooltip tooltip = new Tooltip(String.format(
+        //     "%s\n\nPuissance: %d\nUtilisations: %d\nPrécision: %d%%\n\nCliquez pour sélectionner",
+        //     attaque.getNomAttaque().replace("_", " "),
+        //     attaque.getPuissanceAttaque(),
+        //     attaque.getNbUtilisations(),
+        //     precision
+        // ));
+        Tooltip tooltip = new Tooltip(GameVisual.formatterAttaque(attaque));
         tooltip.setStyle("-fx-font-size: 12px;");
         Tooltip.install(card, tooltip);
         
-        // Gestion du clic
         card.setOnMouseClicked(e -> handleCardClick(card, attaque, selectionIndicator, typeColor));
-        
-        // Effet de survol
         card.setOnMouseEntered(e -> {
             if (!selectedCards.contains(card)) {
                 card.setScaleX(1.05);
@@ -390,7 +366,6 @@ public class AttackSelectionView extends VBox {
                 card.setEffect(new DropShadow(15, Color.WHITE));
             }
         });
-        
         card.setOnMouseExited(e -> {
             if (!selectedCards.contains(card)) {
                 card.setScaleX(1.0);
@@ -418,11 +393,11 @@ public class AttackSelectionView extends VBox {
         );
         
         Label labelText = new Label(label);
-        labelText.setFont(Font.font("System", FontWeight.BOLD, 9));
+        labelText.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 9));
         labelText.setTextFill(Color.web("#aaa"));
         
         Label valueLabel = new Label(value);
-        valueLabel.setFont(Font.font("System", FontWeight.BOLD, 12));
+        valueLabel.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 12));
         valueLabel.setTextFill(Color.WHITE);
         
         box.getChildren().addAll(labelText, valueLabel);
@@ -455,7 +430,7 @@ public class AttackSelectionView extends VBox {
                 c.setDisable(false);
                 c.setOpacity(1.0);
             });
-        } else if (selectedCards.size() < maxAttacksToSelect) {
+        } else if (selectedCards.size() < Joueur.NOMBRE_ATTAQUES_PAR_MONSTRE) {
             // Sélectionner
             selectedCards.add(card);
             selectionIndicator.setVisible(true);
@@ -486,7 +461,7 @@ public class AttackSelectionView extends VBox {
             card.setEffect(glow);
             
             // Désactiver les autres cartes si on a atteint le max
-            if (selectedCards.size() >= maxAttacksToSelect) {
+            if (selectedCards.size() >= Joueur.NOMBRE_ATTAQUES_PAR_MONSTRE) {
                 attackCardMap.keySet().forEach(c -> {
                     if (!selectedCards.contains(c)) {
                         c.setDisable(true);
@@ -505,9 +480,9 @@ public class AttackSelectionView extends VBox {
     private void updateValidateButton() {
         int selectedCount = selectedCards.size();
         
-        selectionCounter.setText(selectedCount + " / " + maxAttacksToSelect + " attaques");
+        selectionCounter.setText(selectedCount + " / " + Joueur.NOMBRE_ATTAQUES_PAR_MONSTRE + " attaques");
         
-        if (selectedCount == maxAttacksToSelect) {
+        if (selectedCount == Joueur.NOMBRE_ATTAQUES_PAR_MONSTRE) {
             btnValidate.setDisable(false);
             
             // Vérifier s'il y a encore des monstres à configurer
@@ -528,7 +503,7 @@ public class AttackSelectionView extends VBox {
             );
         } else {
             btnValidate.setDisable(true);
-            btnValidate.setText("Sélectionnez " + (maxAttacksToSelect - selectedCount) + " attaque(s) de plus");
+            btnValidate.setText("Sélectionnez " + (Joueur.NOMBRE_ATTAQUES_PAR_MONSTRE - selectedCount) + " attaque(s) de plus");
             selectionCounter.setStyle(
                 "-fx-background-color: rgba(0,0,0,0.5); " +
                 "-fx-padding: 8 15; " +
@@ -537,7 +512,7 @@ public class AttackSelectionView extends VBox {
         }
         
         // Réactiver les cartes non sélectionnées si on n'a pas atteint le max
-        if (selectedCount < maxAttacksToSelect) {
+        if (selectedCount < Joueur.NOMBRE_ATTAQUES_PAR_MONSTRE) {
             attackCardMap.keySet().forEach(c -> {
                 if (!selectedCards.contains(c)) {
                     c.setDisable(false);

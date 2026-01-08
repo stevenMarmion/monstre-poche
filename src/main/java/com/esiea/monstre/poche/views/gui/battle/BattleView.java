@@ -21,36 +21,20 @@ import javafx.util.Duration;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
 
 import com.esiea.monstre.poche.models.core.Attaque;
 import com.esiea.monstre.poche.models.core.Joueur;
 import com.esiea.monstre.poche.models.core.Monstre;
 import com.esiea.monstre.poche.models.items.Objet;
+import com.esiea.monstre.poche.views.gui.config.ColorConfig;
+import com.esiea.monstre.poche.views.gui.config.FontConfig;
 
 /**
  * Vue de combat style Pokémon - Design moderne inspiré des jeux GBA/DS.
  * Image de fond en plein écran avec interface overlay.
  */
 public class BattleView extends StackPane {
-
-    // Couleurs par type (palette Pokémon officielle)
-    private static final Map<String, String> TYPE_COLORS = Map.ofEntries(
-        Map.entry("Feu", "#F08030"),
-        Map.entry("Eau", "#6890F0"),
-        Map.entry("Plante", "#78C850"),
-        Map.entry("Foudre", "#F8D030"),
-        Map.entry("Terre", "#E0C068"),
-        Map.entry("Normal", "#A8A878"),
-        Map.entry("Insecte", "#A8B820"),
-        Map.entry("Nature", "#228B22")
-    );
-
-    // Éléments d'interface - Monstre Ennemi
-    private Label lblEnemyName;
-    private Label lblEnemyHpText;
-    private Rectangle hpBarEnemyFill;
     private VBox enemySpriteBox;
 
     // Éléments d'interface - Monstre Joueur
@@ -58,6 +42,11 @@ public class BattleView extends StackPane {
     private Label lblPlayerHpText;
     private Rectangle hpBarPlayerFill;
     private VBox playerSpriteBox;
+
+    // Éléments d'interface - Monstre Ennemi
+    private Label lblEnemyName;
+    private Label lblEnemyHpText;
+    private Rectangle hpBarEnemyFill;
 
     // Boutons d'action
     private Button btnAttack;
@@ -87,7 +76,6 @@ public class BattleView extends StackPane {
         this.joueur1 = joueur1;
         this.joueur2 = joueur2;
         this.isPlayer1Turn = true;
-
         initializeView();
     }
 
@@ -154,11 +142,8 @@ public class BattleView extends StackPane {
         HBox.setHgrow(playerSide, Priority.ALWAYS);
 
         // Info box joueur
-        VBox playerInfoBox = createPlayerInfoBox();
-        
-        // Sprite joueur
+        VBox playerInfoBox = createPlayerInfoBox(joueur1, true);
         playerSpriteBox = createMonsterSpriteBox(joueur1.getMonstreActuel(), true);
-
         playerSide.getChildren().addAll(playerInfoBox, playerSpriteBox);
 
         // === ZONE CENTRALE (VS) ===
@@ -167,7 +152,7 @@ public class BattleView extends StackPane {
         centerZone.setPrefWidth(80);
 
         Label vsLabel = new Label("VS");
-        vsLabel.setFont(Font.font("System", FontWeight.BOLD, 28));
+        vsLabel.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 28));
         vsLabel.setTextFill(Color.WHITE);
         vsLabel.setStyle("-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.8), 8, 0, 2, 2);");
         centerZone.getChildren().add(vsLabel);
@@ -178,12 +163,8 @@ public class BattleView extends StackPane {
         enemySide.setPrefWidth(280);
         HBox.setHgrow(enemySide, Priority.ALWAYS);
 
-        // Info box ennemi
-        VBox enemyInfoBox = createEnemyInfoBox();
-
-        // Sprite ennemi
+        VBox enemyInfoBox = createPlayerInfoBox(joueur2, false);
         enemySpriteBox = createMonsterSpriteBox(joueur2.getMonstreActuel(), false);
-
         enemySide.getChildren().addAll(enemyInfoBox, enemySpriteBox);
 
         area.getChildren().addAll(playerSide, centerZone, enemySide);
@@ -192,10 +173,12 @@ public class BattleView extends StackPane {
 
     /**
      * Crée le panneau d'info du joueur.
+     * @param joueur Le joueur dont on veut afficher les informations
+     * @param isPlayer true si c'est le joueur 1 (à gauche), false si c'est l'ennemi (à droite)
      */
-    private VBox createPlayerInfoBox() {
-        Monstre m = joueur1.getMonstreActuel();
-        String typeColor = TYPE_COLORS.getOrDefault(m.getTypeMonstre().getLabelType(), "#A8A878");
+    private VBox createPlayerInfoBox(Joueur joueur, boolean isPlayer) {
+        Monstre m = joueur.getMonstreActuel();
+        String typeColor = ColorConfig.fromString(m.getTypeMonstre().getLabelType()).getColorCode();
 
         VBox box = new VBox(5);
         box.setAlignment(Pos.CENTER);
@@ -211,88 +194,49 @@ public class BattleView extends StackPane {
         );
 
         // Nom du joueur
-        Label playerLabel = new Label(joueur1.getNomJoueur());
-        playerLabel.setFont(Font.font("System", FontWeight.BOLD, 11));
+        Label playerLabel = new Label(joueur.getNomJoueur());
+        playerLabel.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 11));
         playerLabel.setTextFill(Color.web("#666"));
 
         // Nom du monstre + type
         HBox nameRow = new HBox(8);
         nameRow.setAlignment(Pos.CENTER);
 
-        lblPlayerName = new Label(m.getNomMonstre());
-        lblPlayerName.setFont(Font.font("System", FontWeight.BOLD, 16));
-        lblPlayerName.setTextFill(Color.web("#303030"));
+        Label monsterNameLabel = new Label(m.getNomMonstre());
+        monsterNameLabel.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 16));
+        monsterNameLabel.setTextFill(Color.web("#303030"));
+
+        // Stocker la référence selon si c'est le joueur ou l'ennemi
+        if (isPlayer) {
+            lblPlayerName = monsterNameLabel;
+        } else {
+            lblEnemyName = monsterNameLabel;
+        }
 
         Label typeLabel = new Label(m.getTypeMonstre().getLabelType());
-        typeLabel.setFont(Font.font("System", FontWeight.BOLD, 10));
+        typeLabel.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 10));
         typeLabel.setTextFill(Color.WHITE);
         typeLabel.setPadding(new Insets(2, 8, 2, 8));
         typeLabel.setStyle("-fx-background-color: " + typeColor + "; -fx-background-radius: 10;");
 
-        nameRow.getChildren().addAll(lblPlayerName, typeLabel);
+        nameRow.getChildren().addAll(monsterNameLabel, typeLabel);
 
         // Barre de PV
-        HBox hpRow = createHpBar(m, true);
+        HBox hpRow = createHpBar(m, isPlayer);
 
         // Valeur PV
-        lblPlayerHpText = new Label(String.format("%.0f / %.0f PV", m.getPointsDeVie(), m.getPointsDeVieMax()));
-        lblPlayerHpText.setFont(Font.font("System", FontWeight.BOLD, 12));
-        lblPlayerHpText.setTextFill(Color.web("#404040"));
+        Label hpTextLabel = new Label(String.format("%.0f / %.0f PV", m.getPointsDeVie(), m.getPointsDeVieMax()));
+        hpTextLabel.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 12));
+        hpTextLabel.setTextFill(Color.web("#404040"));
 
-        box.getChildren().addAll(playerLabel, nameRow, hpRow, lblPlayerHpText);
-        return box;
-    }
+        // Stocker la référence selon si c'est le joueur ou l'ennemi
+        if (isPlayer) {
+            lblPlayerHpText = hpTextLabel;
+        } else {
+            lblEnemyHpText = hpTextLabel;
+        }
 
-    /**
-     * Crée le panneau d'info de l'ennemi.
-     */
-    private VBox createEnemyInfoBox() {
-        Monstre m = joueur2.getMonstreActuel();
-        String typeColor = TYPE_COLORS.getOrDefault(m.getTypeMonstre().getLabelType(), "#A8A878");
-
-        VBox box = new VBox(5);
-        box.setAlignment(Pos.CENTER);
-        box.setPadding(new Insets(12, 18, 12, 18));
-        box.setMaxWidth(250);
-        box.setStyle(
-            "-fx-background-color: rgba(255, 255, 255, 0.92); " +
-            "-fx-background-radius: 15; " +
-            "-fx-border-color: " + typeColor + "; " +
-            "-fx-border-width: 3; " +
-            "-fx-border-radius: 15; " +
-            "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 10, 0, 0, 4);"
-        );
-
-        // Nom du joueur
-        Label playerLabel = new Label(joueur2.getNomJoueur());
-        playerLabel.setFont(Font.font("System", FontWeight.BOLD, 11));
-        playerLabel.setTextFill(Color.web("#666"));
-
-        // Nom du monstre + type
-        HBox nameRow = new HBox(8);
-        nameRow.setAlignment(Pos.CENTER);
-
-        lblEnemyName = new Label(m.getNomMonstre());
-        lblEnemyName.setFont(Font.font("System", FontWeight.BOLD, 16));
-        lblEnemyName.setTextFill(Color.web("#303030"));
-
-        Label typeLabel = new Label(m.getTypeMonstre().getLabelType());
-        typeLabel.setFont(Font.font("System", FontWeight.BOLD, 10));
-        typeLabel.setTextFill(Color.WHITE);
-        typeLabel.setPadding(new Insets(2, 8, 2, 8));
-        typeLabel.setStyle("-fx-background-color: " + typeColor + "; -fx-background-radius: 10;");
-
-        nameRow.getChildren().addAll(lblEnemyName, typeLabel);
-
-        // Barre de PV
-        HBox hpRow = createHpBar(m, false);
-
-        // Valeur PV
-        lblEnemyHpText = new Label(String.format("%.0f / %.0f PV", m.getPointsDeVie(), m.getPointsDeVieMax()));
-        lblEnemyHpText.setFont(Font.font("System", FontWeight.BOLD, 12));
-        lblEnemyHpText.setTextFill(Color.web("#404040"));
-
-        box.getChildren().addAll(playerLabel, nameRow, hpRow, lblEnemyHpText);
+        box.getChildren().addAll(playerLabel, nameRow, hpRow, hpTextLabel);
         return box;
     }
 
@@ -304,7 +248,7 @@ public class BattleView extends StackPane {
         row.setAlignment(Pos.CENTER);
 
         Label hpLabel = new Label("PV");
-        hpLabel.setFont(Font.font("System", FontWeight.BOLD, 11));
+        hpLabel.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 11));
         hpLabel.setTextFill(Color.web("#f8a800"));
 
         StackPane barContainer = new StackPane();
@@ -327,6 +271,7 @@ public class BattleView extends StackPane {
 
         barContainer.getChildren().addAll(bg, fill);
 
+        // Stocker la référence selon si c'est le joueur ou l'ennemi
         if (isPlayer) {
             hpBarPlayerFill = fill;
         } else {
@@ -341,7 +286,7 @@ public class BattleView extends StackPane {
      * Crée le sprite d'un monstre.
      */
     private VBox createMonsterSpriteBox(Monstre m, boolean isPlayer) {
-        String typeColor = TYPE_COLORS.getOrDefault(m.getTypeMonstre().getLabelType(), "#A8A878");
+        String typeColor = ColorConfig.fromString(m.getTypeMonstre().getLabelType()).getColorCode();
         double size = isPlayer ? 100 : 90;
 
         VBox spriteBox = new VBox(5);
@@ -349,7 +294,7 @@ public class BattleView extends StackPane {
 
         // Cercle avec initiales
         Label sprite = new Label(m.getNomMonstre().substring(0, Math.min(2, m.getNomMonstre().length())).toUpperCase());
-        sprite.setFont(Font.font("System", FontWeight.BOLD, isPlayer ? 38 : 34));
+        sprite.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, isPlayer ? 38 : 34));
         sprite.setTextFill(Color.WHITE);
         sprite.setPrefSize(size, size);
         sprite.setMinSize(size, size);
@@ -432,7 +377,7 @@ public class BattleView extends StackPane {
 
         // Titre
         Label title = new Label("⚔ LOGS DU TOUR");
-        title.setFont(Font.font("System", FontWeight.BOLD, 14));
+        title.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 14));
         title.setTextFill(Color.web("#c0d0e0"));
         title.setPadding(new Insets(0, 0, 5, 0));
 
@@ -494,7 +439,7 @@ public class BattleView extends StackPane {
      */
     private Button createActionButton(String text, String color, String darkColor) {
         Button btn = new Button(text);
-        btn.setFont(Font.font("System", FontWeight.BOLD, 12));
+        btn.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 12));
         btn.setPrefWidth(105);
         btn.setPrefHeight(42);
 
@@ -580,10 +525,10 @@ public class BattleView extends StackPane {
                 lbl.maxWidthProperty().bind(logBox.widthProperty().subtract(30));
 
                 if (isLast) {
-                    lbl.setFont(Font.font("System", FontWeight.BOLD, 12));
+                    lbl.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 12));
                     lbl.setTextFill(Color.web("#f0f8ff"));
                 } else {
-                    lbl.setFont(Font.font("System", FontWeight.NORMAL, 11));
+                    lbl.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.NORMAL, 11));
                     lbl.setTextFill(Color.web("#a0b0c0"));
                 }
 
@@ -645,54 +590,60 @@ public class BattleView extends StackPane {
     /**
      * Met à jour l'affichage des monstres.
      */
-    public void updatePokemonDisplay() {
-        // Joueur
-        if (joueur1.getMonstreActuel() != null) {
-            Monstre m1 = joueur1.getMonstreActuel();
-            double ratio = Math.max(0, m1.getPointsDeVie() / m1.getPointsDeVieMax());
+    public void updatePokemonDisplay(Joueur joueur) {
+        if (joueur == null || joueur.getMonstreActuel() == null) {
+            return;
+        }
 
-            lblPlayerName.setText(m1.getNomMonstre());
-            lblPlayerHpText.setText(String.format("%.0f / %.0f PV", m1.getPointsDeVie(), m1.getPointsDeVieMax()));
+        Monstre monstre = joueur.getMonstreActuel();
+        double ratio = Math.max(0, monstre.getPointsDeVie() / monstre.getPointsDeVieMax());
 
+        // Déterminer si c'est le joueur1 (à gauche) ou le joueur2 (à droite)
+        boolean isPlayer1 = joueur == joueur1;
+
+        if (isPlayer1) {
+            // Mise à jour du joueur 1 (à gauche)
+            if (lblPlayerName != null) {
+                lblPlayerName.setText(monstre.getNomMonstre());
+            }
+            if (lblPlayerHpText != null) {
+                lblPlayerHpText.setText(String.format("%.0f / %.0f PV", monstre.getPointsDeVie(), monstre.getPointsDeVieMax()));
+            }
             if (hpBarPlayerFill != null) {
                 hpBarPlayerFill.setWidth(160 * ratio);
                 if (ratio > 0.5) hpBarPlayerFill.setFill(Color.web("#48d048"));
                 else if (ratio > 0.2) hpBarPlayerFill.setFill(Color.web("#f8c800"));
                 else hpBarPlayerFill.setFill(Color.web("#f85858"));
             }
-
-            updateSpriteBox(playerSpriteBox, m1, true);
-        }
-
-        // Ennemi
-        if (joueur2.getMonstreActuel() != null) {
-            Monstre m2 = joueur2.getMonstreActuel();
-            double ratio = Math.max(0, m2.getPointsDeVie() / m2.getPointsDeVieMax());
-
-            lblEnemyName.setText(m2.getNomMonstre());
-            lblEnemyHpText.setText(String.format("%.0f / %.0f PV", m2.getPointsDeVie(), m2.getPointsDeVieMax()));
-
+            updateSpriteBox(playerSpriteBox, monstre, true);
+        } else {
+            // Mise à jour du joueur 2 (ennemi à droite)
+            if (lblEnemyName != null) {
+                lblEnemyName.setText(monstre.getNomMonstre());
+            }
+            if (lblEnemyHpText != null) {
+                lblEnemyHpText.setText(String.format("%.0f / %.0f PV", monstre.getPointsDeVie(), monstre.getPointsDeVieMax()));
+            }
             if (hpBarEnemyFill != null) {
                 hpBarEnemyFill.setWidth(160 * ratio);
                 if (ratio > 0.5) hpBarEnemyFill.setFill(Color.web("#48d048"));
                 else if (ratio > 0.2) hpBarEnemyFill.setFill(Color.web("#f8c800"));
                 else hpBarEnemyFill.setFill(Color.web("#f85858"));
             }
-
-            updateSpriteBox(enemySpriteBox, m2, false);
+            updateSpriteBox(enemySpriteBox, monstre, false);
         }
     }
 
     private void updateSpriteBox(VBox spriteBox, Monstre m, boolean isPlayer) {
         if (spriteBox == null || m == null) return;
 
-        String typeColor = TYPE_COLORS.getOrDefault(m.getTypeMonstre().getLabelType(), "#A8A878");
+        String typeColor = ColorConfig.fromString(m.getTypeMonstre().getLabelType()).getColorCode();
         double size = isPlayer ? 100 : 90;
 
         spriteBox.getChildren().clear();
 
         Label sprite = new Label(m.getNomMonstre().substring(0, Math.min(2, m.getNomMonstre().length())).toUpperCase());
-        sprite.setFont(Font.font("System", FontWeight.BOLD, isPlayer ? 38 : 34));
+        sprite.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, isPlayer ? 38 : 34));
         sprite.setTextFill(Color.WHITE);
         sprite.setPrefSize(size, size);
         sprite.setMinSize(size, size);
@@ -730,7 +681,7 @@ public class BattleView extends StackPane {
         // Afficher les attaques normales
         if (attaques != null) {
             for (Attaque a : attaques) {
-                String typeColor = TYPE_COLORS.getOrDefault(a.getTypeAttaque().getLabelType(), "#A8A878");
+                String typeColor = ColorConfig.fromString(a.getTypeAttaque().getLabelType()).getColorCode();
                 boolean hasNoPP = a.getNbUtilisations() <= 0;
 
                 Button btn = new Button();
@@ -742,12 +693,12 @@ public class BattleView extends StackPane {
                 content.setPadding(new Insets(0, 8, 0, 8));
 
                 Label nameLabel = new Label(a.getNomAttaque().replace("_", " "));
-                nameLabel.setFont(Font.font("System", FontWeight.BOLD, 12));
+                nameLabel.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 12));
                 nameLabel.setTextFill(hasNoPP ? Color.GRAY : Color.WHITE);
 
                 String ppText = hasNoPP ? "PP VIDE" : ("PP " + a.getNbUtilisations());
                 Label infoLabel = new Label(a.getTypeAttaque().getLabelType() + " | " + ppText + " | PWR " + a.getPuissanceAttaque());
-                infoLabel.setFont(Font.font("System", 9));
+                infoLabel.setFont(Font.font(FontConfig.SYSTEM.getFontName(), 9));
                 infoLabel.setTextFill(hasNoPP ? Color.DARKGRAY : Color.web("#ddd"));
 
                 content.getChildren().addAll(nameLabel, infoLabel);
@@ -811,11 +762,11 @@ public class BattleView extends StackPane {
         bareHandsContent.setPadding(new Insets(0, 8, 0, 8));
         
         Label bareHandsName = new Label("MAINS NUES");
-        bareHandsName.setFont(Font.font("System", FontWeight.BOLD, 12));
+        bareHandsName.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 12));
         bareHandsName.setTextFill(Color.WHITE);
         
         Label bareHandsInfo = new Label("Normal | PP infini | PWR faible");
-        bareHandsInfo.setFont(Font.font("System", 9));
+        bareHandsInfo.setFont(Font.font(FontConfig.SYSTEM.getFontName(), 9));
         bareHandsInfo.setTextFill(Color.web("#ddd"));
         
         bareHandsContent.getChildren().addAll(bareHandsName, bareHandsInfo);
@@ -828,7 +779,7 @@ public class BattleView extends StackPane {
             "-fx-border-radius: 8; " +
             "-fx-cursor: hand;";
         btnBareHands.setStyle(bareHandsStyle);
-        
+
         btnBareHands.setOnMouseEntered(e -> btnBareHands.setStyle(
             "-fx-background-color: #A0522D; " +
             "-fx-background-radius: 8; " +
@@ -875,7 +826,7 @@ public class BattleView extends StackPane {
         refreshLogDisplay();
 
         for (Monstre m : monstres) {
-            String typeColor = TYPE_COLORS.getOrDefault(m.getTypeMonstre().getLabelType(), "#A8A878");
+            String typeColor = ColorConfig.fromString(m.getTypeMonstre().getLabelType()).getColorCode();
             double hpRatio = Math.max(0, m.getPointsDeVie() / m.getPointsDeVieMax());
 
             VBox card = new VBox(4);
@@ -895,12 +846,12 @@ public class BattleView extends StackPane {
             card.setStyle(normalStyle);
 
             Label nameLabel = new Label(m.getNomMonstre());
-            nameLabel.setFont(Font.font("System", FontWeight.BOLD, 11));
+            nameLabel.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 11));
             nameLabel.setTextFill(Color.WHITE);
 
             String hpColor = hpRatio > 0.5 ? "#48d048" : hpRatio > 0.2 ? "#f8c800" : "#f85858";
             Label hpLabel = new Label(String.format("%.0f/%.0f PV", m.getPointsDeVie(), m.getPointsDeVieMax()));
-            hpLabel.setFont(Font.font("System", FontWeight.BOLD, 10));
+            hpLabel.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 10));
             hpLabel.setTextFill(Color.web(hpColor));
 
             card.getChildren().addAll(nameLabel, hpLabel);
@@ -966,7 +917,7 @@ public class BattleView extends StackPane {
             Button btn = new Button(objName.replace("_", " "));
             btn.setPrefWidth(120);
             btn.setPrefHeight(40);
-            btn.setFont(Font.font("System", FontWeight.BOLD, 10));
+            btn.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 10));
 
             String normalStyle = String.format(
                 "-fx-background-color: %s; " +
@@ -1017,7 +968,7 @@ public class BattleView extends StackPane {
         Button btn = new Button("RETOUR");
         btn.setPrefWidth(80);
         btn.setPrefHeight(32);
-        btn.setFont(Font.font("System", FontWeight.BOLD, 10));
+        btn.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 10));
         btn.setStyle(
             "-fx-background-color: #606070; " +
             "-fx-text-fill: white; " +

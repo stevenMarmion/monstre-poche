@@ -474,7 +474,10 @@ public class OnlineGameController {
                     break;
                 }
             }
-            Platform.runLater(() -> battleView.updatePokemonDisplay());
+            Platform.runLater(() -> {
+                battleView.updatePokemonDisplay(battleView.getJoueur1());
+                battleView.updatePokemonDisplay(battleView.getJoueur2());
+            });
         }
     }
     
@@ -605,7 +608,8 @@ public class OnlineGameController {
         }
         
         // Mettre a jour l'affichage
-        battleView.updatePokemonDisplay();
+        battleView.updatePokemonDisplay(battleView.getJoueur1());
+        battleView.updatePokemonDisplay(battleView.getJoueur2());
         
         // Envoyer la mise a jour des PV du monstre local
         sendMonsterUpdate(joueurLocal.getMonstreActuel());

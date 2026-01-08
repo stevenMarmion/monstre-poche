@@ -1,5 +1,7 @@
 package com.esiea.monstre.poche.views.gui.menu;
 
+import com.esiea.monstre.poche.views.gui.config.FontConfig;
+
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -34,12 +36,12 @@ public class MainMenuView extends VBox {
         
         // Titre principal - Logo Pokémon style
         Label title = new Label("MONSTRE POCHE");
-        title.setFont(Font.font("Arial Black", FontWeight.BOLD, 60));
+        title.setFont(Font.font(FontConfig.ARIAL_BLACK.getFontName(), FontWeight.BOLD, 60));
         title.getStyleClass().add("main-title");
         
         // Sous-titre
         Label subtitle = new Label("Bienvenue au monde des monstres !");
-        subtitle.setFont(Font.font("Arial", FontWeight.BOLD, 24));
+        subtitle.setFont(Font.font(FontConfig.ARIAL.getFontName(), FontWeight.BOLD, 24));
         subtitle.setStyle("-fx-text-fill: white; -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.6), 5, 0, 1, 1);");
         
         // Conteneur pour les boutons
@@ -47,13 +49,8 @@ public class MainMenuView extends VBox {
         buttonBox.setAlignment(Pos.CENTER);
         buttonBox.setFillWidth(true);
         
-        // Bouton "Jouer en local (à deux)"
         btnLocalGame = createMenuButton("Jouer en local (à deux)");
-        
-        // Bouton "Jouer contre un bot"
         btnBotGame = createMenuButton("Jouer contre un bot");
-        
-        // Bouton "Jouer en ligne"
         btnOnlineGame = createMenuButton("Jouer en ligne");
         
         // Ajout des boutons au conteneur
@@ -68,7 +65,7 @@ public class MainMenuView extends VBox {
      */
     private Button createMenuButton(String text) {
         Button button = new Button(text);
-        button.setFont(Font.font("Arial Black", FontWeight.BOLD, 20));
+        button.setFont(Font.font(FontConfig.ARIAL_BLACK.getFontName(), FontWeight.BOLD, 20));
         button.setPrefWidth(350);
         button.setMinWidth(350);
         button.setMaxWidth(350);

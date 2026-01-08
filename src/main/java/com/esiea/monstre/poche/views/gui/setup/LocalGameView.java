@@ -1,5 +1,7 @@
 package com.esiea.monstre.poche.views.gui.setup;
 
+import com.esiea.monstre.poche.views.gui.config.FontConfig;
+
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -40,13 +42,13 @@ public class LocalGameView extends VBox {
         topBar.setPadding(new Insets(10));
         
         btnBackToMenu = new Button("Revenir au menu");
-        btnBackToMenu.setFont(Font.font("System", 14));
+        btnBackToMenu.setFont(Font.font(FontConfig.SYSTEM.getFontName(), 14));
         btnBackToMenu.getStyleClass().add("back-button");
         topBar.getChildren().add(btnBackToMenu);
         
         // Titre
         Label title = new Label("Jouer en local à deux");
-        title.setFont(Font.font("System", FontWeight.BOLD, 36));
+        title.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 36));
         title.getStyleClass().add("main-title");
         
         // Conteneur pour les champs de saisie
@@ -56,14 +58,14 @@ public class LocalGameView extends VBox {
         
         // Champ pour le joueur 1
         Label lblPlayer1 = new Label("Nom du Joueur 1 :");
-        lblPlayer1.setFont(Font.font("System", FontWeight.BOLD, 16));
+        lblPlayer1.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 16));
         lblPlayer1.getStyleClass().add("label-text");
         
         firstPlayerName = createTextField("Entrez le nom du joueur 1");
         
         // Champ pour le joueur 2
         Label lblPlayer2 = new Label("Nom du Joueur 2 :");
-        lblPlayer2.setFont(Font.font("System", FontWeight.BOLD, 16));
+        lblPlayer2.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 16));
         lblPlayer2.getStyleClass().add("label-text");
         
         secondPlayerName = createTextField("Entrez le nom du joueur 2");
@@ -72,7 +74,7 @@ public class LocalGameView extends VBox {
         
         // Bouton pour commencer le jeu
         btnStartGame = new Button("Commencer le jeu");
-        btnStartGame.setFont(Font.font("System", FontWeight.BOLD, 18));
+        btnStartGame.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 18));
         btnStartGame.setPrefWidth(300);
         btnStartGame.getStyleClass().add("menu-button");
         
@@ -88,7 +90,7 @@ public class LocalGameView extends VBox {
         textField.setPromptText(promptText);
         textField.setPrefWidth(300);
         textField.setMaxWidth(300);
-        textField.setFont(Font.font("System", 14));
+        textField.setFont(Font.font(FontConfig.SYSTEM.getFontName(), 14));
         textField.getStyleClass().add("text-field");
         return textField;
     }
