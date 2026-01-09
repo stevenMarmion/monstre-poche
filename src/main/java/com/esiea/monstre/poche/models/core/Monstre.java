@@ -129,14 +129,19 @@ public class Monstre implements Serializable {
         if (!this.attaques.contains(attaque) && this.attaques.size() < 4) {
             this.attaques.add(attaque);
         } else {
-            CombatLogger.log("[INFO] Attaque non ajoutee : " + attaque.getNomAttaque() + " deja presente ou limite atteinte pour " + this.nomMonstre + ".");
+            CombatLogger.info("Attaque non ajoutee : " + attaque.getNomAttaque() + " deja presente ou limite atteinte pour " + this.nomMonstre + ".");
         }
     }
 
     public void attaquer(Monstre cible, Terrain terrain, Attaque attaqueUtilisee) {
+        if (this.getPointsDeVie() <= 0) {
+            CombatLogger.info(this.nomMonstre + " ne peut pas attaquer car il est K.O.");
+            return;
+        }
+
         if (attaqueUtilisee != null) {
             if (attaqueUtilisee.getNbUtilisations() <= 0) {
-                CombatLogger.log(this.nomMonstre + " ne peut pas utiliser " + attaqueUtilisee.getNomAttaque() + " : plus de PP !");
+                CombatLogger.info(this.nomMonstre + " ne peut pas utiliser " + attaqueUtilisee.getNomAttaque() + " : plus de PP !");
                 return;
             } else {
                 attaqueUtilisee.setNbUtilisations(attaqueUtilisee.getNbUtilisations() - 1);
@@ -167,13 +172,12 @@ public class Monstre implements Serializable {
         } else {
             CombatLogger.log("=======================================");
             CombatLogger.log(this.nomMonstre + " utilise " + attaqueUtilisee.getNomAttaque() + " (PP restants: " + attaqueUtilisee.getNbUtilisations() + ") :");
-            CombatLogger.log("  [STATUT] " + this.nomMonstre + " est " + this.statut.getLabelStatut());
+            CombatLogger.log("[STATUT] " + this.nomMonstre + " est " + this.statut.getLabelStatut());
         }
-        
+
         // ensuite on applique nos effets avant attaque si le pokémon est paralysé ou autre
         StatutMonstreUtils.appliquerStatutMonstre(statut, this, (int) degatsAffliges);
         StatutTerrainUtils.appliquerStatutTerrain(terrain, this, (int) degatsAffliges);
-
         TypeUtils.appliqueCapaciteSpecialeNature(typeMonstre, this, terrain);
 
         // notre attaque principal, le process principal
@@ -181,11 +185,11 @@ public class Monstre implements Serializable {
             double pvAvant = cible.getPointsDeVie();
             cible.setPointsDeVie(cible.getPointsDeVie() - (int) degatsAffliges);
             
-            CombatLogger.log(cible.getNomMonstre() + " subit " + (int) degatsAffliges + " points de dégâts.");
-            CombatLogger.log("PV: " + (int)pvAvant + " --> " + (int)cible.getPointsDeVie() + " / " + (int)cible.getPointsDeVieMax());
+            CombatLogger.info(cible.getNomMonstre() + " subit " + (int) degatsAffliges + " points de dégâts.");
+            CombatLogger.info("PV: " + (int)pvAvant + " --> " + (int)cible.getPointsDeVie() + " / " + (int)cible.getPointsDeVieMax());
 
             if (cible.getPointsDeVie() == 0) {
-                CombatLogger.log(cible.getNomMonstre() + " est K.O.");
+                CombatLogger.info(cible.getNomMonstre() + " est K.O.");
             }
 
             // les effets de l'attaque spéciale du monstre si elle est pas ratée
@@ -194,7 +198,7 @@ public class Monstre implements Serializable {
                 TypeUtils.appliqueCapaciteSpeciale(typeMonstre, this, cible, terrain);
             }
         } else {
-            CombatLogger.log(this.nomMonstre + " a raté son attaque.");
+            CombatLogger.info(this.nomMonstre + " a raté son attaque.");
         }
         CombatLogger.log("=======================================");
     }

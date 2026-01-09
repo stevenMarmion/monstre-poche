@@ -11,13 +11,13 @@ public class Feu extends Type {
         this.labelType = "Feu";
         this.fortContre = "Nature";
         this.faibleContre = "Eau";
-        this.chanceBrulure = Math.random(); // notre VAR, c'est juste un random entre 0 et 1
+        this.chanceBrulure = Math.random();
     }
 
     public void appliqueCapaciteSpeciale(Monstre cible) {
         if (Math.random() < this.chanceBrulure) {
             cible.setStatut(new Brule());
-            CombatLogger.log(cible.getNomMonstre() + " est désormais brûlé.");
+            CombatLogger.info(cible.getNomMonstre() + " est désormais brûlé.");
         }
     }
 }

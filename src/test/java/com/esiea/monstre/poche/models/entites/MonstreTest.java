@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import com.esiea.monstre.poche.models.core.Attaque;
 import com.esiea.monstre.poche.models.core.Monstre;
 import com.esiea.monstre.poche.models.core.Terrain;
-import com.esiea.monstre.poche.models.status.monster.Asseche;
+import com.esiea.monstre.poche.models.status.terrain.Asseche;
 import com.esiea.monstre.poche.models.status.monster.Brule;
 import com.esiea.monstre.poche.models.types.Normal;
 

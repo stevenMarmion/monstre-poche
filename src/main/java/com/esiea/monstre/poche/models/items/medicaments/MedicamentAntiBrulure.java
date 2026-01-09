@@ -13,11 +13,11 @@ public class MedicamentAntiBrulure extends Medicament {
     @Override
     public void utiliserObjet(Monstre cible) {
         if (cible.getStatut().getLabelStatut().equals("Brule")) {
-            CombatLogger.log("Utilisation de " + this.nomObjet + " sur " + cible.getNomMonstre());
+            CombatLogger.info("Utilisation de " + this.nomObjet + " sur " + cible.getNomMonstre());
             cible.setStatut(new Normal());
-            CombatLogger.log("  -> " + cible.getNomMonstre() + " n'est plus brûlé !");
+            CombatLogger.info("-> " + cible.getNomMonstre() + " n'est plus brûlé !");
         } else {
-            CombatLogger.log("Utilisation de " + this.nomObjet + " sur " + cible.getNomMonstre() + " - Aucun effet (pas brûlé)");
+            CombatLogger.info("Utilisation de " + this.nomObjet + " sur " + cible.getNomMonstre() + " - Aucun effet (pas brûlé)");
         }
     }
 

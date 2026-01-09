@@ -33,6 +33,9 @@ import javafx.stage.Stage;
  * Implémente INavigationCallback pour la gestion de la navigation entre les vues.
  */
 public class MonstrePocheUI extends Application implements INavigationCallback {
+    private static final long WINDOW_WIDTH = 1280;
+    private static final long WINDOW_HEIGHT = 720;
+
     private Stage stage;
     private Scene scene;
 
@@ -58,7 +61,7 @@ public class MonstrePocheUI extends Application implements INavigationCallback {
         MainMenuView mainMenuView = new MainMenuView();
         new MainMenuController(mainMenuView, this);
         
-        scene = new Scene(mainMenuView, 1280, 720);
+        scene = new Scene(mainMenuView, WINDOW_WIDTH, WINDOW_HEIGHT);
         scene.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
         stage.setScene(scene);
     }

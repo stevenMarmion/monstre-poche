@@ -100,6 +100,13 @@ public class CombatLogger {
     public static void info(String message) {
         addLog("[INFO] " + message);
     }
+
+    /**
+     * Log un message pour le réseau.
+     */
+    public static void network(String message) {
+        addLog("[NETWORK] " + message);
+    }
     
     /**
      * Méthode interne pour ajouter un log.
@@ -139,7 +146,7 @@ public class CombatLogger {
     public static void logTitre(String titre) {
         addLog("");
         addLog(SEPARATOR);
-        addLog("  " + titre.toUpperCase());
+        addLog(titre.toUpperCase());
         addLog(SEPARATOR);
     }
     
@@ -158,7 +165,7 @@ public class CombatLogger {
     public static void logDebutCombat(Joueur joueur1, Joueur joueur2) {
         logTitre("COMBAT LANCE !");
         addLog("");
-        addLog("  " + joueur1.getNomJoueur() + "  VS  " + joueur2.getNomJoueur());
+        addLog(joueur1.getNomJoueur() + "  VS  " + joueur2.getNomJoueur());
         addLog("");
         addLog(LIGHT_SEPARATOR);
     }
@@ -179,6 +186,13 @@ public class CombatLogger {
         }
     }
 
+    public static void afficherActionsDisponibles() {
+        addLog("Actions disponibles :");
+        addLog("  1) Attaquer");
+        addLog("  2) Utiliser un objet");
+        addLog("  3) Changer de monstre");
+    }
+
     /**
      * Affiche un menu avec des options.
      */
@@ -186,7 +200,7 @@ public class CombatLogger {
         logTitre(titre);
         addLog("");
         for (int i = 0; i < options.length; i++) {
-            addLog("  [" + (i + 1) + "] " + options[i]);
+            addLog("[" + (i + 1) + "] " + options[i]);
         }
         addLog("");
     }

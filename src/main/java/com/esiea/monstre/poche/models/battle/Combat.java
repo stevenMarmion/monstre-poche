@@ -11,7 +11,7 @@ import com.esiea.monstre.poche.models.core.Terrain;
 import com.esiea.monstre.poche.models.game.GameVisual;
 import com.esiea.monstre.poche.models.game.resources.GameResourcesFactory;
 import com.esiea.monstre.poche.models.items.Objet;
-import com.esiea.monstre.poche.models.status.monster.Asseche;
+import com.esiea.monstre.poche.models.status.terrain.Asseche;
 import com.esiea.monstre.poche.models.status.terrain.Innonde;
 
 public abstract class Combat {
@@ -25,9 +25,6 @@ public abstract class Combat {
         this.terrain = new Terrain("Arène de jeu", new Asseche());
     }
 
-    // ========================================
-    // Méthodes abstraites à implémenter par les sous-classes
-    // ========================================
     protected abstract void lancer();
     protected abstract void executerTour();
     protected abstract void afficherMessage(String message);
@@ -36,10 +33,6 @@ public abstract class Combat {
     protected abstract void afficherErreur(String erreur);
     protected abstract String demanderSaisie(String prompt);
     protected abstract Object gereChoixAction(Joueur joueur);
-
-    // ========================================
-    // Méthodes concrètes communes (Template Methods)
-    // ========================================
 
     /**
      * Sélection des monstres pour un joueur
@@ -69,7 +62,7 @@ public abstract class Combat {
                     continue;
                 }
                 joueur.ajouterMonstre(monstreCharge);
-                afficherMessage("  [OK] Monstre ajoute : " + monstreCharge.getNomMonstre());
+                afficherMessage("[OK] Monstre ajoute : " + monstreCharge.getNomMonstre());
             } catch (NumberFormatException e) {
                 afficherErreur("Saisie invalide. Veuillez entrer un numero.");
             }
@@ -93,7 +86,7 @@ public abstract class Combat {
             // Filtrer les attaques compatibles avec le type du monstre
             List<Attaque> attaquesCompatibles = new ArrayList<>();
             for (Attaque attaque : attaquesADisposition) {
-                if (monstre.getTypeMonstre().getLabelType().equals(attaque.getTypeAttaque().getLabelType())) {
+                if (monstre.getTypeMonstre().getLabelType().equals(attaque.getTypeAttaque().getLabelType()) || attaque.getTypeAttaque().getLabelType().equals("Normal")) {
                     attaquesCompatibles.add(attaque);
                 }
             }
@@ -117,7 +110,7 @@ public abstract class Combat {
                         continue;
                     }
                     monstre.ajouterAttaque(attaqueChargee);
-                    afficherMessage("  [OK] Attaque ajoutee : " + attaqueChargee.getNomAttaque());
+                    afficherMessage("[OK] Attaque ajoutee : " + attaqueChargee.getNomAttaque());
                 } catch (NumberFormatException e) {
                     afficherErreur("Saisie invalide. Veuillez entrer un numero.");
                 }
@@ -149,7 +142,7 @@ public abstract class Combat {
                 }
                 Objet objetChoisi = objetsDisponibles.get(indexChoisi - 1);
                 joueur.ajouterObjet(objetChoisi.copyOf());
-                afficherMessage("  [OK] Objet ajoute pour " + joueur.getNomJoueur() + " : " + objetChoisi.getNomObjet());
+                afficherMessage("[OK] Objet ajoute pour " + joueur.getNomJoueur() + " : " + objetChoisi.getNomObjet());
             } catch (NumberFormatException e) {
                 afficherErreur("Saisie invalide. Veuillez entrer un numero.");
             }
@@ -166,27 +159,36 @@ public abstract class Combat {
         afficherTitre("Attaques de " + monstreActuel.getNomMonstre());
 
         int index = 1;
+        boolean attaquesSpeNonDisponibles = true;
         for (Attaque attaque : monstreActuel.getAttaques()) {
             String ppStatus = attaque.getNbUtilisations() <= 0 ? " [VIDE]" : "";
             afficherMessage(String.format("[%d] %s%s", index++, GameVisual.formatterAttaque(attaque), ppStatus));
+            if (attaque.getNbUtilisations() > 0) {
+                attaquesSpeNonDisponibles = false;
+            }
         }
-        afficherMessage(String.format("[%d] %s | PP: illimite | Puissance: faible", index, "MAINS NUES"));
+
+        if (attaquesSpeNonDisponibles) {
+            afficherMessage("Toutes les attaques spéciales sont épuisées. Vous pouvez attaquer à mains nues.");
+            afficherMessage(String.format("[%d] %s | PP: illimite | Puissance: faible", index, "MAINS NUES"));
+        }
 
         while (true) {
-            String choixInput = demanderSaisie("Attaque choisie (0 pour mains nues) >");
+            String message = attaquesSpeNonDisponibles ? "Choix de l'attaque (0 pour mains nues) >" : "Choix de l'attaque >";
+            String choixInput = demanderSaisie(message);
             try {
                 int indexChoisi = Integer.parseInt(choixInput);
-                if (indexChoisi == 0) {
-                    afficherMessage("  [OK] Attaque a mains nues selectionnee.");
+                if (attaquesSpeNonDisponibles && indexChoisi == 0) {
+                    afficherMessage("[OK] Attaque a mains nues selectionnee.");
                     return null;
                 }
                 if (indexChoisi < 1 || indexChoisi > monstreActuel.getAttaques().size()) {
-                    afficherErreur("Index invalide. Veuillez choisir 0 ou un nombre entre 1 et " + monstreActuel.getAttaques().size());
+                    afficherErreur("Index invalide. Veuillez choisir un nombre entre 1 et " + monstreActuel.getAttaques().size());
                     continue;
                 }
                 Attaque attaqueTemp = monstreActuel.getAttaques().get(indexChoisi - 1);
                 if (attaqueTemp.getNbUtilisations() <= 0) {
-                    afficherErreur("Cette attaque n'a plus de PP ! Choisissez une autre attaque ou 0 pour mains nues.");
+                    afficherErreur("Cette attaque n'a plus de PP ! Choisissez une autre attaque");
                     continue;
                 }
                 return attaqueTemp;
@@ -258,10 +260,6 @@ public abstract class Combat {
         }
     }
 
-    // ========================================
-    // Logique métier du combat (inchangée)
-    // ========================================
-
     /**
      * Vérifie si l'inondation doit être retirée quand un monstre quitte le terrain.
      * CDC: L'inondation est automatiquement retirée lorsque le monstre l'ayant déclenché quitte le terrain.
@@ -270,8 +268,7 @@ public abstract class Combat {
         if (terrain.getStatutTerrain() instanceof Innonde) {
             Innonde innonde = (Innonde) terrain.getStatutTerrain();
             if (innonde.getMonstreSource() != null && innonde.getMonstreSource().equals(ancienMonstre)) {
-                terrain.setStatutTerrain(new Asseche());
-                CombatLogger.log("L'inondation se retire car " + ancienMonstre.getNomMonstre() + " quitte le terrain.");
+                innonde.retraitInnondation(terrain);
             }
         }
     }
@@ -314,21 +311,17 @@ public abstract class Combat {
             if (joueur1.getMonstreActuel().getVitesse() > joueur2.getMonstreActuel().getVitesse()) {
                 joueur1.getMonstreActuel().attaquer(joueur2.getMonstreActuel(), terrain, attaque1);
                 joueur2.getMonstreActuel().attaquer(joueur1.getMonstreActuel(), terrain, attaque2);
-
-                if (joueur1.getMonstreActuel().getPointsDeVie() == 0) {
-                    joueur1.switchMonstreActuelAuto();
-                } else if (joueur2.getMonstreActuel().getPointsDeVie() == 0) {
-                    joueur2.switchMonstreActuelAuto();
-                }
             } else {
                 joueur2.getMonstreActuel().attaquer(joueur1.getMonstreActuel(), terrain, attaque2);
                 joueur1.getMonstreActuel().attaquer(joueur2.getMonstreActuel(), terrain, attaque1);
-
-                if (joueur1.getMonstreActuel().getPointsDeVie() == 0) {
-                    joueur1.switchMonstreActuelAuto();
-                } else if (joueur2.getMonstreActuel().getPointsDeVie() == 0) {
-                    joueur2.switchMonstreActuelAuto();
-                }
+            }
+            
+            if (joueur1.getMonstreActuel().getPointsDeVie() == 0) {
+                verifierRetraitInondation(joueur1.getMonstreActuel());
+                joueur1.switchMonstreActuelAuto();
+            } else if (joueur2.getMonstreActuel().getPointsDeVie() == 0) {
+                verifierRetraitInondation(joueur2.getMonstreActuel());
+                joueur2.switchMonstreActuelAuto();
             }
         } else if (j1Attaque) {
             Attaque attaque1 = actionJoueur1 instanceof Attaque ? (Attaque) actionJoueur1 : null;
@@ -341,9 +334,9 @@ public abstract class Combat {
 
     public void finDePartie() {
         if (joueur1.sontMonstresMorts()) {
-            CombatLogger.log("Le joueur " + joueur2.getNomJoueur() + " a gagné la partie !");
+            CombatLogger.info("Le joueur " + joueur2.getNomJoueur() + " a gagné la partie !");
         } else if (joueur2.sontMonstresMorts()) {
-            CombatLogger.log("Le joueur " + joueur1.getNomJoueur() + " a gagné la partie !");
+            CombatLogger.info("Le joueur " + joueur1.getNomJoueur() + " a gagné la partie !");
         }
     }
 

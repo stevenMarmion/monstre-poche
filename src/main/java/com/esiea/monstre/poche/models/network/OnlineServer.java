@@ -24,9 +24,9 @@ public class OnlineServer {
 
     public void lancer() {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
-            CombatLogger.log("Serveur en attente d'un joueur sur le port " + port + " ...");
+            CombatLogger.network("Serveur en attente d'un joueur sur le port " + port + " ...");
             Socket socket = serverSocket.accept();
-            CombatLogger.log("Joueur connecté depuis " + socket.getInetAddress());
+            CombatLogger.network("Joueur connecté depuis " + socket.getInetAddress());
 
             try (OnlineConnection connection = new OnlineConnection(socket)) {
                 String nomJoueurLocal = GameVisual.demanderSaisie(scanner, "Entrez votre nom de joueur >");
@@ -47,9 +47,9 @@ public class OnlineServer {
 
     public OnlineConnection demarrerServeur() {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
-            CombatLogger.log("Serveur en attente d'un joueur sur le port " + port + " ...");
+            CombatLogger.network("Serveur en attente d'un joueur sur le port " + port + " ...");
             Socket socket = serverSocket.accept();
-            CombatLogger.log("Joueur connecté depuis " + socket.getInetAddress());
+            CombatLogger.network("Joueur connecté depuis " + socket.getInetAddress());
 
             OnlineConnection connection = new OnlineConnection(socket);
             return connection;

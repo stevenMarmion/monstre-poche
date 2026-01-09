@@ -15,6 +15,6 @@ public class Brule extends StatutMonstre {
             degatsBrule = cible.getPointsDeVie();
         }
         cible.setPointsDeVie(cible.getPointsDeVie() - degatsBrule);
-        CombatLogger.log(cible.getNomMonstre() + " est brûlé ! Subit " + (int)degatsBrule + " dégâts de brûlure.");
+        CombatLogger.info(cible.getNomMonstre() + " est brûlé ! Subit " + (int)degatsBrule + " dégâts de brûlure");
     }
 }

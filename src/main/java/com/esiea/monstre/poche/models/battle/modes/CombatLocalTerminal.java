@@ -28,7 +28,7 @@ public class CombatLocalTerminal extends Combat {
 
     @Override
     protected void afficherMessage(String message) {
-        CombatLogger.log(message);
+        CombatLogger.info(message);
     }
 
     @Override
@@ -85,10 +85,8 @@ public class CombatLocalTerminal extends Combat {
         this.afficherTitre("Tour de " + joueur.getNomJoueur());
         Monstre actif = joueur.getMonstreActuel();
         this.afficherMessage("Monstre actif : " + actif.getNomMonstre() + " | PV " + (int) actif.getPointsDeVie() + "/" + (int) actif.getPointsDeVieMax() + " | ATK " + actif.getAttaque() + " | DEF " + actif.getDefense() + " | VIT " + actif.getVitesse());
-        this.afficherMessage("Actions disponibles :");
-        this.afficherMessage("  1) Attaquer");
-        this.afficherMessage("  2) Utiliser un objet");
-        this.afficherMessage("  3) Changer de monstre");
+        
+        CombatLogger.afficherActionsDisponibles();
 
         String choixAction = this.demanderSaisie("Votre choix >");
         while (!choixAction.equals("1") && !choixAction.equals("2") && !choixAction.equals("3")) {

@@ -2,6 +2,7 @@ package com.esiea.monstre.poche.models.types;
 
 import com.esiea.monstre.poche.models.battle.logs.CombatLogger;
 import com.esiea.monstre.poche.models.core.Monstre;
+import com.esiea.monstre.poche.models.core.Terrain;
 import com.esiea.monstre.poche.models.status.monster.Empoisonne;
 
 public class Insecte extends Nature {
@@ -17,13 +18,13 @@ public class Insecte extends Nature {
     }
 
     @Override
-    public void appliqueCapaciteSpeciale(Monstre cible) {
+    public void appliqueCapaciteSpeciale(Monstre cible, Terrain terrain) {
         if ((nbTourAttaque % NB_TOUR_MAX_ATTAQUE_EMPOISONNEMENT) == 0) {
             cible.setStatut(new Empoisonne());   
-            CombatLogger.log(cible.getNomMonstre() + " est désormais empoisonné.");
+            CombatLogger.info(cible.getNomMonstre() + " est désormais empoisonné.");
         }
         nbTourAttaque++;
-        super.appliqueCapaciteSpeciale(cible);
+        super.appliqueCapaciteSpeciale(cible, terrain);
     }
     
 }

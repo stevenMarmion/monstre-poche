@@ -1,6 +1,7 @@
 package com.esiea.monstre.poche.views.gui.battle;
 
 import com.esiea.monstre.poche.models.core.Joueur;
+import com.esiea.monstre.poche.views.gui.config.FontConfig;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -14,7 +15,6 @@ import javafx.scene.text.FontWeight;
  * Vue pour afficher le gagnant de la partie.
  */
 public class WinnerView extends VBox {
-    
     private Button btnBackToMenu;
     
     public WinnerView(Joueur winner) {
@@ -34,21 +34,21 @@ public class WinnerView extends VBox {
         
         // Titre de victoire
         Label lblTitle = new Label("VICTOIRE !");
-        lblTitle.setFont(Font.font("System", FontWeight.BOLD, 72));
+        lblTitle.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 72));
         lblTitle.getStyleClass().add("main-title");
         
         // Nom du gagnant
         Label lblWinner = new Label(winner.getNomJoueur());
-        lblWinner.setFont(Font.font("System", FontWeight.BOLD, 48));
+        lblWinner.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 48));
         lblWinner.getStyleClass().add("battle-log");
         
         // Message de félicitations
         Label lblMessage = new Label("Félicitations ! Vous avez remporté la victoire !");
-        lblMessage.setFont(Font.font("System", 24));
+        lblMessage.setFont(Font.font(FontConfig.SYSTEM.getFontName(), 24));
         lblMessage.getStyleClass().add("label-text");
         
         // Bouton retour au menu
-        btnBackToMenu.setFont(Font.font("System", FontWeight.BOLD, 18));
+        btnBackToMenu.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 18));
         btnBackToMenu.setPrefWidth(300);
         btnBackToMenu.setPrefHeight(60);
         btnBackToMenu.getStyleClass().add("menu-button");

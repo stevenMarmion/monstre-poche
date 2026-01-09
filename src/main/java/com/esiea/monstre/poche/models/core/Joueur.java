@@ -37,7 +37,7 @@ public class Joueur implements Serializable {
     }
 
     public void setMonstreActuel(Monstre monstreActuel) {
-        CombatLogger.log("[CHANGEMENT] " + this.nomJoueur + " envoie " + monstreActuel.getNomMonstre() + " au combat.");
+        CombatLogger.info("[CHANGEMENT] " + this.nomJoueur + " envoie " + monstreActuel.getNomMonstre() + " au combat.");
         this.monstreActuel = monstreActuel;
     }
 
@@ -60,7 +60,7 @@ public class Joueur implements Serializable {
 
     public void ajouterMonstre(Monstre monstre) {
         if (monstres.size() >= 3) {
-            CombatLogger.log("[INFO] La liste de monstres est pleine.");
+            CombatLogger.info("La liste de monstres est pleine.");
             return;
         }
 
@@ -74,7 +74,7 @@ public class Joueur implements Serializable {
         if (!estMonstrePresentDansListe) {
             monstres.add(monstre);
         } else {
-            CombatLogger.log("[INFO] Monstre deja present dans la liste.");
+            CombatLogger.info("Monstre deja present dans la liste.");
         }
     }
 

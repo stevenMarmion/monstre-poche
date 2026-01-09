@@ -2,6 +2,7 @@ package com.esiea.monstre.poche.models.types;
 
 import com.esiea.monstre.poche.models.battle.logs.CombatLogger;
 import com.esiea.monstre.poche.models.core.Monstre;
+import com.esiea.monstre.poche.models.core.Terrain;
 import com.esiea.monstre.poche.models.status.monster.Normal;
 
 public class Plante extends Nature {
@@ -13,11 +14,11 @@ public class Plante extends Nature {
         this.faibleContre = "Feu";
     }
 
-    public void appliqueCapaciteSpeciale(Monstre cible) {
+    public void appliqueCapaciteSpeciale(Monstre cible, Terrain terrain) {
         if (Math.random() < CHANCE_SOIN) {
             cible.setStatut(new Normal());
-            CombatLogger.log(cible.getNomMonstre() + " est soigné et redevient normal !");
+            CombatLogger.info(cible.getNomMonstre() + " est soigné de ses altérations et redevient normal !");
         }
-        super.appliqueCapaciteSpeciale(cible);
+        super.appliqueCapaciteSpeciale(cible, terrain);
     }
 }

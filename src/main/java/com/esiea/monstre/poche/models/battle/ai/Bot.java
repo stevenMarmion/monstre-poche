@@ -40,7 +40,7 @@ public class Bot extends Joueur {
         List<Monstre> monstresDisponibles = resourceFactory.getTousLesMonstres();
 
         if (monstresDisponibles.isEmpty()) {
-            CombatLogger.log("[ERREUR] Aucun monstre disponible pour le bot.");
+            CombatLogger.error("Aucun monstre disponible pour le bot.");
             return;
         }
 
@@ -61,7 +61,7 @@ public class Bot extends Joueur {
 
         if (Boolean.FALSE.equals(monstresSelectionnes.isEmpty())) {
             this.setMonstreActuel(monstresSelectionnes.get(0));
-            CombatLogger.log("[BOT] " + this.getNomJoueur() + " a selectionne " + monstresSelectionnes.size() + " monstres.");
+            CombatLogger.info("[BOT] " + this.getNomJoueur() + " a selectionne " + monstresSelectionnes.size() + " monstres.");
         }
     }
 
@@ -73,7 +73,7 @@ public class Bot extends Joueur {
         List<Attaque> attaquesDisponibles = resourceFactory.getToutesLesAttaques();
 
         if (attaquesDisponibles.isEmpty()) {
-            CombatLogger.log("[ERREUR] Aucune attaque disponible pour le bot.");
+            CombatLogger.error("Aucune attaque disponible pour le bot.");
             return;
         }
 
@@ -95,7 +95,7 @@ public class Bot extends Joueur {
             }
         }
 
-        CombatLogger.log("[BOT] " + this.getNomJoueur() + " a configure les attaques de ses monstres.");
+        CombatLogger.info("[BOT] " + this.getNomJoueur() + " a configure les attaques de ses monstres.");
     }
 
     /**

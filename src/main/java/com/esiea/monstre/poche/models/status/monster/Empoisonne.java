@@ -15,6 +15,6 @@ public class Empoisonne extends StatutMonstre {
             degatsPoison = cible.getPointsDeVie();
         }
         cible.setPointsDeVie(cible.getPointsDeVie() - degatsPoison);
-        CombatLogger.log(cible.getNomMonstre() + " est empoisonné ! Subit " + (int)degatsPoison + " dégâts de poison.");
+        CombatLogger.info(cible.getNomMonstre() + " est empoisonné ! Subit " + (int)degatsPoison + " dégâts de poison.");
     }
 }

@@ -24,8 +24,8 @@ public class Foudre extends Type {
 
     public void appliqueCapaciteSpeciale(Monstre cible) {
         if (Math.random() < this.chanceParalysie) {
-            cible.setStatut(new Paralyse());
-            CombatLogger.log(cible.getNomMonstre() + " est désormais paralysé.");
+            cible.setStatut(new Paralyse((int)(Math.random() * 6)));
+            CombatLogger.info(cible.getNomMonstre() + " est désormais paralysé.");
         }
     }
 }

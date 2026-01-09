@@ -13,11 +13,11 @@ public class MedicamentAntiPoison extends Medicament {
     @Override
     public void utiliserObjet(Monstre cible) {
         if (cible.getStatut().getLabelStatut().equals("Empoisonne")) {
-            CombatLogger.log("Utilisation de " + this.nomObjet + " sur " + cible.getNomMonstre());
+            CombatLogger.info("Utilisation de " + this.nomObjet + " sur " + cible.getNomMonstre());
             cible.setStatut(new Normal());
-            CombatLogger.log("  -> " + cible.getNomMonstre() + " n'est plus empoisonné !");
+            CombatLogger.info("-> " + cible.getNomMonstre() + " n'est plus empoisonné !");
         } else {
-            CombatLogger.log("Utilisation de " + this.nomObjet + " sur " + cible.getNomMonstre() + " - Aucun effet (pas empoisonné)");
+            CombatLogger.info("Utilisation de " + this.nomObjet + " sur " + cible.getNomMonstre() + " - Aucun effet (pas empoisonné)");
         }
     }
 

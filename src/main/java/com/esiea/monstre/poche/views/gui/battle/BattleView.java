@@ -21,36 +21,30 @@ import javafx.util.Duration;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
 
 import com.esiea.monstre.poche.models.core.Attaque;
 import com.esiea.monstre.poche.models.core.Joueur;
 import com.esiea.monstre.poche.models.core.Monstre;
 import com.esiea.monstre.poche.models.items.Objet;
+import com.esiea.monstre.poche.views.gui.components.UIComponentFactory;
+import com.esiea.monstre.poche.views.gui.config.ColorConfig;
+import com.esiea.monstre.poche.views.gui.config.FontConfig;
 
 /**
  * Vue de combat style Pokémon - Design moderne inspiré des jeux GBA/DS.
  * Image de fond en plein écran avec interface overlay.
  */
 public class BattleView extends StackPane {
+    public static final int ATTACK_BUTTON_WIDTH = 165;
+    public static final int ATTACK_BUTTON_HEIGHT = 48;
+    public static final int MONSTER_CARD_WIDTH = 110;
+    public static final double HP_BAR_MAX_WIDTH = 160.0;
+    public static final int ATTACK_GRID_COLUMNS = 2;
+    public static final double HP_RATIO_HIGH_THRESHOLD = 0.5;
+    public static final double HP_RATIO_MEDIUM_THRESHOLD = 0.2;
+    public static final int MAX_LOG_BLOCKS = 50;
 
-    // Couleurs par type (palette Pokémon officielle)
-    private static final Map<String, String> TYPE_COLORS = Map.ofEntries(
-        Map.entry("Feu", "#F08030"),
-        Map.entry("Eau", "#6890F0"),
-        Map.entry("Plante", "#78C850"),
-        Map.entry("Foudre", "#F8D030"),
-        Map.entry("Terre", "#E0C068"),
-        Map.entry("Normal", "#A8A878"),
-        Map.entry("Insecte", "#A8B820"),
-        Map.entry("Nature", "#228B22")
-    );
-
-    // Éléments d'interface - Monstre Ennemi
-    private Label lblEnemyName;
-    private Label lblEnemyHpText;
-    private Rectangle hpBarEnemyFill;
     private VBox enemySpriteBox;
 
     // Éléments d'interface - Monstre Joueur
@@ -58,6 +52,11 @@ public class BattleView extends StackPane {
     private Label lblPlayerHpText;
     private Rectangle hpBarPlayerFill;
     private VBox playerSpriteBox;
+
+    // Éléments d'interface - Monstre Ennemi
+    private Label lblEnemyName;
+    private Label lblEnemyHpText;
+    private Rectangle hpBarEnemyFill;
 
     // Boutons d'action
     private Button btnAttack;
@@ -69,7 +68,6 @@ public class BattleView extends StackPane {
     private VBox logBox;
     private ScrollPane logScrollPane;
     private List<String> battleLogBlocks = new ArrayList<>();
-    private static final int MAX_LOG_BLOCKS = 50;
 
     // Panneaux de choix
     private HBox actionButtonsContainer;
@@ -87,14 +85,12 @@ public class BattleView extends StackPane {
         this.joueur1 = joueur1;
         this.joueur2 = joueur2;
         this.isPlayer1Turn = true;
-
         initializeView();
     }
 
     private void initializeView() {
         this.setAlignment(Pos.CENTER);
 
-        // === IMAGE DE FOND EN PLEIN ÉCRAN ===
         try {
             Image bgImage = new Image(getClass().getResource("/images/exemple_combat.png").toExternalForm());
             ImageView bgView = new ImageView(bgImage);
@@ -154,11 +150,8 @@ public class BattleView extends StackPane {
         HBox.setHgrow(playerSide, Priority.ALWAYS);
 
         // Info box joueur
-        VBox playerInfoBox = createPlayerInfoBox();
-        
-        // Sprite joueur
+        VBox playerInfoBox = createPlayerInfoBox(joueur1, true);
         playerSpriteBox = createMonsterSpriteBox(joueur1.getMonstreActuel(), true);
-
         playerSide.getChildren().addAll(playerInfoBox, playerSpriteBox);
 
         // === ZONE CENTRALE (VS) ===
@@ -167,7 +160,7 @@ public class BattleView extends StackPane {
         centerZone.setPrefWidth(80);
 
         Label vsLabel = new Label("VS");
-        vsLabel.setFont(Font.font("System", FontWeight.BOLD, 28));
+        vsLabel.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 28));
         vsLabel.setTextFill(Color.WHITE);
         vsLabel.setStyle("-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.8), 8, 0, 2, 2);");
         centerZone.getChildren().add(vsLabel);
@@ -178,12 +171,8 @@ public class BattleView extends StackPane {
         enemySide.setPrefWidth(280);
         HBox.setHgrow(enemySide, Priority.ALWAYS);
 
-        // Info box ennemi
-        VBox enemyInfoBox = createEnemyInfoBox();
-
-        // Sprite ennemi
+        VBox enemyInfoBox = createPlayerInfoBox(joueur2, false);
         enemySpriteBox = createMonsterSpriteBox(joueur2.getMonstreActuel(), false);
-
         enemySide.getChildren().addAll(enemyInfoBox, enemySpriteBox);
 
         area.getChildren().addAll(playerSide, centerZone, enemySide);
@@ -192,10 +181,12 @@ public class BattleView extends StackPane {
 
     /**
      * Crée le panneau d'info du joueur.
+     * @param joueur Le joueur dont on veut afficher les informations
+     * @param isPlayer true si c'est le joueur 1 (à gauche), false si c'est l'ennemi (à droite)
      */
-    private VBox createPlayerInfoBox() {
-        Monstre m = joueur1.getMonstreActuel();
-        String typeColor = TYPE_COLORS.getOrDefault(m.getTypeMonstre().getLabelType(), "#A8A878");
+    private VBox createPlayerInfoBox(Joueur joueur, boolean isPlayer) {
+        Monstre m = joueur.getMonstreActuel();
+        String typeColor = ColorConfig.fromString(m.getTypeMonstre().getLabelType()).getColorCode();
 
         VBox box = new VBox(5);
         box.setAlignment(Pos.CENTER);
@@ -211,88 +202,49 @@ public class BattleView extends StackPane {
         );
 
         // Nom du joueur
-        Label playerLabel = new Label(joueur1.getNomJoueur());
-        playerLabel.setFont(Font.font("System", FontWeight.BOLD, 11));
+        Label playerLabel = new Label(joueur.getNomJoueur());
+        playerLabel.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 11));
         playerLabel.setTextFill(Color.web("#666"));
 
         // Nom du monstre + type
         HBox nameRow = new HBox(8);
         nameRow.setAlignment(Pos.CENTER);
 
-        lblPlayerName = new Label(m.getNomMonstre());
-        lblPlayerName.setFont(Font.font("System", FontWeight.BOLD, 16));
-        lblPlayerName.setTextFill(Color.web("#303030"));
+        Label monsterNameLabel = new Label(m.getNomMonstre());
+        monsterNameLabel.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 16));
+        monsterNameLabel.setTextFill(Color.web("#303030"));
+
+        // Stocker la référence selon si c'est le joueur ou l'ennemi
+        if (isPlayer) {
+            lblPlayerName = monsterNameLabel;
+        } else {
+            lblEnemyName = monsterNameLabel;
+        }
 
         Label typeLabel = new Label(m.getTypeMonstre().getLabelType());
-        typeLabel.setFont(Font.font("System", FontWeight.BOLD, 10));
+        typeLabel.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 10));
         typeLabel.setTextFill(Color.WHITE);
         typeLabel.setPadding(new Insets(2, 8, 2, 8));
         typeLabel.setStyle("-fx-background-color: " + typeColor + "; -fx-background-radius: 10;");
 
-        nameRow.getChildren().addAll(lblPlayerName, typeLabel);
+        nameRow.getChildren().addAll(monsterNameLabel, typeLabel);
 
         // Barre de PV
-        HBox hpRow = createHpBar(m, true);
+        HBox hpRow = createHpBar(m, isPlayer);
 
         // Valeur PV
-        lblPlayerHpText = new Label(String.format("%.0f / %.0f PV", m.getPointsDeVie(), m.getPointsDeVieMax()));
-        lblPlayerHpText.setFont(Font.font("System", FontWeight.BOLD, 12));
-        lblPlayerHpText.setTextFill(Color.web("#404040"));
+        Label hpTextLabel = new Label(UIComponentFactory.formatHpText(m.getPointsDeVie(), m.getPointsDeVieMax()));
+        hpTextLabel.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 12));
+        hpTextLabel.setTextFill(Color.web("#404040"));
 
-        box.getChildren().addAll(playerLabel, nameRow, hpRow, lblPlayerHpText);
-        return box;
-    }
+        // Stocker la référence selon si c'est le joueur ou l'ennemi
+        if (isPlayer) {
+            lblPlayerHpText = hpTextLabel;
+        } else {
+            lblEnemyHpText = hpTextLabel;
+        }
 
-    /**
-     * Crée le panneau d'info de l'ennemi.
-     */
-    private VBox createEnemyInfoBox() {
-        Monstre m = joueur2.getMonstreActuel();
-        String typeColor = TYPE_COLORS.getOrDefault(m.getTypeMonstre().getLabelType(), "#A8A878");
-
-        VBox box = new VBox(5);
-        box.setAlignment(Pos.CENTER);
-        box.setPadding(new Insets(12, 18, 12, 18));
-        box.setMaxWidth(250);
-        box.setStyle(
-            "-fx-background-color: rgba(255, 255, 255, 0.92); " +
-            "-fx-background-radius: 15; " +
-            "-fx-border-color: " + typeColor + "; " +
-            "-fx-border-width: 3; " +
-            "-fx-border-radius: 15; " +
-            "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 10, 0, 0, 4);"
-        );
-
-        // Nom du joueur
-        Label playerLabel = new Label(joueur2.getNomJoueur());
-        playerLabel.setFont(Font.font("System", FontWeight.BOLD, 11));
-        playerLabel.setTextFill(Color.web("#666"));
-
-        // Nom du monstre + type
-        HBox nameRow = new HBox(8);
-        nameRow.setAlignment(Pos.CENTER);
-
-        lblEnemyName = new Label(m.getNomMonstre());
-        lblEnemyName.setFont(Font.font("System", FontWeight.BOLD, 16));
-        lblEnemyName.setTextFill(Color.web("#303030"));
-
-        Label typeLabel = new Label(m.getTypeMonstre().getLabelType());
-        typeLabel.setFont(Font.font("System", FontWeight.BOLD, 10));
-        typeLabel.setTextFill(Color.WHITE);
-        typeLabel.setPadding(new Insets(2, 8, 2, 8));
-        typeLabel.setStyle("-fx-background-color: " + typeColor + "; -fx-background-radius: 10;");
-
-        nameRow.getChildren().addAll(lblEnemyName, typeLabel);
-
-        // Barre de PV
-        HBox hpRow = createHpBar(m, false);
-
-        // Valeur PV
-        lblEnemyHpText = new Label(String.format("%.0f / %.0f PV", m.getPointsDeVie(), m.getPointsDeVieMax()));
-        lblEnemyHpText.setFont(Font.font("System", FontWeight.BOLD, 12));
-        lblEnemyHpText.setTextFill(Color.web("#404040"));
-
-        box.getChildren().addAll(playerLabel, nameRow, hpRow, lblEnemyHpText);
+        box.getChildren().addAll(playerLabel, nameRow, hpRow, hpTextLabel);
         return box;
     }
 
@@ -304,13 +256,13 @@ public class BattleView extends StackPane {
         row.setAlignment(Pos.CENTER);
 
         Label hpLabel = new Label("PV");
-        hpLabel.setFont(Font.font("System", FontWeight.BOLD, 11));
+        hpLabel.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 11));
         hpLabel.setTextFill(Color.web("#f8a800"));
 
         StackPane barContainer = new StackPane();
         barContainer.setAlignment(Pos.CENTER_LEFT);
 
-        double maxWidth = 160;
+        double maxWidth = HP_BAR_MAX_WIDTH;
         double ratio = Math.max(0, m.getPointsDeVie() / m.getPointsDeVieMax());
 
         Rectangle bg = new Rectangle(maxWidth, 12);
@@ -321,12 +273,11 @@ public class BattleView extends StackPane {
         Rectangle fill = new Rectangle(maxWidth * ratio, 12);
         fill.setArcWidth(8);
         fill.setArcHeight(8);
-        if (ratio > 0.5) fill.setFill(Color.web("#48d048"));
-        else if (ratio > 0.2) fill.setFill(Color.web("#f8c800"));
-        else fill.setFill(Color.web("#f85858"));
+        fill.setFill(Color.web(UIComponentFactory.getHpColor(ratio)));
 
         barContainer.getChildren().addAll(bg, fill);
 
+        // Stocker la référence selon si c'est le joueur ou l'ennemi
         if (isPlayer) {
             hpBarPlayerFill = fill;
         } else {
@@ -341,7 +292,7 @@ public class BattleView extends StackPane {
      * Crée le sprite d'un monstre.
      */
     private VBox createMonsterSpriteBox(Monstre m, boolean isPlayer) {
-        String typeColor = TYPE_COLORS.getOrDefault(m.getTypeMonstre().getLabelType(), "#A8A878");
+        String typeColor = ColorConfig.fromString(m.getTypeMonstre().getLabelType()).getColorCode();
         double size = isPlayer ? 100 : 90;
 
         VBox spriteBox = new VBox(5);
@@ -349,7 +300,7 @@ public class BattleView extends StackPane {
 
         // Cercle avec initiales
         Label sprite = new Label(m.getNomMonstre().substring(0, Math.min(2, m.getNomMonstre().length())).toUpperCase());
-        sprite.setFont(Font.font("System", FontWeight.BOLD, isPlayer ? 38 : 34));
+        sprite.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, isPlayer ? 38 : 34));
         sprite.setTextFill(Color.WHITE);
         sprite.setPrefSize(size, size);
         sprite.setMinSize(size, size);
@@ -432,7 +383,7 @@ public class BattleView extends StackPane {
 
         // Titre
         Label title = new Label("⚔ LOGS DU TOUR");
-        title.setFont(Font.font("System", FontWeight.BOLD, 14));
+        title.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 14));
         title.setTextFill(Color.web("#c0d0e0"));
         title.setPadding(new Insets(0, 0, 5, 0));
 
@@ -475,10 +426,10 @@ public class BattleView extends StackPane {
         grid.setVgap(10);
         grid.setAlignment(Pos.CENTER);
 
-        btnAttack = createActionButton("ATTAQUE", "#e85858", "#c84848");
-        btnItem = createActionButton("SAC", "#58b858", "#48a848");
-        btnSwitch = createActionButton("POKEMON", "#5898e8", "#4888d8");
-        btnFlee = createActionButton("FUITE", "#888898", "#707080");
+        btnAttack = UIComponentFactory.createActionButton("ATTAQUE", ColorConfig.ACTION_ATTACK_COLOR.getColorCode(), ColorConfig.ACTION_ATTACK_DARK.getColorCode());
+        btnItem = UIComponentFactory.createActionButton("SAC", ColorConfig.ACTION_ITEM_COLOR.getColorCode(), ColorConfig.ACTION_ITEM_DARK.getColorCode());
+        btnSwitch = UIComponentFactory.createActionButton("POKEMON", ColorConfig.ACTION_SWITCH_COLOR.getColorCode(), ColorConfig.ACTION_SWITCH_DARK.getColorCode());
+        btnFlee = UIComponentFactory.createActionButton("FUITE", ColorConfig.ACTION_FLEE_COLOR.getColorCode(), ColorConfig.ACTION_FLEE_DARK.getColorCode());
 
         grid.add(btnAttack, 0, 0);
         grid.add(btnItem, 1, 0);
@@ -489,55 +440,6 @@ public class BattleView extends StackPane {
         return panel;
     }
 
-    /**
-     * Crée un bouton d'action stylisé.
-     */
-    private Button createActionButton(String text, String color, String darkColor) {
-        Button btn = new Button(text);
-        btn.setFont(Font.font("System", FontWeight.BOLD, 12));
-        btn.setPrefWidth(105);
-        btn.setPrefHeight(42);
-
-        String normalStyle = String.format(
-            "-fx-background-color: %s; " +
-            "-fx-text-fill: white; " +
-            "-fx-background-radius: 10; " +
-            "-fx-border-color: %s; " +
-            "-fx-border-width: 0 0 4 0; " +
-            "-fx-border-radius: 10; " +
-            "-fx-cursor: hand;",
-            color, darkColor
-        );
-        btn.setStyle(normalStyle);
-
-        btn.setOnMouseEntered(e -> btn.setStyle(String.format(
-            "-fx-background-color: derive(%s, 12%%); " +
-            "-fx-text-fill: white; " +
-            "-fx-background-radius: 10; " +
-            "-fx-border-color: %s; " +
-            "-fx-border-width: 0 0 4 0; " +
-            "-fx-border-radius: 10; " +
-            "-fx-cursor: hand;",
-            color, darkColor
-        )));
-
-        btn.setOnMouseExited(e -> btn.setStyle(normalStyle));
-
-        btn.setOnMousePressed(e -> btn.setStyle(String.format(
-            "-fx-background-color: %s; " +
-            "-fx-text-fill: white; " +
-            "-fx-background-radius: 10; " +
-            "-fx-border-color: %s; " +
-            "-fx-border-width: 4 0 0 0; " +
-            "-fx-border-radius: 10; " +
-            "-fx-cursor: hand;",
-            darkColor, darkColor
-        )));
-
-        btn.setOnMouseReleased(e -> btn.setStyle(normalStyle));
-
-        return btn;
-    }
 
     /**
      * Rafraîchit l'affichage des logs.
@@ -580,10 +482,10 @@ public class BattleView extends StackPane {
                 lbl.maxWidthProperty().bind(logBox.widthProperty().subtract(30));
 
                 if (isLast) {
-                    lbl.setFont(Font.font("System", FontWeight.BOLD, 12));
+                    lbl.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 12));
                     lbl.setTextFill(Color.web("#f0f8ff"));
                 } else {
-                    lbl.setFont(Font.font("System", FontWeight.NORMAL, 11));
+                    lbl.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.NORMAL, 11));
                     lbl.setTextFill(Color.web("#a0b0c0"));
                 }
 
@@ -645,54 +547,56 @@ public class BattleView extends StackPane {
     /**
      * Met à jour l'affichage des monstres.
      */
-    public void updatePokemonDisplay() {
-        // Joueur
-        if (joueur1.getMonstreActuel() != null) {
-            Monstre m1 = joueur1.getMonstreActuel();
-            double ratio = Math.max(0, m1.getPointsDeVie() / m1.getPointsDeVieMax());
-
-            lblPlayerName.setText(m1.getNomMonstre());
-            lblPlayerHpText.setText(String.format("%.0f / %.0f PV", m1.getPointsDeVie(), m1.getPointsDeVieMax()));
-
-            if (hpBarPlayerFill != null) {
-                hpBarPlayerFill.setWidth(160 * ratio);
-                if (ratio > 0.5) hpBarPlayerFill.setFill(Color.web("#48d048"));
-                else if (ratio > 0.2) hpBarPlayerFill.setFill(Color.web("#f8c800"));
-                else hpBarPlayerFill.setFill(Color.web("#f85858"));
-            }
-
-            updateSpriteBox(playerSpriteBox, m1, true);
+    public void updatePokemonDisplay(Joueur joueur) {
+        if (joueur == null || joueur.getMonstreActuel() == null) {
+            return;
         }
 
-        // Ennemi
-        if (joueur2.getMonstreActuel() != null) {
-            Monstre m2 = joueur2.getMonstreActuel();
-            double ratio = Math.max(0, m2.getPointsDeVie() / m2.getPointsDeVieMax());
+        Monstre monstre = joueur.getMonstreActuel();
+        double ratio = Math.max(0, monstre.getPointsDeVie() / monstre.getPointsDeVieMax());
 
-            lblEnemyName.setText(m2.getNomMonstre());
-            lblEnemyHpText.setText(String.format("%.0f / %.0f PV", m2.getPointsDeVie(), m2.getPointsDeVieMax()));
+        // Déterminer si c'est le joueur1 (à gauche) ou le joueur2 (à droite)
+        boolean isPlayer1 = joueur == joueur1;
 
-            if (hpBarEnemyFill != null) {
-                hpBarEnemyFill.setWidth(160 * ratio);
-                if (ratio > 0.5) hpBarEnemyFill.setFill(Color.web("#48d048"));
-                else if (ratio > 0.2) hpBarEnemyFill.setFill(Color.web("#f8c800"));
-                else hpBarEnemyFill.setFill(Color.web("#f85858"));
+        if (isPlayer1) {
+            // Mise à jour du joueur 1 (à gauche)
+            if (lblPlayerName != null) {
+                lblPlayerName.setText(monstre.getNomMonstre());
             }
-
-            updateSpriteBox(enemySpriteBox, m2, false);
+            if (lblPlayerHpText != null) {
+                lblPlayerHpText.setText(UIComponentFactory.formatHpText(monstre.getPointsDeVie(), monstre.getPointsDeVieMax()));
+            }
+            if (hpBarPlayerFill != null) {
+                hpBarPlayerFill.setWidth(HP_BAR_MAX_WIDTH * ratio);
+                hpBarPlayerFill.setFill(Color.web(UIComponentFactory.getHpColor(ratio)));
+            }
+            updateSpriteBox(playerSpriteBox, monstre, true);
+        } else {
+            // Mise à jour du joueur 2 (ennemi à droite)
+            if (lblEnemyName != null) {
+                lblEnemyName.setText(monstre.getNomMonstre());
+            }
+            if (lblEnemyHpText != null) {
+                lblEnemyHpText.setText(UIComponentFactory.formatHpText(monstre.getPointsDeVie(), monstre.getPointsDeVieMax()));
+            }
+            if (hpBarEnemyFill != null) {
+                hpBarEnemyFill.setWidth(HP_BAR_MAX_WIDTH * ratio);
+                hpBarEnemyFill.setFill(Color.web(UIComponentFactory.getHpColor(ratio)));
+            }
+            updateSpriteBox(enemySpriteBox, monstre, false);
         }
     }
 
     private void updateSpriteBox(VBox spriteBox, Monstre m, boolean isPlayer) {
         if (spriteBox == null || m == null) return;
 
-        String typeColor = TYPE_COLORS.getOrDefault(m.getTypeMonstre().getLabelType(), "#A8A878");
+        String typeColor = ColorConfig.fromString(m.getTypeMonstre().getLabelType()).getColorCode();
         double size = isPlayer ? 100 : 90;
 
         spriteBox.getChildren().clear();
 
         Label sprite = new Label(m.getNomMonstre().substring(0, Math.min(2, m.getNomMonstre().length())).toUpperCase());
-        sprite.setFont(Font.font("System", FontWeight.BOLD, isPlayer ? 38 : 34));
+        sprite.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, isPlayer ? 38 : 34));
         sprite.setTextFill(Color.WHITE);
         sprite.setPrefSize(size, size);
         sprite.setMinSize(size, size);
@@ -730,64 +634,38 @@ public class BattleView extends StackPane {
         // Afficher les attaques normales
         if (attaques != null) {
             for (Attaque a : attaques) {
-                String typeColor = TYPE_COLORS.getOrDefault(a.getTypeAttaque().getLabelType(), "#A8A878");
+                String typeColor = ColorConfig.fromString(a.getTypeAttaque().getLabelType()).getColorCode();
                 boolean hasNoPP = a.getNbUtilisations() <= 0;
 
                 Button btn = new Button();
-                btn.setPrefWidth(165);
-                btn.setPrefHeight(48);
-
-                VBox content = new VBox(2);
-                content.setAlignment(Pos.CENTER_LEFT);
-                content.setPadding(new Insets(0, 8, 0, 8));
-
-                Label nameLabel = new Label(a.getNomAttaque().replace("_", " "));
-                nameLabel.setFont(Font.font("System", FontWeight.BOLD, 12));
-                nameLabel.setTextFill(hasNoPP ? Color.GRAY : Color.WHITE);
+                btn.setPrefWidth(ATTACK_BUTTON_WIDTH);
+                btn.setPrefHeight(ATTACK_BUTTON_HEIGHT);
 
                 String ppText = hasNoPP ? "PP VIDE" : ("PP " + a.getNbUtilisations());
-                Label infoLabel = new Label(a.getTypeAttaque().getLabelType() + " | " + ppText + " | PWR " + a.getPuissanceAttaque());
-                infoLabel.setFont(Font.font("System", 9));
-                infoLabel.setTextFill(hasNoPP ? Color.DARKGRAY : Color.web("#ddd"));
-
-                content.getChildren().addAll(nameLabel, infoLabel);
+                String infoText = a.getTypeAttaque().getLabelType() + " | " + ppText + " | PWR " + a.getPuissanceAttaque();
+                VBox content = UIComponentFactory.createButtonContent(a.getNomAttaque().replace("_", " "), infoText, hasNoPP);
                 btn.setGraphic(content);
 
-                String normalStyle;
                 if (hasNoPP) {
                     // Style grisé pour les attaques sans PP
-                    normalStyle = "-fx-background-color: #444; " +
-                        "-fx-background-radius: 8; " +
-                        "-fx-border-color: #333; " +
-                        "-fx-border-width: 0 0 3 0; " +
-                        "-fx-border-radius: 8; " +
-                        "-fx-opacity: 0.6;";
+                    btn.setStyle(UIComponentFactory.createButtonStyle(
+                        ColorConfig.NO_PP_BG_COLOR.getColorCode(), ColorConfig.NO_PP_BORDER_COLOR.getColorCode(), "0 0 3 0", 8) + "-fx-opacity: 0.6;");
                     btn.setDisable(true);
                 } else {
-                    normalStyle = String.format(
-                        "-fx-background-color: %s; " +
-                        "-fx-background-radius: 8; " +
-                        "-fx-border-color: derive(%s, -30%%); " +
-                        "-fx-border-width: 0 0 3 0; " +
-                        "-fx-border-radius: 8; " +
-                        "-fx-cursor: hand;",
-                        typeColor, typeColor
+                    // Utiliser UIComponentFactory pour les effets hover
+                    String normalStyle = UIComponentFactory.createCardStyle(
+                        typeColor,
+                        UIComponentFactory.deriveColor(typeColor, -30),
+                        "0 0 3 0",
+                        8
                     );
-                }
-                btn.setStyle(normalStyle);
-
-                if (!hasNoPP) {
-                    btn.setOnMouseEntered(e -> btn.setStyle(String.format(
-                        "-fx-background-color: derive(%s, 15%%); " +
-                        "-fx-background-radius: 8; " +
-                        "-fx-border-color: derive(%s, -30%%); " +
-                        "-fx-border-width: 0 0 3 0; " +
-                        "-fx-border-radius: 8; " +
-                        "-fx-cursor: hand;",
-                        typeColor, typeColor
-                    )));
-                    final String savedStyle = normalStyle;
-                    btn.setOnMouseExited(e -> btn.setStyle(savedStyle));
+                    String hoverStyle = UIComponentFactory.createCardStyle(
+                        UIComponentFactory.deriveColor(typeColor, 15),
+                        UIComponentFactory.deriveColor(typeColor, -30),
+                        "0 0 3 0",
+                        8
+                    );
+                    UIComponentFactory.addHoverEffect(btn, normalStyle, hoverStyle);
 
                     btn.setOnAction(e -> {
                         onSelect.accept(a);
@@ -797,48 +675,23 @@ public class BattleView extends StackPane {
 
                 attackGrid.add(btn, col, row);
                 col++;
-                if (col >= 2) { col = 0; row++; }
+                if (col >= ATTACK_GRID_COLUMNS) { col = 0; row++; }
             }
         }
         
         // Bouton "Mains nues" toujours disponible
         Button btnBareHands = new Button();
-        btnBareHands.setPrefWidth(165);
-        btnBareHands.setPrefHeight(48);
-        
-        VBox bareHandsContent = new VBox(2);
-        bareHandsContent.setAlignment(Pos.CENTER_LEFT);
-        bareHandsContent.setPadding(new Insets(0, 8, 0, 8));
-        
-        Label bareHandsName = new Label("MAINS NUES");
-        bareHandsName.setFont(Font.font("System", FontWeight.BOLD, 12));
-        bareHandsName.setTextFill(Color.WHITE);
-        
-        Label bareHandsInfo = new Label("Normal | PP infini | PWR faible");
-        bareHandsInfo.setFont(Font.font("System", 9));
-        bareHandsInfo.setTextFill(Color.web("#ddd"));
-        
-        bareHandsContent.getChildren().addAll(bareHandsName, bareHandsInfo);
+        btnBareHands.setPrefWidth(ATTACK_BUTTON_WIDTH);
+        btnBareHands.setPrefHeight(ATTACK_BUTTON_HEIGHT);
+
+        VBox bareHandsContent = UIComponentFactory.createButtonContent("MAINS NUES", "Normal | PP infini | PWR faible", false);
         btnBareHands.setGraphic(bareHandsContent);
-        
-        String bareHandsStyle = "-fx-background-color: #8B4513; " +
-            "-fx-background-radius: 8; " +
-            "-fx-border-color: #654321; " +
-            "-fx-border-width: 0 0 3 0; " +
-            "-fx-border-radius: 8; " +
-            "-fx-cursor: hand;";
-        btnBareHands.setStyle(bareHandsStyle);
-        
-        btnBareHands.setOnMouseEntered(e -> btnBareHands.setStyle(
-            "-fx-background-color: #A0522D; " +
-            "-fx-background-radius: 8; " +
-            "-fx-border-color: #654321; " +
-            "-fx-border-width: 0 0 3 0; " +
-            "-fx-border-radius: 8; " +
-            "-fx-cursor: hand;"
-        ));
-        btnBareHands.setOnMouseExited(e -> btnBareHands.setStyle(bareHandsStyle));
-        
+
+        // Utiliser UIComponentFactory pour les effets hover
+        String bareHandsNormalStyle = UIComponentFactory.createCardStyle(ColorConfig.BARE_HANDS_COLOR.getColorCode(), ColorConfig.BARE_HANDS_BORDER.getColorCode(), "0 0 3 0", 8);
+        String bareHandsHoverStyle = UIComponentFactory.createCardStyle(ColorConfig.BARE_HANDS_COLOR_HOVER.getColorCode(), ColorConfig.BARE_HANDS_BORDER.getColorCode(), "0 0 3 0", 8);
+        UIComponentFactory.addHoverEffect(btnBareHands, bareHandsNormalStyle, bareHandsHoverStyle);
+
         btnBareHands.setOnAction(e -> {
             onSelect.accept(null); // null représente l'attaque à mains nues
             hideAllChoices();
@@ -846,10 +699,10 @@ public class BattleView extends StackPane {
         
         attackGrid.add(btnBareHands, col, row);
         col++;
-        if (col >= 2) { col = 0; row++; }
+        if (col >= ATTACK_GRID_COLUMNS) { col = 0; row++; }
 
         // Bouton retour
-        Button btnBack = createBackButton();
+        Button btnBack = UIComponentFactory.createBackButton();
         btnBack.setOnAction(e -> hideAllChoices());
         attackGrid.add(btnBack, col, row);
 
@@ -875,46 +728,19 @@ public class BattleView extends StackPane {
         refreshLogDisplay();
 
         for (Monstre m : monstres) {
-            String typeColor = TYPE_COLORS.getOrDefault(m.getTypeMonstre().getLabelType(), "#A8A878");
-            double hpRatio = Math.max(0, m.getPointsDeVie() / m.getPointsDeVieMax());
-
-            VBox card = new VBox(4);
-            card.setAlignment(Pos.CENTER);
-            card.setPadding(new Insets(8, 12, 8, 12));
-            card.setPrefWidth(110);
-
-            String normalStyle = String.format(
-                "-fx-background-color: %s; " +
-                "-fx-background-radius: 10; " +
-                "-fx-border-color: derive(%s, -30%%); " +
-                "-fx-border-width: 0 0 3 0; " +
-                "-fx-border-radius: 10; " +
-                "-fx-cursor: hand;",
-                typeColor, typeColor
+            String typeColor = ColorConfig.fromString(m.getTypeMonstre().getLabelType()).getColorCode();
+            double hpRatio   = Math.max(0, m.getPointsDeVie() / m.getPointsDeVieMax());
+            VBox card        = UIComponentFactory.createTypeCard(typeColor, MONSTER_CARD_WIDTH);
+            Label nameLabel  = UIComponentFactory.createLabel(m.getNomMonstre(), 11, FontWeight.BOLD, Color.WHITE);
+            String hpColor   = UIComponentFactory.getHpColor(hpRatio);
+            Label hpLabel    = UIComponentFactory.createLabel(
+                UIComponentFactory.formatHpText(m.getPointsDeVie(), m.getPointsDeVieMax()),
+                10,
+                FontWeight.BOLD,
+                Color.web(hpColor)
             );
-            card.setStyle(normalStyle);
-
-            Label nameLabel = new Label(m.getNomMonstre());
-            nameLabel.setFont(Font.font("System", FontWeight.BOLD, 11));
-            nameLabel.setTextFill(Color.WHITE);
-
-            String hpColor = hpRatio > 0.5 ? "#48d048" : hpRatio > 0.2 ? "#f8c800" : "#f85858";
-            Label hpLabel = new Label(String.format("%.0f/%.0f PV", m.getPointsDeVie(), m.getPointsDeVieMax()));
-            hpLabel.setFont(Font.font("System", FontWeight.BOLD, 10));
-            hpLabel.setTextFill(Color.web(hpColor));
 
             card.getChildren().addAll(nameLabel, hpLabel);
-
-            card.setOnMouseEntered(e -> card.setStyle(String.format(
-                "-fx-background-color: derive(%s, 15%%); " +
-                "-fx-background-radius: 10; " +
-                "-fx-border-color: derive(%s, -30%%); " +
-                "-fx-border-width: 0 0 3 0; " +
-                "-fx-border-radius: 10; " +
-                "-fx-cursor: hand;",
-                typeColor, typeColor
-            )));
-            card.setOnMouseExited(e -> card.setStyle(normalStyle));
 
             card.setOnMouseClicked(e -> {
                 onSelect.accept(m);
@@ -924,7 +750,7 @@ public class BattleView extends StackPane {
             monsterChoicePanel.getChildren().add(card);
         }
 
-        Button btnBack = createBackButton();
+        Button btnBack = UIComponentFactory.createBackButton();
         btnBack.setOnAction(e -> hideAllChoices());
         monsterChoicePanel.getChildren().add(btnBack);
 
@@ -950,47 +776,9 @@ public class BattleView extends StackPane {
         refreshLogDisplay();
 
         for (Objet obj : objets) {
-            String objName = obj.getNomObjet();
-            final String objColor;
-
-            if (objName.toLowerCase().contains("medicament") || objName.toLowerCase().contains("anti")) {
-                objColor = "#e88848";
-            } else if (objName.toLowerCase().contains("degat")) {
-                objColor = "#e85858";
-            } else if (objName.toLowerCase().contains("vitesse")) {
-                objColor = "#5898e8";
-            } else {
-                objColor = "#58b858";
-            }
-
-            Button btn = new Button(objName.replace("_", " "));
-            btn.setPrefWidth(120);
-            btn.setPrefHeight(40);
-            btn.setFont(Font.font("System", FontWeight.BOLD, 10));
-
-            String normalStyle = String.format(
-                "-fx-background-color: %s; " +
-                "-fx-text-fill: white; " +
-                "-fx-background-radius: 8; " +
-                "-fx-border-color: derive(%s, -30%%); " +
-                "-fx-border-width: 0 0 3 0; " +
-                "-fx-border-radius: 8; " +
-                "-fx-cursor: hand;",
-                objColor, objColor
-            );
-            btn.setStyle(normalStyle);
-
-            btn.setOnMouseEntered(e -> btn.setStyle(String.format(
-                "-fx-background-color: derive(%s, 15%%); " +
-                "-fx-text-fill: white; " +
-                "-fx-background-radius: 8; " +
-                "-fx-border-color: derive(%s, -30%%); " +
-                "-fx-border-width: 0 0 3 0; " +
-                "-fx-border-radius: 8; " +
-                "-fx-cursor: hand;",
-                objColor, objColor
-            )));
-            btn.setOnMouseExited(e -> btn.setStyle(normalStyle));
+            String objName  = obj.getNomObjet();
+            String objColor = UIComponentFactory.getItemColor(objName);
+            Button btn      = UIComponentFactory.createTypeButton(objName.replace("_", " "), objColor, 120, 40, 10);
 
             btn.setOnAction(e -> {
                 onSelect.accept(obj);
@@ -1000,7 +788,7 @@ public class BattleView extends StackPane {
             itemChoicePanel.getChildren().add(btn);
         }
 
-        Button btnBack = createBackButton();
+        Button btnBack = UIComponentFactory.createBackButton();
         btnBack.setOnAction(e -> hideAllChoices());
         itemChoicePanel.getChildren().add(btnBack);
 
@@ -1010,25 +798,6 @@ public class BattleView extends StackPane {
         actionButtonsContainer.setManaged(false);
     }
 
-    /**
-     * Crée un bouton retour standard.
-     */
-    private Button createBackButton() {
-        Button btn = new Button("RETOUR");
-        btn.setPrefWidth(80);
-        btn.setPrefHeight(32);
-        btn.setFont(Font.font("System", FontWeight.BOLD, 10));
-        btn.setStyle(
-            "-fx-background-color: #606070; " +
-            "-fx-text-fill: white; " +
-            "-fx-background-radius: 6; " +
-            "-fx-border-color: #505060; " +
-            "-fx-border-width: 0 0 2 0; " +
-            "-fx-border-radius: 6; " +
-            "-fx-cursor: hand;"
-        );
-        return btn;
-    }
 
     /**
      * Cache tous les panneaux de choix.
@@ -1050,11 +819,6 @@ public class BattleView extends StackPane {
         actionButtonsContainer.setManaged(true);
 
         clearBattleLog();
-    }
-
-    // Alias pour compatibilité
-    public void hideAttackChoices() {
-        hideAllChoices();
     }
 
     public void setTurn(boolean player1Turn) {

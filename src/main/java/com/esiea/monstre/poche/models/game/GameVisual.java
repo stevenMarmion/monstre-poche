@@ -49,7 +49,7 @@ public class GameVisual {
         String choix = demanderSaisie(scanner, "Votre choix (1, 2 ou 3) >");
         
         while (!choix.equals("1") && !choix.equals("2") && !choix.equals("3")) {
-            CombatLogger.log("Choix invalide. Veuillez entrer 1, 2 ou 3.");
+            CombatLogger.error("Choix invalide. Veuillez entrer 1, 2 ou 3.");
             choix = demanderSaisie(scanner, "Votre choix (1, 2 ou 3) >");
         }
         
@@ -70,7 +70,7 @@ public class GameVisual {
         String choix = demanderSaisie(scanner, "Votre choix (1, 2 ou 3) >");
         
         while (!choix.equals("1") && !choix.equals("2") && !choix.equals("3")) {
-            CombatLogger.log("Choix invalide. Veuillez entrer 1, 2 ou 3.");
+            CombatLogger.error("Choix invalide. Veuillez entrer 1, 2 ou 3.");
             choix = demanderSaisie(scanner, "Votre choix (1, 2 ou 3) >");
         }
         
@@ -90,7 +90,7 @@ public class GameVisual {
         String choix = demanderSaisie(scanner, "Votre choix (1 ou 2) >");
 
         while (!choix.equals("1") && !choix.equals("2")) {
-            CombatLogger.log("Choix invalide. Veuillez entrer 1 ou 2.");
+            CombatLogger.error("Choix invalide. Veuillez entrer 1 ou 2.");
             choix = demanderSaisie(scanner, "Votre choix (1 ou 2) >");
         }
 
@@ -110,12 +110,12 @@ public class GameVisual {
         try {
             int port = portStr.isEmpty() ? 5555 : Integer.parseInt(portStr);
             if (port < 1024 || port > 65535) {
-                CombatLogger.log("Port invalide. Doit être entre 1024 et 65535. Utilisation du port 5555.");
+                CombatLogger.error("Port invalide. Doit être entre 1024 et 65535. Utilisation du port 5555.");
                 return 5555;
             }
             return port;
         } catch (NumberFormatException e) {
-            CombatLogger.log("Port invalide. Utilisation du port 5555 par défaut.");
+            CombatLogger.error("Port invalide. Utilisation du port 5555 par défaut.");
             return 5555;
         }
     }
@@ -136,11 +136,11 @@ public class GameVisual {
         try {
             port = portStr.isEmpty() ? 5555 : Integer.parseInt(portStr);
             if (port < 1024 || port > 65535) {
-                CombatLogger.log("Port invalide. Utilisation du port 5555.");
+                CombatLogger.error("Port invalide. Utilisation du port 5555.");
                 port = 5555;
             }
         } catch (NumberFormatException e) {
-            CombatLogger.log("Port invalide. Utilisation du port 5555 par défaut.");
+            CombatLogger.error("Port invalide. Utilisation du port 5555 par défaut.");
         }
 
         return new String[]{adresse, String.valueOf(port)};
@@ -157,7 +157,7 @@ public class GameVisual {
         String choix = demanderSaisie(scanner, "Votre choix (1 ou 2) >");
 
         while (!choix.equals("1") && !choix.equals("2")) {
-            CombatLogger.log("Choix invalide. Veuillez entrer 1 ou 2.");
+            CombatLogger.error("Choix invalide. Veuillez entrer 1 ou 2.");
             choix = demanderSaisie(scanner, "Votre choix (1 ou 2) >");
         }
 

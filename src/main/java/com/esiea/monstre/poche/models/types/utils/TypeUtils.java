@@ -67,10 +67,10 @@ public class TypeUtils {
                 ((Terre) statut).appliqueCapaciteSpeciale(monstreAttaquant);
                 break;
             case "plante":
-                ((Plante) statut).appliqueCapaciteSpeciale(monstreAttaquant);
+                ((Plante) statut).appliqueCapaciteSpeciale(monstreAttaquant, terrain);
                 break;
             case "insecte":
-                ((Insecte) statut).appliqueCapaciteSpeciale(cible);
+                ((Insecte) statut).appliqueCapaciteSpeciale(cible, terrain);
                 break;
             case "normal":
                 break;
@@ -88,17 +88,13 @@ public class TypeUtils {
      * @param terrain le terrain actuel
      */
     public static void appliqueCapaciteSpecialeNature(Type statut, Monstre cible, Terrain terrain) {
-        if (!terrain.getStatutTerrain().getLabelStatut().equals("Innonde")) {
-            return;
-        }
-        
         switch (statut.getLabelType().toLowerCase()) {
             case "nature":
             case "plante":
             case "insecte":
                 // Tous les types Nature bénéficient de la récupération
                 // Pour Plante et Insecte, on appelle directement la méthode de Nature
-                new Nature().appliqueCapaciteSpeciale(cible);
+                new Nature().appliqueCapaciteSpeciale(cible, terrain);
                 break;
             default:
                 break;
