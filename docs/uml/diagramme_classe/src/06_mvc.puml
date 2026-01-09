@@ -1,0 +1,101 @@
+@startuml MVC
+
+title Architecture MVC - Vue d'ensemble
+
+package "Controllers" {
+    interface INavigationCallback {
+        +showMainMenu() : void
+        +showBattle(Joueur, Joueur) : void
+        +showBattleBot(Joueur, Bot) : void
+        +showWinnerView(Joueur) : void
+        +showMonsterSelectionPlayer(Joueur, Runnable) : void
+        +showAttackSelectionPlayer(Joueur, Runnable) : void
+    }
+
+    class BattleController {
+        -view : BattleView
+        -combat : Combat
+        -player1Action : Object
+        -player2Action : Object
+
+        +BattleController(BattleView, INavigationCallback)
+        -handleAttackAction() : void
+        -handleSwitchAction() : void
+        -handleItemAction() : void
+        -executeTurnActions() : void
+    }
+
+    class MainMenuController
+    class LocalGameController
+    class BotGameController
+    class MonsterSelectionController
+    class AttackSelectionController
+    class WinnerController
+}
+
+package "Views" {
+    class MonstrePocheUI {
+        -{static} WINDOW_WIDTH : long = 1280
+        -{static} WINDOW_HEIGHT : long = 720
+        -stage : Stage
+        -scene : Scene
+
+        +{static} main(String[]) : void
+        +start(Stage) : void
+        +showMainMenu() : void
+        +showBattle(Joueur, Joueur) : void
+    }
+
+    class BattleView {
+        -joueur1 : Joueur
+        -joueur2 : Joueur
+        -isPlayer1Turn : boolean
+
+        +BattleView(Joueur, Joueur)
+        +updateBattleLog(String) : void
+        +updatePokemonDisplay(Joueur) : void
+        +displayAttackChoices(List<Attaque>, Consumer<Attaque>) : void
+        +displayMonsterChoices(List<Monstre>, Consumer<Monstre>) : void
+        +displayItemChoices(List<Objet>, Consumer<Objet>) : void
+    }
+
+    class MainMenuView
+    class LocalGameView
+    class BotGameView
+    class WinnerView
+    class MonsterSelectionView
+    class AttackSelectionView
+}
+
+package "Models" {
+    class Combat <<abstract>>
+    class Joueur
+    class Monstre
+    class Attaque
+}
+
+' Relations MVC
+MonstrePocheUI ..|> INavigationCallback
+
+BattleController --> BattleView : -view
+BattleController --> INavigationCallback : -callback
+BattleController --> Combat : -combat
+
+MainMenuController --> MainMenuView
+LocalGameController --> LocalGameView
+BotGameController --> BotGameView
+MonsterSelectionController --> MonsterSelectionView
+AttackSelectionController --> AttackSelectionView
+WinnerController --> WinnerView
+
+BattleView --> "2" Joueur : joueur1, joueur2
+Combat --> "2" Joueur
+Joueur --> "*" Monstre
+Monstre --> "*" Attaque
+
+note bottom of MonstrePocheUI
+  Point d'entrée de l'application
+  Gère la navigation entre les vues
+end note
+
+@enduml
