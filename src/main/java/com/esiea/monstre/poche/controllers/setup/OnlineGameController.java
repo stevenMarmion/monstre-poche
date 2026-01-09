@@ -324,7 +324,7 @@ public class OnlineGameController {
         }
         
         // Creer la vue de combat
-        battleView = new BattleView(joueurLocal, joueurDistant);
+        battleView = new BattleView(joueurLocal, joueurDistant, null);
         navigationCallback.showBattleOnline(battleView);
         
         // Configurer le CombatLogger pour l'interface
