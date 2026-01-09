@@ -9,10 +9,10 @@ public class Paralyse extends StatutMonstre {
     private static final double CHANCE_RATER_ATTAQUE = 0.75;
     private static final int NB_TOURS_MAX_PARALYSIE = 6;
 
-    public Paralyse(int nbToursAvecEffet) {
+    public Paralyse() {
         this.labelStatut = "Paralyse";
         this.nbToursEffet = NB_TOURS_MAX_PARALYSIE;
-        this.nbToursAvecEffet = NB_TOURS_MAX_PARALYSIE - nbToursAvecEffet;
+        this.nbToursAvecEffet = 0;
     }
 
     public void rateAttaque(Monstre cible) {
