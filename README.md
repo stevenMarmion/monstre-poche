@@ -29,12 +29,12 @@ git clone https://github.com/stevenMarmion/monstre-poche
 cd monstre-poche
 ```
 
-2**Compiler le projet**
+2. **Compiler le projet**
 ```bash
 mvn clean install -DskipTests
 ```
 
-3**Exécuter l'application**
+3. **Exécuter l'application**
 ```bash
 # Ou avec exec:java (choisir son mode de lancement)
 mvn exec:java
@@ -43,7 +43,7 @@ mvn exec:java
 mvn javafx:run
 ```
 
-4.**(Optionnel) générer la javadoc**
+4. **(Optionnel) générer la javadoc**
 ```bash
 # générer la javadoc
 mvn javadoc:javadoc
@@ -217,14 +217,6 @@ Vidéo de démonstration du mode en ligne par interface :
 - **Écran de victoire** :
   - Affichage du vainqueur
   - Retour au menu principal
-
-#### Design moderne
-- Image de fond personnalisée pour le combat
-- Cartes colorées par type de monstre
-- Animations de transition
-- Effets de survol sur les boutons
-- Panneau de logs avec scroll automatique
-- Interface responsive
 
 ### Système de logs
 
