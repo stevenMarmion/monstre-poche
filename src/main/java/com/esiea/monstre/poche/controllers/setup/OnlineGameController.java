@@ -14,9 +14,11 @@ import com.esiea.monstre.poche.models.core.Attaque;
 import com.esiea.monstre.poche.models.core.Joueur;
 import com.esiea.monstre.poche.models.core.Monstre;
 import com.esiea.monstre.poche.models.game.resources.GameResourcesFactory;
+import com.esiea.monstre.poche.models.items.Objet;
 import com.esiea.monstre.poche.models.network.OnlineClient;
 import com.esiea.monstre.poche.models.network.OnlineConnection;
 import com.esiea.monstre.poche.models.network.OnlineServer;
+import com.esiea.monstre.poche.models.network.enums.EnumEvent;
 import com.esiea.monstre.poche.views.gui.battle.BattleView;
 import com.esiea.monstre.poche.views.gui.setup.OnlineGameView;
 
@@ -163,13 +165,11 @@ public class OnlineGameController {
     private void exchangePlayerDataAndStartBattle(Joueur joueurLocal, OnlineConnection connection, boolean hosting) {
         new Thread(() -> {
             try {
-                BufferedReader in = new BufferedReader(
-                    new InputStreamReader(connection.getSocket().getInputStream())
-                );
+                BufferedReader in = new BufferedReader(new InputStreamReader(connection.getSocket().getInputStream()));
                 
                 // Envoyer nos donnees de joueur
                 String playerData = serializePlayer(joueurLocal);
-                connection.sendInfo("PLAYER_DATA|" + playerData);
+                connection.sendInfo(EnumEvent.PLAYER_DATA.toString() + playerData);
                 CombatLogger.network("Donnees envoyees, en attente de l'adversaire...");
                 
                 // Attendre les donnees de l'adversaire
@@ -177,7 +177,7 @@ public class OnlineGameController {
                 Joueur joueurDistantTemp = null;
                 
                 while ((line = in.readLine()) != null) {
-                    if (line.startsWith("INFO|PLAYER_DATA|")) {
+                    if (line.startsWith(EnumEvent.INFO.toString() + EnumEvent.PLAYER_DATA.toString())) {
                         String remoteData = line.substring(17);
                         joueurDistantTemp = deserializePlayer(remoteData);
                         CombatLogger.network("Donnees de l'adversaire recues !");
@@ -266,14 +266,14 @@ public class OnlineGameController {
             CombatLogger.info("Chargement monstre: " + nomMonstre + " avec " + atkNames.length + " attaques");
             
             // Trouver le monstre dans le loader
-            Monstre monstre = findMonstreByName(nomMonstre);
+            Monstre monstre = GameResourcesFactory.getInstance().findMonstreByName(nomMonstre);
             if (monstre != null) {
                 // Cloner le monstre pour ne pas modifier l'original
                 Monstre clonedMonstre = monstre.copyOf();
                 
                 // Ajouter les attaques
                 for (String atkName : atkNames) {
-                    Attaque attaque = findAttaqueByName(atkName);
+                    Attaque attaque = GameResourcesFactory.getInstance().findAttaqueByName(atkName);
                     if (attaque != null) {
                         clonedMonstre.ajouterAttaque(attaque);
                     } else {
@@ -304,24 +304,6 @@ public class OnlineGameController {
         }
         
         return joueur;
-    }
-    
-    private Monstre findMonstreByName(String name) {
-        for (Monstre m : GameResourcesFactory.getInstance().getTousLesMonstres()) {
-            if (m.getNomMonstre().equals(name)) {
-                return m;
-            }
-        }
-        return null;
-    }
-
-    private Attaque findAttaqueByName(String name) {
-        for (Attaque a : GameResourcesFactory.getInstance().getToutesLesAttaques()) {
-            if (a.getNomAttaque().equals(name)) {
-                return a;
-            }
-        }
-        return null;
     }
     
     /**
@@ -377,9 +359,7 @@ public class OnlineGameController {
     private void startNetworkListener() {
         networkListenerThread = new Thread(() -> {
             try {
-                BufferedReader in = new BufferedReader(
-                    new InputStreamReader(currentConnection.getSocket().getInputStream())
-                );
+                BufferedReader in = new BufferedReader(new InputStreamReader(currentConnection.getSocket().getInputStream()));
                 
                 String line;
                 while (running && (line = in.readLine()) != null) {
@@ -402,16 +382,13 @@ public class OnlineGameController {
      * Traite un message recu du reseau.
      */
     private void processNetworkMessage(String line) {
-        if (line.startsWith("INFO|ACTION|")) {
-            // Format: INFO|ACTION|TYPE|DATA
+        if (line.startsWith(EnumEvent.INFO.toString() + EnumEvent.ACTION.toString())) {
             String actionData = line.substring(12);
             parseRemoteAction(actionData);
-        } else if (line.startsWith("INFO|MONSTER_UPDATE|")) {
-            // Mise a jour des donnees du monstre distant
+        } else if (line.startsWith(EnumEvent.INFO.toString() + EnumEvent.MONSTER_UPDATE.toString())) {
             String updateData = line.substring(20);
             parseMonsterUpdate(updateData);
-        } else if (line.startsWith("INFO|")) {
-            // Message d'information general
+        } else if (line.startsWith(EnumEvent.INFO.toString())) {
             String message = line.substring(5);
             Platform.runLater(() -> battleView.updateBattleLog("[Distant] " + message));
         }
@@ -453,6 +430,17 @@ public class OnlineGameController {
                     }
                 }
                 CombatLogger.error("Monstre inconnu recu : " + actionValue);
+            } else if ("ITEM".equals(actionType)) {
+                for (Objet o : joueurDistant.getObjets()) {
+                    if (o.getNomObjet().equals(actionValue)) {
+                        remoteAction = o;
+                        remoteReady = true;
+                        battleView.updateBattleLog(joueurDistant.getNomJoueur() + " utilise l'objet " + actionValue);
+                        tryExecuteTurn();
+                        return;
+                    }
+                }
+                CombatLogger.error("Objet inconnu recu : " + actionValue);
             }
         });
     }
@@ -484,14 +472,14 @@ public class OnlineGameController {
      * Envoie l'action locale a l'adversaire.
      */
     private void sendAction(String actionType, String actionValue) {
-        currentConnection.sendInfo("ACTION|" + actionType + "|" + actionValue);
+        currentConnection.sendInfo(EnumEvent.ACTION.toString() + actionType + "|" + actionValue);
     }
     
     /**
      * Envoie la mise a jour du monstre local.
      */
     private void sendMonsterUpdate(Monstre monstre) {
-        currentConnection.sendInfo("MONSTER_UPDATE|" + monstre.getNomMonstre() + "|" + (int) monstre.getPointsDeVie());
+        currentConnection.sendInfo(EnumEvent.MONSTER_UPDATE.toString() + monstre.getNomMonstre() + "|" + (int) monstre.getPointsDeVie());
     }
     
     /**
@@ -657,7 +645,7 @@ public class OnlineGameController {
         try {
             currentConnection.close();
         } catch (IOException e) {
-            // Ignorer
+            CombatLogger.error("Erreur lors de la fermeture de la connexion : " + e.getMessage());
         }
     }
 }

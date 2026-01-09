@@ -4,7 +4,11 @@ public enum EnumEvent {
     INFO("INFO|"),
     ASK("ASK|"),
     END("END|"),
-    ANSWER("ANSWER|");
+    ANSWER("ANSWER|"),
+
+    PLAYER_DATA("PLAYER_DATA|"),
+    MONSTER_UPDATE("MONSTER_UPDATE|"),
+    ACTION("ACTION|");
 
     private final String label;
 

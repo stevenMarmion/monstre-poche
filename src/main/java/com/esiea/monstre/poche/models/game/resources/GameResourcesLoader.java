@@ -133,7 +133,6 @@ public class GameResourcesLoader {
                         int defense = valeurAleatoire(defMin, defMax);
                         int vitesse = valeurAleatoire(vitMin, vitMax);
                         
-                        // Appliquer les probabilités spéciales au type
                         if (type instanceof Foudre && probaParalysie != null) {
                             ((Foudre) type).setChanceParalysie(probaParalysie);
                         }
@@ -198,7 +197,6 @@ public class GameResourcesLoader {
                                 vitMax = Integer.parseInt(parts[2]);
                                 break;
 
-                            // Effets spéciaux pour types spéciaux
                             case "Paralysis":
                                 probaParalysie = Double.parseDouble(parts[1]);
                                 if (probaParalysie < 0 || probaParalysie > 1) {

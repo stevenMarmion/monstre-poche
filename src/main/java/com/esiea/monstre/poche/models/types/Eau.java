@@ -13,10 +13,10 @@ public class Eau extends Type {
     private double probabiliteFaireChuter;
 
     public Eau() {
-        this(0.4, 0.3);
+        this(null, null);
     }
     
-    public Eau(double probabiliteInnondation, double probabiliteFaireChuter) {
+    public Eau(Double probabiliteInnondation, Double probabiliteFaireChuter) {
         this.labelType = "Eau";
         this.fortContre = "Feu";
         this.faibleContre = "Foudre";
@@ -24,11 +24,11 @@ public class Eau extends Type {
         this.probabiliteFaireChuter = probabiliteFaireChuter;
     }
     
-    public void setProbabiliteInnondation(double probabiliteInnondation) {
+    public void setProbabiliteInnondation(Double probabiliteInnondation) {
         this.probabiliteInnondation = probabiliteInnondation;
     }
     
-    public void setProbabiliteFaireChuter(double probabiliteFaireChuter) {
+    public void setProbabiliteFaireChuter(Double probabiliteFaireChuter) {
         this.probabiliteFaireChuter = probabiliteFaireChuter;
     }
 

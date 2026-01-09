@@ -30,7 +30,7 @@ class MedicamentAntiParalysieTest {
 
     @Test
     void testUtiliserObjetSurMonstreParalyse() {
-        monstre.setStatut(new Paralyse((int)(Math.random() * 6)));
+        monstre.setStatut(new Paralyse());
         assertEquals("Paralyse", monstre.getStatut().getLabelStatut());
         
         medicament.utiliserObjet(monstre);
