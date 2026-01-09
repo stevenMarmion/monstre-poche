@@ -12,6 +12,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -162,8 +163,10 @@ public class AttackSelectionView extends AbstractSelectionView<Attaque> {
             currentMonstre.getDefense(),
             currentMonstre.getVitesse()
         ));
-        statsLabel.setTextFill(Color.web("#ccc"));
-        statsLabel.setFont(Font.font(FontConfig.SYSTEM.getFontName(), 12));
+        statsLabel.setStyle("-fx-text-fill: #FFFFFF;");
+        statsLabel.setEffect(new DropShadow(2, Color.BLACK));
+
+        statsLabel.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 12));
 
         nameBox.getChildren().addAll(monsterName, typeBadge, statsLabel);
         monsterInfo.getChildren().addAll(avatar, nameBox);

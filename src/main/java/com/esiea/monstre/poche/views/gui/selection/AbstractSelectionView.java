@@ -142,14 +142,19 @@ public abstract class AbstractSelectionView<T> extends VBox {
 
         lblPlayerName = new Label(getMainTitle());
         lblPlayerName.getStyleClass().add("main-title");
+        lblPlayerName.setStyle("-fx-text-fill: #FFFFFF;");
+        lblPlayerName.setEffect(new DropShadow(2, Color.BLACK));
+
 
         Label subtitle = new Label(getSubtitle());
         subtitle.getStyleClass().add("subtitle-text");
         subtitle.setStyle("-fx-font-size: 16px;");
+        subtitle.setStyle("-fx-text-fill: #FFFFFF;");
+        subtitle.setEffect(new DropShadow(2, Color.BLACK));
 
         Label instructions = new Label(getInstructions());
         instructions.getStyleClass().add("label-text");
-        instructions.setStyle("-fx-font-size: 14px; -fx-opacity: 0.8;");
+        instructions.setStyle("-fx-font-size: 14px; -fx-opacity: 0.8;-fx-text-fill: #FFFFFF;");
 
         titleBox.getChildren().addAll(lblPlayerName, subtitle, instructions);
         return titleBox;
@@ -275,12 +280,12 @@ public abstract class AbstractSelectionView<T> extends VBox {
 
             // Style de sélection
             String selectedStyle = normalStyle.replace(typeColor, typeColor)
-                .replaceAll("-fx-border-color: [^;]+;", "-fx-border-color: #4CAF50;")
+                .replaceAll("-fx-border-color: [^;]+;", "-fx-border-color: #FFFFFF;")
                 .replaceAll("-fx-border-width: [^;]+;", "-fx-border-width: 4;");
             card.setStyle(selectedStyle);
 
             Glow glow = new Glow(0.4);
-            DropShadow shadow = new DropShadow(12, Color.web("#4CAF50"));
+            DropShadow shadow = new DropShadow(12, Color.web("#FFFFFF"));
             glow.setInput(shadow);
             card.setEffect(glow);
 

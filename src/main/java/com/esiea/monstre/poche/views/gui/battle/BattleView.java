@@ -45,17 +45,22 @@ public class BattleView extends StackPane {
     public static final double HP_RATIO_MEDIUM_THRESHOLD = 0.2;
     public static final int MAX_LOG_BLOCKS = 50;
 
-    private VBox enemySpriteBox;
+    private VBox playerInfoBox;  // carte d'info contenant le joueur, pokemon et son sprite
+    private VBox enemyInfoBox;
 
     // Éléments d'interface - Monstre Joueur
     private Label lblPlayerName;
     private Label lblPlayerHpText;
+    private Label lblPlayerMonsterType;
+
     private Rectangle hpBarPlayerFill;
     private VBox playerSpriteBox;
+    private VBox enemySpriteBox;
 
     // Éléments d'interface - Monstre Ennemi
     private Label lblEnemyName;
     private Label lblEnemyHpText;
+    private Label lblEnemyMonsterType;
     private Rectangle hpBarEnemyFill;
 
     // Boutons d'action
@@ -193,12 +198,12 @@ public class BattleView extends StackPane {
         box.setPadding(new Insets(12, 18, 12, 18));
         box.setMaxWidth(250);
         box.setStyle(
-            "-fx-background-color: rgba(255, 255, 255, 0.92); " +
-            "-fx-background-radius: 15; " +
-            "-fx-border-color: " + typeColor + "; " +
-            "-fx-border-width: 3; " +
-            "-fx-border-radius: 15; " +
-            "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 10, 0, 0, 4);"
+                "-fx-background-color: rgba(255, 255, 255, 0.92); " +
+                        "-fx-background-radius: 15; " +
+                        "-fx-border-color: " + typeColor + "; " +
+                        "-fx-border-width: 3; " +
+                        "-fx-border-radius: 15; " +
+                        "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 10, 0, 0, 4);"
         );
 
         // Nom du joueur
@@ -225,7 +230,14 @@ public class BattleView extends StackPane {
         typeLabel.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 10));
         typeLabel.setTextFill(Color.WHITE);
         typeLabel.setPadding(new Insets(2, 8, 2, 8));
-        typeLabel.setStyle("-fx-background-color: " + typeColor + "; -fx-background-radius: 10;");
+        typeLabel.setStyle("-fx-background-color: " + ColorConfig.fromString(m.getTypeMonstre().getLabelType()).getColorCode() + "; -fx-background-radius: 10;");
+
+        // Stocker la référence selon si c'est le joueur ou l'ennemi
+        if (isPlayer) {
+            lblPlayerMonsterType = typeLabel;
+        } else {
+            lblEnemyMonsterType = typeLabel;
+        }
 
         nameRow.getChildren().addAll(monsterNameLabel, typeLabel);
 
@@ -245,6 +257,12 @@ public class BattleView extends StackPane {
         }
 
         box.getChildren().addAll(playerLabel, nameRow, hpRow, hpTextLabel);
+
+        if (isPlayer) {
+            playerInfoBox = box;
+        } else {
+            enemyInfoBox = box;
+        }
         return box;
     }
 
@@ -307,13 +325,13 @@ public class BattleView extends StackPane {
         sprite.setMaxSize(size, size);
         sprite.setAlignment(Pos.CENTER);
         sprite.setStyle(String.format(
-            "-fx-background-color: radial-gradient(center 50%% 35%%, radius 55%%, %s, derive(%s, -30%%)); " +
-            "-fx-background-radius: 50%%; " +
-            "-fx-border-color: derive(%s, -45%%); " +
-            "-fx-border-width: 4; " +
-            "-fx-border-radius: 50%%; " +
-            "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 15, 0, 0, 8);",
-            typeColor, typeColor, typeColor
+                "-fx-background-color: radial-gradient(center 50%% 35%%, radius 55%%, %s, derive(%s, -30%%)); " +
+                        "-fx-background-radius: 50%%; " +
+                        "-fx-border-color: derive(%s, -45%%); " +
+                        "-fx-border-width: 4; " +
+                        "-fx-border-radius: 50%%; " +
+                        "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 15, 0, 0, 8);",
+                typeColor, typeColor, typeColor
         ));
 
         // Ombre au sol
@@ -336,9 +354,9 @@ public class BattleView extends StackPane {
         panel.setMinHeight(180);
         panel.setPrefHeight(200);
         panel.setStyle(
-            "-fx-background-color: linear-gradient(to bottom, rgba(30, 40, 50, 0.95), rgba(20, 25, 35, 0.98)); " +
-            "-fx-border-color: #5a6a7a; " +
-            "-fx-border-width: 3 0 0 0;"
+                "-fx-background-color: linear-gradient(to bottom, rgba(30, 40, 50, 0.95), rgba(20, 25, 35, 0.98)); " +
+                        "-fx-border-color: #5a6a7a; " +
+                        "-fx-border-width: 3 0 0 0;"
         );
 
         // Zone des boutons d'action
@@ -376,9 +394,9 @@ public class BattleView extends StackPane {
         panel.setAlignment(Pos.TOP_CENTER);
         panel.setPadding(new Insets(15, 15, 15, 15));
         panel.setStyle(
-            "-fx-background-color: linear-gradient(to bottom, rgba(25, 35, 50, 0.96), rgba(15, 20, 30, 0.98)); " +
-            "-fx-border-color: #4a5a7a; " +
-            "-fx-border-width: 0 0 0 3;"
+                "-fx-background-color: linear-gradient(to bottom, rgba(25, 35, 50, 0.96), rgba(15, 20, 30, 0.98)); " +
+                        "-fx-border-color: #4a5a7a; " +
+                        "-fx-border-width: 0 0 0 3;"
         );
 
         // Titre
@@ -395,9 +413,9 @@ public class BattleView extends StackPane {
         logScrollPane = new ScrollPane(logBox);
         logScrollPane.setFitToWidth(true);
         logScrollPane.setStyle(
-            "-fx-background: transparent; " +
-            "-fx-background-color: transparent; " +
-            "-fx-border-color: transparent;"
+                "-fx-background: transparent; " +
+                        "-fx-background-color: transparent; " +
+                        "-fx-border-color: transparent;"
         );
         logScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         logScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
@@ -450,25 +468,25 @@ public class BattleView extends StackPane {
         // Afficher tous les blocs de logs
         for (int i = 0; i < battleLogBlocks.size(); i++) {
             String block = battleLogBlocks.get(i);
-            
+
             VBox blockBox = new VBox(3);
             blockBox.setPadding(new Insets(8, 12, 8, 12));
-            
+
             // Le dernier bloc est mis en évidence
             boolean isLast = (i == battleLogBlocks.size() - 1);
-            
+
             if (isLast) {
                 blockBox.setStyle(
-                    "-fx-background-color: rgba(80, 100, 130, 0.85); " +
-                    "-fx-background-radius: 10; " +
-                    "-fx-border-color: #6a8aaa; " +
-                    "-fx-border-width: 1; " +
-                    "-fx-border-radius: 10;"
+                        "-fx-background-color: rgba(80, 100, 130, 0.85); " +
+                                "-fx-background-radius: 10; " +
+                                "-fx-border-color: #6a8aaa; " +
+                                "-fx-border-width: 1; " +
+                                "-fx-border-radius: 10;"
                 );
             } else {
                 blockBox.setStyle(
-                    "-fx-background-color: rgba(50, 60, 75, 0.7); " +
-                    "-fx-background-radius: 8;"
+                        "-fx-background-color: rgba(50, 60, 75, 0.7); " +
+                                "-fx-background-radius: 8;"
                 );
             }
 
@@ -494,7 +512,7 @@ public class BattleView extends StackPane {
 
             logBox.getChildren().add(blockBox);
         }
-        
+
         // Scroll automatique vers le bas
         if (logScrollPane != null) {
             logScrollPane.layout();
@@ -570,6 +588,24 @@ public class BattleView extends StackPane {
                 hpBarPlayerFill.setWidth(HP_BAR_MAX_WIDTH * ratio);
                 hpBarPlayerFill.setFill(Color.web(UIComponentFactory.getHpColor(ratio)));
             }
+
+            String typeColorCode = ColorConfig.fromString(joueur.getMonstreActuel().getTypeMonstre().getLabelType()).getColorCode();
+
+            // Bordure de la carte d'info (couleur selon le type)
+            if (playerInfoBox != null) {
+                playerInfoBox.setStyle(
+                        "-fx-background-color: rgba(255, 255, 255, 0.92); " +
+                                "-fx-background-radius: 15; " +
+                                "-fx-border-color: " + typeColorCode + "; " +
+                                "-fx-border-width: 3; " +
+                                "-fx-border-radius: 15; " +
+                                "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 10, 0, 0, 4);"
+                );
+            }
+            if (lblPlayerMonsterType != null) {
+                lblPlayerMonsterType.setText(monstre.getTypeMonstre().getLabelType());
+                lblPlayerMonsterType.setStyle("-fx-background-color: " + typeColorCode + "; -fx-background-radius: 10;");
+            }
             updateSpriteBox(playerSpriteBox, monstre, true);
         } else {
             // Mise à jour du joueur 2 (ennemi à droite)
@@ -582,6 +618,23 @@ public class BattleView extends StackPane {
             if (hpBarEnemyFill != null) {
                 hpBarEnemyFill.setWidth(HP_BAR_MAX_WIDTH * ratio);
                 hpBarEnemyFill.setFill(Color.web(UIComponentFactory.getHpColor(ratio)));
+            }
+
+            String typeColorCode = ColorConfig.fromString(monstre.getTypeMonstre().getLabelType()).getColorCode();
+            // Bordure de la carte d'info (couleur selon le type)
+            if (enemyInfoBox != null) {
+                enemyInfoBox.setStyle(
+                        "-fx-background-color: rgba(255, 255, 255, 0.92); " +
+                                "-fx-background-radius: 15; " +
+                                "-fx-border-color: " + typeColorCode + "; " +
+                                "-fx-border-width: 3; " +
+                                "-fx-border-radius: 15; " +
+                                "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 10, 0, 0, 4);"
+                );
+            }
+            if (lblEnemyMonsterType != null) {
+                lblEnemyMonsterType.setText(monstre.getTypeMonstre().getLabelType());
+                lblEnemyMonsterType.setStyle("-fx-background-color: " + typeColorCode + "; -fx-background-radius: 10;");
             }
             updateSpriteBox(enemySpriteBox, monstre, false);
         }
@@ -603,13 +656,13 @@ public class BattleView extends StackPane {
         sprite.setMaxSize(size, size);
         sprite.setAlignment(Pos.CENTER);
         sprite.setStyle(String.format(
-            "-fx-background-color: radial-gradient(center 50%% 35%%, radius 55%%, %s, derive(%s, -30%%)); " +
-            "-fx-background-radius: 50%%; " +
-            "-fx-border-color: derive(%s, -45%%); " +
-            "-fx-border-width: 4; " +
-            "-fx-border-radius: 50%%; " +
-            "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 15, 0, 0, 8);",
-            typeColor, typeColor, typeColor
+                "-fx-background-color: radial-gradient(center 50%% 35%%, radius 55%%, %s, derive(%s, -30%%)); " +
+                        "-fx-background-radius: 50%%; " +
+                        "-fx-border-color: derive(%s, -45%%); " +
+                        "-fx-border-width: 4; " +
+                        "-fx-border-radius: 50%%; " +
+                        "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 15, 0, 0, 8);",
+                typeColor, typeColor, typeColor
         ));
 
         Rectangle shadow = new Rectangle(size * 1.2, 15);
@@ -630,7 +683,7 @@ public class BattleView extends StackPane {
         refreshLogDisplay();
 
         int col = 0, row = 0;
-        
+
         // Afficher les attaques normales
         if (attaques != null) {
             for (Attaque a : attaques) {
@@ -649,21 +702,21 @@ public class BattleView extends StackPane {
                 if (hasNoPP) {
                     // Style grisé pour les attaques sans PP
                     btn.setStyle(UIComponentFactory.createButtonStyle(
-                        ColorConfig.NO_PP_BG_COLOR.getColorCode(), ColorConfig.NO_PP_BORDER_COLOR.getColorCode(), "0 0 3 0", 8) + "-fx-opacity: 0.6;");
+                            ColorConfig.NO_PP_BG_COLOR.getColorCode(), ColorConfig.NO_PP_BORDER_COLOR.getColorCode(), "0 0 3 0", 8) + "-fx-opacity: 0.6;");
                     btn.setDisable(true);
                 } else {
                     // Utiliser UIComponentFactory pour les effets hover
                     String normalStyle = UIComponentFactory.createCardStyle(
-                        typeColor,
-                        UIComponentFactory.deriveColor(typeColor, -30),
-                        "0 0 3 0",
-                        8
+                            typeColor,
+                            UIComponentFactory.deriveColor(typeColor, -30),
+                            "0 0 3 0",
+                            8
                     );
                     String hoverStyle = UIComponentFactory.createCardStyle(
-                        UIComponentFactory.deriveColor(typeColor, 15),
-                        UIComponentFactory.deriveColor(typeColor, -30),
-                        "0 0 3 0",
-                        8
+                            UIComponentFactory.deriveColor(typeColor, 15),
+                            UIComponentFactory.deriveColor(typeColor, -30),
+                            "0 0 3 0",
+                            8
                     );
                     UIComponentFactory.addHoverEffect(btn, normalStyle, hoverStyle);
 
@@ -678,7 +731,7 @@ public class BattleView extends StackPane {
                 if (col >= ATTACK_GRID_COLUMNS) { col = 0; row++; }
             }
         }
-        
+
         // Bouton "Mains nues" toujours disponible
         Button btnBareHands = new Button();
         btnBareHands.setPrefWidth(ATTACK_BUTTON_WIDTH);
@@ -696,7 +749,7 @@ public class BattleView extends StackPane {
             onSelect.accept(null); // null représente l'attaque à mains nues
             hideAllChoices();
         });
-        
+
         attackGrid.add(btnBareHands, col, row);
         col++;
         if (col >= ATTACK_GRID_COLUMNS) { col = 0; row++; }
@@ -734,10 +787,10 @@ public class BattleView extends StackPane {
             Label nameLabel  = UIComponentFactory.createLabel(m.getNomMonstre(), 11, FontWeight.BOLD, Color.WHITE);
             String hpColor   = UIComponentFactory.getHpColor(hpRatio);
             Label hpLabel    = UIComponentFactory.createLabel(
-                UIComponentFactory.formatHpText(m.getPointsDeVie(), m.getPointsDeVieMax()),
-                10,
-                FontWeight.BOLD,
-                Color.web(hpColor)
+                    UIComponentFactory.formatHpText(m.getPointsDeVie(), m.getPointsDeVieMax()),
+                    10,
+                    FontWeight.BOLD,
+                    Color.web(hpColor)
             );
 
             card.getChildren().addAll(nameLabel, hpLabel);
