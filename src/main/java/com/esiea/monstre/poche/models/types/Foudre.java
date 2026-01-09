@@ -8,23 +8,23 @@ public class Foudre extends Type {
     private double chanceParalysie;
 
     public Foudre() {
-        this(0.2);
+        this(null);
     }
     
-    public Foudre(double chanceParalysie) {
+    public Foudre(Double chanceParalysie) {
         this.labelType = "Foudre";
         this.fortContre = "Eau";
         this.faibleContre = "Terre";
         this.chanceParalysie = chanceParalysie;
     }
     
-    public void setChanceParalysie(double chanceParalysie) {
+    public void setChanceParalysie(Double chanceParalysie) {
         this.chanceParalysie = chanceParalysie;
     }
 
     public void appliqueCapaciteSpeciale(Monstre cible) {
         if (Math.random() < this.chanceParalysie) {
-            cible.setStatut(new Paralyse((int)(Math.random() * 6)));
+            cible.setStatut(new Paralyse());
             CombatLogger.info(cible.getNomMonstre() + " est désormais paralysé.");
         }
     }

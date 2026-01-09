@@ -70,6 +70,14 @@ public class GameResourcesFactory {
                 .toList();
     }
 
+    public Monstre findMonstreByName(String name) {
+        Monstre monstre = monstresTemplate.get(name.toLowerCase());
+        if (monstre != null) {
+            return monstre.copyOf();
+        }
+        return null;
+    }
+
     // =====================================================
     //                MONSTRES
     // =====================================================
@@ -83,6 +91,14 @@ public class GameResourcesFactory {
         return monstresTemplate.values().stream()
                 .map(Monstre::copyOf)
                 .toList();
+    }
+
+    public Attaque findAttaqueByName(String name) {
+        Attaque attaque = attaquesTemplate.get(name.toLowerCase());
+        if (attaque != null) {
+            return attaque.copyOf();
+        }
+        return null;
     }
 
     // =====================================================
