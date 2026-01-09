@@ -16,6 +16,8 @@ import com.esiea.monstre.poche.models.types.utils.TypeUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 
@@ -65,7 +67,7 @@ public class GameResourcesLoader {
             throw new IOException("Ressource introuvable dans le dossier resources du projet : " + nomFichier);
         }
 
-        return new BufferedReader(new java.io.InputStreamReader(stream));
+        return new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
     }
 
 
