@@ -18,7 +18,7 @@ public class StatutMonstreUtils {
                 ((Empoisonne) statutMonstre).appliquerEffets(cible, degatsAffliges);
                 break;
             case "Paralyse":
-                ((Paralyse) statutMonstre).appliquerEffets(cible, degatsAffliges);
+                ((Paralyse) statutMonstre).appliquerEffets(cible);
                 break;
             case "SousTerre":
                 ((SousTerre) statutMonstre).appliquerEffets(cible);

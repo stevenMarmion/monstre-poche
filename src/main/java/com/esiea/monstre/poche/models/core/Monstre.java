@@ -133,12 +133,15 @@ public class Monstre implements Serializable {
         }
     }
 
-    public void attaquer(Monstre cible, Terrain terrain, Attaque attaqueUtilisee) {
+    public boolean verifieMonstreEstMort() {
         if (this.getPointsDeVie() <= 0) {
             CombatLogger.info(this.nomMonstre + " ne peut pas attaquer car il est K.O.");
-            return;
+            return true;
         }
+        return false;
+    }
 
+    private void monstreUtiliseAttaque(Attaque attaqueUtilisee) {
         if (attaqueUtilisee != null) {
             if (attaqueUtilisee.getNbUtilisations() <= 0) {
                 CombatLogger.info(this.nomMonstre + " ne peut pas utiliser " + attaqueUtilisee.getNomAttaque() + " : plus de PP !");
@@ -147,25 +150,30 @@ public class Monstre implements Serializable {
                 attaqueUtilisee.setNbUtilisations(attaqueUtilisee.getNbUtilisations() - 1);
             }
         }
-        
-        // Vérifier si l'attaque échoue (probabilité d'échec)
+    }
+
+    private boolean estAttaqueRateParProbaEchec(Attaque attaqueUtilisee) {
         if (attaqueUtilisee != null && Math.random() < attaqueUtilisee.getProbabiliteEchec()) {
             CombatLogger.log("=======================================");
             CombatLogger.log(this.nomMonstre + " utilise " + attaqueUtilisee.getNomAttaque() + "...");
             CombatLogger.log("  --> L'attaque échoue ! (probabilité d'échec: " + (int)(attaqueUtilisee.getProbabiliteEchec() * 100) + "%)");
             CombatLogger.log("=======================================");
-            return;
+            return true;
         }
-        
-        // on commence par calculer les dégâts, c'est la base de tout
+        return false;
+    }
+
+    private double getDegatsPourAttaqueUtilise(Attaque attaqueUtilisee, Monstre cible) {
         double degatsAffliges;
         if (attaqueUtilisee == null || !this.attaques.contains(attaqueUtilisee)) {
             degatsAffliges = calculeDegat(this, cible);
         } else {
             degatsAffliges = attaqueUtilisee.calculeDegatsAttaque(this, cible);
         }
+        return degatsAffliges;
+    }
 
-        // Log avant attaque avec PP restants
+    private void logAttaqueUtilisee(Attaque attaqueUtilisee) {
         if (attaqueUtilisee == null) {
             CombatLogger.log("=======================================");
             CombatLogger.log(this.nomMonstre + " attaque avec ses propres forces (sans attaque spécifique) :");
@@ -174,13 +182,16 @@ public class Monstre implements Serializable {
             CombatLogger.log(this.nomMonstre + " utilise " + attaqueUtilisee.getNomAttaque() + " (PP restants: " + attaqueUtilisee.getNbUtilisations() + ") :");
             CombatLogger.log("[STATUT] " + this.nomMonstre + " est " + this.statut.getLabelStatut());
         }
+    }
 
-        // ensuite on applique nos effets avant attaque si le pokémon est paralysé ou autre
+    private void appliquerDebutTour(Terrain terrain, double degatsAffliges) {
         StatutMonstreUtils.appliquerStatutMonstre(statut, this, (int) degatsAffliges);
         StatutTerrainUtils.appliquerStatutTerrain(terrain, this, (int) degatsAffliges);
-        TypeUtils.appliqueCapaciteSpecialeNature(typeMonstre, this, terrain);
 
-        // notre attaque principal, le process principal
+        TypeUtils.appliqueCapaciteSpecialeNature(typeMonstre, this, terrain);
+    }
+
+    private void appliquerAttaque(Monstre cible, double degatsAffliges, Attaque attaqueUtilisee, Terrain terrain) {
         if (!this.isRateAttaque()) {
             double pvAvant = cible.getPointsDeVie();
             cible.setPointsDeVie(cible.getPointsDeVie() - (int) degatsAffliges);
@@ -191,15 +202,37 @@ public class Monstre implements Serializable {
             if (cible.getPointsDeVie() == 0) {
                 CombatLogger.info(cible.getNomMonstre() + " est K.O.");
             }
-
-            // les effets de l'attaque spéciale du monstre si elle est pas ratée
-            // ET si c'est une vraie attaque (pas mains nues)
-            if (attaqueUtilisee != null) {
-                TypeUtils.appliqueCapaciteSpeciale(typeMonstre, this, cible, terrain);
-            }
         } else {
             CombatLogger.info(this.nomMonstre + " a raté son attaque.");
         }
+    }
+
+    private void appliquerFinTour(Attaque attaqueUtilisee, Monstre cible, Terrain terrain) {
+        // les effets de l'attaque spéciale du monstre si elle est pas ratée
+        // ET si c'est une vraie attaque (pas mains nues)
+        if (!this.isRateAttaque() && attaqueUtilisee != null) {
+            if (!attaqueUtilisee.getTypeAttaque().getLabelType().equals("Normal")) {
+                TypeUtils.appliqueCapaciteSpeciale(typeMonstre, this, cible, terrain);
+            }
+        }
+    }
+
+    public void attaquer(Monstre cible, Terrain terrain, Attaque attaqueUtilisee) {
+        if (verifieMonstreEstMort()) { 
+            return;
+        }
+
+        monstreUtiliseAttaque(attaqueUtilisee);
+        if (estAttaqueRateParProbaEchec(attaqueUtilisee)) {
+            return;
+        }
+
+        double degatsAffliges = getDegatsPourAttaqueUtilise(attaqueUtilisee, cible);
+        logAttaqueUtilisee(attaqueUtilisee);
+        appliquerDebutTour(terrain, degatsAffliges);
+        appliquerAttaque(cible, degatsAffliges, attaqueUtilisee, terrain);
+        appliquerFinTour(attaqueUtilisee, cible, terrain);
+
         CombatLogger.log("=======================================");
     }
 

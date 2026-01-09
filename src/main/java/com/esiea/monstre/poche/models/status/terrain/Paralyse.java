@@ -33,7 +33,7 @@ public class Paralyse extends StatutMonstre {
         }
     }
 
-    public void appliquerEffets(Monstre cible, double degats) {
+    public void appliquerEffets(Monstre cible) {
         this.nbToursAvecEffet++;
         sortParalysie(cible);
         if (cible.getStatut().getLabelStatut().equals("Paralyse")) {

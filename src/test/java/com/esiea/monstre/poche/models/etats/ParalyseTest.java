@@ -39,7 +39,7 @@ class ParalyseTest {
     @Test
     void testAppliquerEffets() {
         // Ce test vérifie que la méthode ne plante pas
-        statutParalyse.appliquerEffets(monstre, 50);
+        statutParalyse.appliquerEffets(monstre);
         assertNotNull(monstre.getStatut());
     }
 }
