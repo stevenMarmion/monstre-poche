@@ -92,7 +92,7 @@ public class MonstrePocheUI extends Application implements INavigationCallback {
     
     @Override
     public void showMonsterSelectionPlayer(Joueur joueur, Runnable onComplete) {
-        MonsterSelectionView monsterSelectionView = new MonsterSelectionView(GameResourcesFactory.getInstance(), joueur);
+        MonsterSelectionView monsterSelectionView = new MonsterSelectionView(joueur);
         new MonsterSelectionController(monsterSelectionView, this, joueur, onComplete);
 
         scene.setRoot(monsterSelectionView);
@@ -140,7 +140,6 @@ public class MonstrePocheUI extends Application implements INavigationCallback {
 
     @Override
     public void showBattleOnline(BattleView battleView) {
-        // La BattleView est deja creee et configuree par OnlineGameController
         scene.setRoot(battleView);
     }
 }

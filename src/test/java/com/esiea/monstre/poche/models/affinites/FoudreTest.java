@@ -13,6 +13,7 @@ class FoudreTest {
     @BeforeEach
     void setUp() {
         typeFoudre = new Foudre();
+        typeFoudre.setChanceParalysie(0.5);
     }
 
     @Test

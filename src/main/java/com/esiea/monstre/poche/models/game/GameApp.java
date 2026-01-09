@@ -64,10 +64,6 @@ public class GameApp {
         int difficulteBout = GameVisual.afficherMenuDifficulteBot(scanner);
         Bot bot = new Bot("Kylian le Bot", difficulteBout);
 
-        bot.chargerMonstresAutomatiquement(GameResourcesFactory.getInstance());
-        bot.chargerAttaquesAutomatiquement(GameResourcesFactory.getInstance());
-        bot.chargerObjetsAutomatiquement(GameResourcesFactory.getInstance());
-
         CombatBot combatBot = new CombatBot(joueur1, bot);
         combatBot.lancer();
     }

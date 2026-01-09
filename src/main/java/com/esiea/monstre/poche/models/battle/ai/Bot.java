@@ -27,6 +27,12 @@ public class Bot extends Joueur {
         super(nomBot);
         this.random = new Random();
         this.niveauDifficulte = Math.min(Math.max(niveauDifficulte, 1), 3);
+
+        this.chargerMonstresAutomatiquement(GameResourcesFactory.getInstance());
+        this.chargerAttaquesAutomatiquement(GameResourcesFactory.getInstance());
+        this.chargerObjetsAutomatiquement(GameResourcesFactory.getInstance());
+
+        CombatLogger.info("[BOT] " + this.getNomJoueur() + " initialisé avec niveau de difficulté " + this.niveauDifficulte);
     }
 
     public Bot(String nomBot) {
@@ -60,8 +66,8 @@ public class Bot extends Joueur {
         }
 
         if (Boolean.FALSE.equals(monstresSelectionnes.isEmpty())) {
-            this.setMonstreActuel(monstresSelectionnes.get(0));
             CombatLogger.info("[BOT] " + this.getNomJoueur() + " a selectionne " + monstresSelectionnes.size() + " monstres.");
+            this.setMonstreActuel(monstresSelectionnes.get(0));
         }
     }
 
@@ -105,7 +111,7 @@ public class Bot extends Joueur {
         List<Objet> objetsDisponibles = resourceFactory.getTousLesObjets();
 
         if (objetsDisponibles.isEmpty()){
-            System.out.println("Aucun objets disponibles pour le bot.");
+            CombatLogger.error("Aucun objets disponibles pour le bot.");
         }
         while(this.getObjets().size() < Joueur.TAILLE_INVENTAIRE_MAX
             && this.getObjets().size() < objetsDisponibles.size()){
@@ -116,7 +122,7 @@ public class Bot extends Joueur {
             this.getObjets().add(objet);
         }
 
-        System.out.println("[BOT] " + this.getNomJoueur() + " a configuré sa liste d'objets.");
+        CombatLogger.info("[BOT] " + this.getNomJoueur() + " a configuré sa liste d'objets.");
     }
 
         /**

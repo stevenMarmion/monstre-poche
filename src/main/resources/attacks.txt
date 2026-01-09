@@ -208,5 +208,17 @@ Power 55
 NbUse 10
 Fail 0.05
 EndAttack
-
-
+Attack
+Name Chatouilles
+Type Normal
+Power 15
+NbUse 20
+Fail 0.01
+EndAttack
+Attack
+Name Ultra-Laser
+Type Normal
+Power 140
+NbUse 2
+Fail 0.50
+EndAttack

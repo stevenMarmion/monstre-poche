@@ -62,7 +62,6 @@ public class BattleView extends StackPane {
     private Button btnAttack;
     private Button btnItem;
     private Button btnSwitch;
-    private Button btnFlee;
 
     // Zone de logs
     private VBox logBox;
@@ -429,12 +428,10 @@ public class BattleView extends StackPane {
         btnAttack = UIComponentFactory.createActionButton("ATTAQUE", ColorConfig.ACTION_ATTACK_COLOR.getColorCode(), ColorConfig.ACTION_ATTACK_DARK.getColorCode());
         btnItem = UIComponentFactory.createActionButton("SAC", ColorConfig.ACTION_ITEM_COLOR.getColorCode(), ColorConfig.ACTION_ITEM_DARK.getColorCode());
         btnSwitch = UIComponentFactory.createActionButton("POKEMON", ColorConfig.ACTION_SWITCH_COLOR.getColorCode(), ColorConfig.ACTION_SWITCH_DARK.getColorCode());
-        btnFlee = UIComponentFactory.createActionButton("FUITE", ColorConfig.ACTION_FLEE_COLOR.getColorCode(), ColorConfig.ACTION_FLEE_DARK.getColorCode());
 
         grid.add(btnAttack, 0, 0);
         grid.add(btnItem, 1, 0);
         grid.add(btnSwitch, 0, 1);
-        grid.add(btnFlee, 1, 1);
 
         panel.getChildren().add(grid);
         return panel;
@@ -679,27 +676,37 @@ public class BattleView extends StackPane {
             }
         }
         
-        // Bouton "Mains nues" toujours disponible
-        Button btnBareHands = new Button();
-        btnBareHands.setPrefWidth(ATTACK_BUTTON_WIDTH);
-        btnBareHands.setPrefHeight(ATTACK_BUTTON_HEIGHT);
+        boolean attaquesDispo = false;
+        for (Attaque a : attaques) {
+            if (a.getNbUtilisations() > 0) {
+                attaquesDispo = true;
+                break;
+            }
+        }
 
-        VBox bareHandsContent = UIComponentFactory.createButtonContent("MAINS NUES", "Normal | PP infini | PWR faible", false);
-        btnBareHands.setGraphic(bareHandsContent);
+        if (!attaquesDispo) {
+            // Bouton "Mains nues" toujours disponible
+            Button btnBareHands = new Button();
+            btnBareHands.setPrefWidth(ATTACK_BUTTON_WIDTH);
+            btnBareHands.setPrefHeight(ATTACK_BUTTON_HEIGHT);
 
-        // Utiliser UIComponentFactory pour les effets hover
-        String bareHandsNormalStyle = UIComponentFactory.createCardStyle(ColorConfig.BARE_HANDS_COLOR.getColorCode(), ColorConfig.BARE_HANDS_BORDER.getColorCode(), "0 0 3 0", 8);
-        String bareHandsHoverStyle = UIComponentFactory.createCardStyle(ColorConfig.BARE_HANDS_COLOR_HOVER.getColorCode(), ColorConfig.BARE_HANDS_BORDER.getColorCode(), "0 0 3 0", 8);
-        UIComponentFactory.addHoverEffect(btnBareHands, bareHandsNormalStyle, bareHandsHoverStyle);
+            VBox bareHandsContent = UIComponentFactory.createButtonContent("MAINS NUES", "Normal | PP infini | PWR faible", false);
+            btnBareHands.setGraphic(bareHandsContent);
 
-        btnBareHands.setOnAction(e -> {
-            onSelect.accept(null); // null représente l'attaque à mains nues
-            hideAllChoices();
-        });
-        
-        attackGrid.add(btnBareHands, col, row);
-        col++;
-        if (col >= ATTACK_GRID_COLUMNS) { col = 0; row++; }
+            // Utiliser UIComponentFactory pour les effets hover
+            String bareHandsNormalStyle = UIComponentFactory.createCardStyle(ColorConfig.BARE_HANDS_COLOR.getColorCode(), ColorConfig.BARE_HANDS_BORDER.getColorCode(), "0 0 3 0", 8);
+            String bareHandsHoverStyle = UIComponentFactory.createCardStyle(ColorConfig.BARE_HANDS_COLOR_HOVER.getColorCode(), ColorConfig.BARE_HANDS_BORDER.getColorCode(), "0 0 3 0", 8);
+            UIComponentFactory.addHoverEffect(btnBareHands, bareHandsNormalStyle, bareHandsHoverStyle);
+
+            btnBareHands.setOnAction(e -> {
+                onSelect.accept(null); // null représente l'attaque à mains nues
+                hideAllChoices();
+            });
+            
+            attackGrid.add(btnBareHands, col, row);
+            col++;
+            if (col >= ATTACK_GRID_COLUMNS) { col = 0; row++; }
+        }
 
         // Bouton retour
         Button btnBack = UIComponentFactory.createBackButton();
@@ -830,7 +837,6 @@ public class BattleView extends StackPane {
     public Button getBtnAttack() { return btnAttack; }
     public Button getBtnItem() { return btnItem; }
     public Button getBtnSwitch() { return btnSwitch; }
-    public Button getBtnFlee() { return btnFlee; }
     public Joueur getJoueur1() { return joueur1; }
     public Joueur getJoueur2() { return joueur2; }
     public boolean isPlayer1Turn() { return isPlayer1Turn; }
