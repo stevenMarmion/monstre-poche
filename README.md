@@ -289,14 +289,6 @@ monstre-poche/
 ├── README.md                        
 ├── docs/
 │   └── uml/                         # Diagrammes UML
-│       └── diagramme_classe/src/
-│           ├── 00_vue_ensemble.puml
-│           ├── 01_models_core.puml
-│           ├── 02_types.puml
-│           ├── 03_statuts.puml
-│           ├── 04_items.puml
-│           ├── 05_combat.puml
-│           └── 06_mvc.puml
 │
 ├── src/
 │   ├── main/
