@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import com.esiea.monstre.poche.models.core.Attaque;
 import com.esiea.monstre.poche.models.core.Monstre;
-import com.esiea.monstre.poche.models.status.terrain.Paralyse;
+import com.esiea.monstre.poche.models.status.monster.Paralyse;
 import com.esiea.monstre.poche.models.types.Normal;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -39,7 +39,7 @@ class ParalyseTest {
     @Test
     void testAppliquerEffets() {
         // Ce test vérifie que la méthode ne plante pas
-        statutParalyse.appliquerEffets(monstre, 50);
+        statutParalyse.appliquerEffets(monstre);
         assertNotNull(monstre.getStatut());
     }
 }

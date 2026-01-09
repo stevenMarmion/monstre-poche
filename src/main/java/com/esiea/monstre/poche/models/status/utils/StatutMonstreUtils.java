@@ -5,7 +5,7 @@ import com.esiea.monstre.poche.models.status.monster.Brule;
 import com.esiea.monstre.poche.models.status.monster.Empoisonne;
 import com.esiea.monstre.poche.models.status.monster.SousTerre;
 import com.esiea.monstre.poche.models.status.monster.StatutMonstre;
-import com.esiea.monstre.poche.models.status.terrain.Paralyse;
+import com.esiea.monstre.poche.models.status.monster.Paralyse;
 
 public class StatutMonstreUtils {
     
@@ -18,7 +18,7 @@ public class StatutMonstreUtils {
                 ((Empoisonne) statutMonstre).appliquerEffets(cible, degatsAffliges);
                 break;
             case "Paralyse":
-                ((Paralyse) statutMonstre).appliquerEffets(cible, degatsAffliges);
+                ((Paralyse) statutMonstre).appliquerEffets(cible);
                 break;
             case "SousTerre":
                 ((SousTerre) statutMonstre).appliquerEffets(cible);

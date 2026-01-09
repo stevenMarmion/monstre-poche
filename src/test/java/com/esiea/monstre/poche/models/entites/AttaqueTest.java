@@ -73,6 +73,7 @@ class AttaqueTest {
         // Formule: ((11 * 50 * 90) / (25 * 50) + 2) * 1 * coeff
         // Base = (49500 / 1250 + 2) * 1 = (39.6 + 2) = 41.6
         // Avec coefficient entre 0.85 et 1.0: entre 35.36 et 41.6
+        System.out.println(degats);
         assertTrue(degats >= 35 && degats <= 42);
     }
 
