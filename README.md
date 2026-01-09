@@ -5,11 +5,8 @@
 - MARMION Steven
 - RIBEROU Kylian
 
-## Promo
+Etudiants en 3A FISA à l'ESIEA
 
-- 3A
-
----
 
 ## Description du projet
 
@@ -23,7 +20,6 @@ Monstre Poche est un jeu de combat au tour par tour développé en Java avec Jav
 
 - Java 17 ou supérieur
 - Maven 3.6 ou supérieur
-- JavaFX 21.0.2 (géré automatiquement par Maven)
 
 ### Installation
 
@@ -31,12 +27,6 @@ Monstre Poche est un jeu de combat au tour par tour développé en Java avec Jav
 ```bash
 git clone <url-du-repo>
 cd monstre-poche
-```
-
-2. **Migrer vers Maven** (si ce n'est pas déjà fait)
-```bash
-chmod +x migrate-to-maven.sh
-./migrate-to-maven.sh
 ```
 
 3. **Compiler le projet**
@@ -51,11 +41,11 @@ mvn package
 
 5. **Exécuter l'application**
 ```bash
-# Avec Maven (interface graphique)
-mvn javafx:run
-
-# Ou avec exec:java (mode console)
+# Ou avec exec:java (choisir son mode de lancement)
 mvn exec:java
+
+# Ou lancer l'interface graphique directement Avec Maven
+mvn javafx:run
 
 # Ou directement avec le JAR
 java -jar target/monstre-poche-1.0-SNAPSHOT-jar-with-dependencies.jar
@@ -68,7 +58,7 @@ java -jar target/monstre-poche-1.0-SNAPSHOT-jar-with-dependencies.jar
 ```
 monstre-poche/
 ├── pom.xml                          # Configuration Maven
-├── README.md                        # Ce fichier
+├── README.md                        
 ├── docs/
 │   └── uml/                         # Diagrammes UML
 │       └── diagramme_classe/src/
@@ -114,8 +104,6 @@ monstre-poche/
 │   │
 │   └── test/
 │       └── java/                           # Tests unitaires
-│
-└── target/                                 # Fichiers générés
 ```
 
 ---

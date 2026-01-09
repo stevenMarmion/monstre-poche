@@ -553,50 +553,13 @@ Terrain "1" --> "1" StatutTerrain : -statutTerrain
 
 Combat --> "2" Joueur : joueur1, joueur2
 Combat --> "1" Terrain : terrain
-Bot --|> Joueur
-CombatLocalTerminal --|> Combat
-CombatBot --|> Combat
-CombatEnLigne --|> Combat
-
-' ============================================
-' RELATIONS - TYPES
-' ============================================
-
-Eau --|> Type
-Feu --|> Type
-Foudre --|> Type
-Terre --|> Type
-Nature --|> Type
-Normal --|> Type
-Plante --|> Nature
-Insecte --|> Nature
 
 ' ============================================
 ' RELATIONS - STATUTS
 ' ============================================
 
-Brule --|> StatutMonstre
-Paralyse --|> StatutMonstre
-Empoisonne --|> StatutMonstre
-NormalStatut --|> StatutMonstre
-SousTerre --|> StatutMonstre
-
-Innonde --|> StatutTerrain
-Asseche --|> StatutTerrain
 Innonde --> Monstre : -monstreSource
 
-' ============================================
-' RELATIONS - ITEMS
-' ============================================
-
-Potion --|> Objet
-Medicament --|> Objet
-PotionSante --|> Potion
-PotionDegat --|> Potion
-PotionVitesse --|> Potion
-MedicamentAntiBrulure --|> Medicament
-MedicamentAntiParalysie --|> Medicament
-MedicamentAntiPoison --|> Medicament
 
 ' ============================================
 ' RELATIONS - MVC
