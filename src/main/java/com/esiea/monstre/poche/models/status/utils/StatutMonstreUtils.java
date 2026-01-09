@@ -5,7 +5,7 @@ import com.esiea.monstre.poche.models.status.monster.Brule;
 import com.esiea.monstre.poche.models.status.monster.Empoisonne;
 import com.esiea.monstre.poche.models.status.monster.SousTerre;
 import com.esiea.monstre.poche.models.status.monster.StatutMonstre;
-import com.esiea.monstre.poche.models.status.terrain.Paralyse;
+import com.esiea.monstre.poche.models.status.monster.Paralyse;
 
 public class StatutMonstreUtils {
     
