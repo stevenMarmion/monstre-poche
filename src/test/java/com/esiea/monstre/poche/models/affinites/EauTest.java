@@ -1,0 +1,34 @@
+package com.esiea.monstre.poche.models.affinites;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import com.esiea.monstre.poche.models.types.Eau;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+class EauTest {
+    private Eau typeEau;
+
+    @BeforeEach
+    void setUp() {
+        typeEau = new Eau();
+        typeEau.setProbabiliteInnondation(0.4);
+        typeEau.setProbabiliteFaireChuter(0.3);
+    }
+
+    @Test
+    void testGetLabelType() {
+        assertEquals("Eau", typeEau.getLabelType());
+    }
+
+    @Test
+    void testEstFortContre() {
+        assertEquals("Feu", typeEau.estFortContre());
+    }
+
+    @Test
+    void testEstFaibleContre() {
+        assertEquals("Foudre", typeEau.estFaibleContre());
+    }
+}

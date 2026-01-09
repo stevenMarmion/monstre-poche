@@ -13,18 +13,11 @@ NbUse 8
 Fail 0.05
 EndAttack
 Attack
-Name Mega_Foudroyant
+Name Fatal-Foudre
 Type Foudre
-Power 60
-NbUse 5
-Fail 0.10
-EndAttack
-Attack
-Name Tempête-Électrique
-Type Foudre
-Power 70
+Power 100
 NbUse 3
-Fail 0.15
+Fail 0.20
 EndAttack
 Attack
 Name Charge
@@ -39,13 +32,6 @@ Type Normal
 Power 30
 NbUse 20
 Fail 0.02
-EndAttack
-Attack
-Name Coup_de_Poing
-Type Normal
-Power 55
-NbUse 6
-Fail 0.08
 EndAttack
 Attack
 Name Morsure-Ténébreuse
@@ -69,16 +55,16 @@ NbUse 6
 Fail 0.12
 EndAttack
 Attack
-Name Flammes-Vives
+Name Lance-Flammes
 Type Feu
 Power 70
 NbUse 5
 Fail 0.10
 EndAttack
 Attack
-Name Incendie
+Name Eruption
 Type Feu
-Power 80
+Power 110
 NbUse 4
 Fail 0.15
 EndAttack
@@ -97,16 +83,16 @@ NbUse 6
 Fail 0.08
 EndAttack
 Attack
-Name Vigne-Fouettée
+Name Fouet-Lianes
 Type Plante
-Power 55
+Power 80
 NbUse 5
 Fail 0.12
 EndAttack
 Attack
 Name Tempête-Florale
 Type Plante
-Power 60
+Power 100
 NbUse 3
 Fail 0.15
 EndAttack
@@ -193,4 +179,46 @@ Type Insecte
 Power 35
 NbUse 6
 Fail 0.10
+EndAttack
+Attack
+Name Poing-de-Feu
+Type Feu
+Power 55
+NbUse 7
+Fail 0.10
+EndAttack
+Attack
+Name Aqua-Brèche
+Type Eau
+Power 60
+NbUse 6
+Fail 0.10
+EndAttack
+Attack
+Name Boule-Elek
+Type Foudre
+Power 150
+NbUse 2
+Fail 0.40
+EndAttack
+Attack
+Name Etincelle
+Type Foudre
+Power 55
+NbUse 10
+Fail 0.05
+EndAttack
+Attack
+Name Chatouilles
+Type Normal
+Power 15
+NbUse 20
+Fail 0.01
+EndAttack
+Attack
+Name Ultra-Laser
+Type Normal
+Power 140
+NbUse 2
+Fail 0.50
 EndAttack

@@ -1,0 +1,103 @@
+package com.esiea.monstre.poche.models.types.utils;
+
+import com.esiea.monstre.poche.models.core.Monstre;
+import com.esiea.monstre.poche.models.core.Terrain;
+import com.esiea.monstre.poche.models.types.Eau;
+import com.esiea.monstre.poche.models.types.Feu;
+import com.esiea.monstre.poche.models.types.Foudre;
+import com.esiea.monstre.poche.models.types.Insecte;
+import com.esiea.monstre.poche.models.types.Nature;
+import com.esiea.monstre.poche.models.types.Normal;
+import com.esiea.monstre.poche.models.types.Plante;
+import com.esiea.monstre.poche.models.types.Terre;
+import com.esiea.monstre.poche.models.types.Type;
+
+/**
+ * Classe utilitaire proposant des méthodes pour gérer les types et les comparaisons
+ */
+public class TypeUtils {
+
+    /**
+     * Crée une instance de Type à partir d'une chaîne de caractères
+     * Utilisé pour le parsing de fichiers de chargement de monstres ou d'attaques
+     */
+    public static Type getTypeFromString(String typeStr) {
+        switch (typeStr.toLowerCase()) {
+            case "feu":
+                return new Feu();
+            case "eau":
+                return new Eau();
+            case "foudre":
+                return new Foudre();
+            case "terre":
+                return new Terre();
+            case "plante":
+                return new Plante();
+            case "insecte":
+                return new Insecte();
+            case "nature":
+                return new Nature();
+            case "normal":
+                return new Normal();
+            default:
+                return new Normal();
+        }
+    }
+
+    /**
+     * Applique la capacité spéciale d'un type à un monstre cible en fonction du type
+     * 
+     * @param statut le type dont la capacité spéciale doit être appliquée
+     * @param monstreAttaquant le monstre qui attaque (nécessaire pour Eau)
+     * @param cible le monstre cible
+     * @param terrain le terrain actuel
+     */
+    public static void appliqueCapaciteSpeciale(Type statut, Monstre monstreAttaquant, Monstre cible, Terrain terrain) {
+        switch (statut.getLabelType().toLowerCase()) {
+            case "feu":
+                ((Feu) statut).appliqueCapaciteSpeciale(cible);
+                break;
+            case "eau":
+                ((Eau) statut).appliqueCapaciteSpeciale(terrain, monstreAttaquant);
+                break;
+            case "foudre":
+                ((Foudre) statut).appliqueCapaciteSpeciale(cible);
+                break;
+            case "terre":
+                ((Terre) statut).appliqueCapaciteSpeciale(monstreAttaquant);
+                break;
+            case "plante":
+                ((Plante) statut).appliqueCapaciteSpeciale(monstreAttaquant, terrain);
+                break;
+            case "insecte":
+                ((Insecte) statut).appliqueCapaciteSpeciale(cible, terrain);
+                break;
+            case "normal":
+                break;
+            default:
+                break;
+        }
+    }
+
+    /**
+     * Applique la capacité spéciale du type Nature si le terrain est Inondé.
+     * CDC: Les monstres de type nature (Plante, Insecte) récupèrent 1/20 de leurs PV max sur terrain inondé.
+     * 
+     * @param statut le type dont la capacité spéciale doit être appliquée
+     * @param cible le monstre cible
+     * @param terrain le terrain actuel
+     */
+    public static void appliqueCapaciteSpecialeNature(Type statut, Monstre cible, Terrain terrain) {
+        switch (statut.getLabelType().toLowerCase()) {
+            case "nature":
+            case "plante":
+            case "insecte":
+                // Tous les types Nature bénéficient de la récupération
+                // Pour Plante et Insecte, on appelle directement la méthode de Nature
+                new Nature().appliqueCapaciteSpeciale(cible, terrain);
+                break;
+            default:
+                break;
+        }
+    }
+}

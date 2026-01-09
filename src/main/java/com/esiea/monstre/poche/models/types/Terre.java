@@ -1,0 +1,24 @@
+package com.esiea.monstre.poche.models.types;
+
+import com.esiea.monstre.poche.models.battle.logs.CombatLogger;
+import com.esiea.monstre.poche.models.core.Monstre;
+import com.esiea.monstre.poche.models.status.monster.SousTerre;
+
+public class Terre extends Type {
+    private static final double CHANCE_FUITE = 0.05;
+
+    public Terre() {
+        this.labelType = "Terre";
+        this.fortContre = "Foudre";
+        this.faibleContre = "Nature";
+    }
+
+    public void appliqueCapaciteSpeciale(Monstre cible) {
+        boolean fuite = Math.random() < CHANCE_FUITE;
+        if (fuite) {
+            cible.setStatut(new SousTerre());
+            CombatLogger.info(cible.getNomMonstre() + " s'enfuit sous terre !");
+            ((SousTerre) cible.getStatut()).appliquerEffets(cible);
+        }
+    }
+}

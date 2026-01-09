@@ -1,0 +1,45 @@
+package com.esiea.monstre.poche.models.etats;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import com.esiea.monstre.poche.models.core.Attaque;
+import com.esiea.monstre.poche.models.core.Monstre;
+import com.esiea.monstre.poche.models.status.monster.Paralyse;
+import com.esiea.monstre.poche.models.types.Normal;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.ArrayList;
+
+class ParalyseTest {
+    private Paralyse statutParalyse;
+    private Monstre monstre;
+
+    @BeforeEach
+    void setUp() {
+        statutParalyse = new Paralyse();
+        monstre = new Monstre("Pikachu", 100, 50, 40, 90, new ArrayList<Attaque>(), new Normal());
+    }
+
+    @Test
+    void testGetLabelStatut() {
+        assertEquals("Paralyse", statutParalyse.getLabelStatut());
+    }
+
+    @Test
+    void testRateAttaque() {
+        // Ce test est probabiliste, on va juste vérifier que ça ne plante pas
+        monstre.setRateAttaque(false);
+        statutParalyse.rateAttaque(monstre);
+        // Le résultat peut être true ou false selon le random
+        assertNotNull(monstre.isRateAttaque());
+    }
+
+    @Test
+    void testAppliquerEffets() {
+        // Ce test vérifie que la méthode ne plante pas
+        statutParalyse.appliquerEffets(monstre);
+        assertNotNull(monstre.getStatut());
+    }
+}
