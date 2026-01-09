@@ -1,5 +1,8 @@
 package com.esiea.monstre.poche.views.gui.battle;
 
+import com.esiea.monstre.poche.models.core.Terrain;
+import com.esiea.monstre.poche.models.status.terrain.Asseche;
+import com.esiea.monstre.poche.models.status.terrain.Innonde;
 import javafx.animation.FadeTransition;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -48,6 +51,10 @@ public class BattleView extends StackPane {
     private VBox playerInfoBox;  // carte d'info contenant le joueur, pokemon et son sprite
     private VBox enemyInfoBox;
 
+
+    // Éléments d'interface - Terrain
+    private VBox terrainInfoBox;
+
     // Éléments d'interface - Monstre Joueur
     private Label lblPlayerName;
     private Label lblPlayerHpText;
@@ -84,11 +91,18 @@ public class BattleView extends StackPane {
     private Joueur joueur1;
     private Joueur joueur2;
     private boolean isPlayer1Turn;
+    private Terrain terrainActuel;
 
-    public BattleView(Joueur joueur1, Joueur joueur2) {
+    public BattleView(Joueur joueur1, Joueur joueur2, Terrain terrain) {
         this.joueur1 = joueur1;
         this.joueur2 = joueur2;
         this.isPlayer1Turn = true;
+        if (terrain == null){
+            this.terrainActuel = new Terrain("Terrain de jeu", new Asseche());
+        }
+        else {
+            this.terrainActuel = terrain;
+        }
         initializeView();
     }
 
@@ -126,7 +140,20 @@ public class BattleView extends StackPane {
         // Zone inférieure (actions)
         bottomPanel = createActionBottomPanel();
 
-        leftPanel.getChildren().addAll(battleArea, bottomPanel);
+        // StackPane pour superposer le terrain
+        StackPane battleStack = new StackPane();
+        battleStack.getChildren().add(battleArea);
+
+        // IMPORTANT : Le battleStack doit prendre tout l'espace disponible
+        VBox.setVgrow(battleStack, Priority.ALWAYS);
+
+        // VBox terrain en haut à gauche
+        VBox terrainBox = createTerrainInfoBox();
+        StackPane.setAlignment(terrainBox, Pos.TOP_LEFT);
+        StackPane.setMargin(terrainBox, new Insets(15, 0, 0, 15));
+
+        battleStack.getChildren().add(terrainBox);
+        leftPanel.getChildren().addAll(battleStack, bottomPanel );
 
         // === PARTIE DROITE : Zone des logs ===
         VBox rightPanel = createLogPanel();
@@ -138,6 +165,7 @@ public class BattleView extends StackPane {
         mainLayout.getChildren().addAll(leftPanel, rightPanel);
         this.getChildren().add(mainLayout);
     }
+
 
     /**
      * Zone de combat avec les deux monstres face à face.
@@ -181,6 +209,65 @@ public class BattleView extends StackPane {
 
         area.getChildren().addAll(playerSide, centerZone, enemySide);
         return area;
+    }
+
+    private VBox createTerrainInfoBox() {
+        VBox box = new VBox(4);
+        box.setAlignment(Pos.TOP_LEFT);
+        box.setPadding(new Insets(8, 12, 8, 12));
+
+        box.setMaxWidth(370);  // Largeur maximale
+        box.setMaxHeight(160); // Hauteur maximale
+
+        box.setStyle(
+                "-fx-background-color: rgba(0, 0, 0, 0.35); " +
+                        "-fx-background-radius: 10;"
+        );
+        this.terrainInfoBox = box;
+        updateTerrainInfoBox(terrainActuel);
+        return box;
+    }
+
+    public void updateTerrainInfoBox(Terrain terrain){
+        this.terrainActuel = terrain;
+        this.terrainInfoBox.getChildren().clear();
+
+        Label title = new Label("Terrain actuel : " + terrainActuel.getNomTerrain());
+        title.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 14));
+        title.setTextFill(Color.WHITE);
+
+        Label titleTypeTerrain = new Label("Statut : " + terrainActuel.getStatutTerrain().getLabelStatut());
+        title.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 14));
+        title.setTextFill(Color.WHITE);
+
+        Label labelEffects = new Label("Effets :");
+        labelEffects.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 12));
+        labelEffects.setTextFill(Color.web("#f0f8ff"));
+
+        Label terrainEffects = new Label();
+        terrainEffects.setFont(Font.font(FontConfig.SYSTEM.getFontName(), 11));
+        terrainEffects.setTextFill(Color.web("#f0f8ff"));
+        terrainEffects.setWrapText(true); // Permettre le retour à la ligne
+        terrainEffects.setMaxWidth(320); // Limiter la largeur du texte
+
+        if (terrainActuel.getStatutTerrain() instanceof Innonde) {
+            terrainEffects.setText(
+                    "A chaque attaque, les monstres (sauf type eau) ont une probabilité" +
+                            " de chuter et de rater leur attaque, leur\n infligeant 1/4 des dégats de celle-ci."
+            );
+        } else {
+            terrainEffects.setText("Terrain normal et asséché, pas d'effets particuliers");
+        }
+
+        if (Boolean.FALSE.equals(terrainActuel.getStatutTerrain() instanceof Asseche)) {
+            Label labelToursRestants = new Label("Tours restants : " + terrainActuel.getStatutTerrain().getNbToursAvecEffet());
+            labelToursRestants.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 11));
+            labelToursRestants.setTextFill(Color.web("#f0f8ff"));
+            this.terrainInfoBox.getChildren().addAll(title, titleTypeTerrain, labelEffects, terrainEffects, labelToursRestants);
+        }
+        else {
+            this.terrainInfoBox.getChildren().addAll(title, titleTypeTerrain, labelEffects, terrainEffects);
+        }
     }
 
     /**
@@ -898,6 +985,7 @@ public class BattleView extends StackPane {
     public Button getBtnSwitch() { return btnSwitch; }
     public Joueur getJoueur1() { return joueur1; }
     public Joueur getJoueur2() { return joueur2; }
+    public Terrain getTerrain(){ return terrainActuel;}
     public boolean isPlayer1Turn() { return isPlayer1Turn; }
     public void setIsPlayer1Turn(boolean isPlayer1Turn) { this.isPlayer1Turn = isPlayer1Turn; }
 }

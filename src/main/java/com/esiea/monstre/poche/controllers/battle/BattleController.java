@@ -183,7 +183,8 @@ public class BattleController {
         // Mise à jour de l'affichage
         view.updatePokemonDisplay(view.getJoueur1());
         view.updatePokemonDisplay(view.getJoueur2());
-        
+
+        view.updateTerrainInfoBox(combat.terrain);
         // Vérifier fin de combat
         Joueur winner = combat.getAWinner();
         if (winner != null) {

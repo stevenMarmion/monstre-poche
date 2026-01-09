@@ -116,7 +116,7 @@ public class MonstrePocheUI extends Application implements INavigationCallback {
     
     @Override
     public void showBattle(Joueur joueur1, Joueur joueur2) {
-        BattleView battleView = new BattleView(joueur1, joueur2);
+        BattleView battleView = new BattleView(joueur1, joueur2, null);
         new BattleController(battleView, this);
 
         scene.setRoot(battleView);
@@ -124,7 +124,7 @@ public class MonstrePocheUI extends Application implements INavigationCallback {
 
     @Override
     public void showBattleBot(Joueur joueur1, Bot bot) {
-        BattleView battleView = new BattleView(joueur1, bot);
+        BattleView battleView = new BattleView(joueur1, bot, null);
         new BattleController(battleView, this);
 
         scene.setRoot(battleView);
