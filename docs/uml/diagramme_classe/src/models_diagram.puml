@@ -1,0 +1,456 @@
+@startuml Diagramme de Classes - Modèles Monstre Poche
+!define ABSTRACT_CLASS abstract class
+!define INTERFACE interface
+
+' ==================== CORE MODELS ====================
+
+    class Attaque {
+        # {static} serialVersionUID: long
+        - nomAttaque: String
+        - nbUtilisations: int
+        - puissanceAttaque: int
+        - probabiliteEchec: double
+        - typeAttaque: Type
+        + Attaque(String nomAttaque, int nbUtilisations, int puissanceAttaque, double probabiliteEchec, Type typeAttaque)
+        + getNomAttaque(): String
+        + getNbUtilisations(): int
+        + getPuissanceAttaque(): int
+        + getProbabiliteEchec(): double
+        + getTypeAttaque(): Type
+        + setNomAttaque(String nomAttaque): void
+        + setNbUtilisations(int nbUtilisations): void
+        + setPuissanceAttaque(int puissanceAttaque): void
+        + setProbabiliteEchec(double probabiliteEchec): void
+        + setTypeAttaque(Type typeAttaque): void
+        + calculeDegatsAttaque(Monstre monstreAttaquant, Monstre cible): double
+        + copyOf(): Attaque
+        + toString(): String
+    }
+
+    class Monstre {
+        # {static} serialVersionUID: long
+        - nomMonstre: String
+        - pointsDeVieMax: double
+        - pointsDeVie: double
+        - attaque: int
+        - defense: int
+        - vitesse: int
+        - typeMonstre: Type
+        - rateAttaque: boolean
+        + Monstre(String nomMonstre, double pointsDeVie, int attaque, int defense, int vitesse, ArrayList<Attaque> attaques, Type typeMonstre)
+        + getNomMonstre(): String
+        + getPointsDeVie(): double
+        + getPointsDeVieMax(): double
+        + getAttaque(): int
+        + getDefense(): int
+        + getVitesse(): int
+        + getAttaques(): ArrayList<Attaque>
+        + getTypeMonstre(): Type
+        + getStatut(): StatutMonstre
+        + isRateAttaque(): boolean
+        + setNomMonstre(String nomMonstre): void
+        + setPointsDeVie(double pointsDeVie): void
+        + setPointsDeVieMax(double pointsDeVieMax): void
+        + setAttaque(int attaque): void
+        + setDefense(int defense): void
+        + setVitesse(int vitesse): void
+        + setAttaques(ArrayList<Attaque> attaques): void
+        + setStatut(StatutMonstre statut): void
+        + setTypeMonstre(Type typeMonstre): void
+        + setRateAttaque(boolean rateAttaque): void
+        + ajouterAttaque(Attaque attaque): void
+        + verifieMonstreEstMort(): boolean
+        - monstreUtiliseAttaque(Attaque attaqueUtilisee): void
+        - estAttaqueRateParProbaEchec(Attaque attaqueUtilisee): boolean
+        - getDegatsPourAttaqueUtilise(Attaque attaqueUtilisee, Monstre cible): double
+        - logAttaqueUtilisee(Attaque attaqueUtilisee): void
+        - appliquerDebutTour(Terrain terrain, double degatsAffliges): void
+        - appliquerAttaque(Monstre cible, double degatsAffliges, Attaque attaqueUtilisee, Terrain terrain): void
+        - appliquerFinTour(Attaque attaqueUtilisee, Monstre cible, Terrain terrain): void
+        + attaquer(Monstre cible, Terrain terrain, Attaque attaqueUtilisee): void
+        + calculeDegat(Monstre monstreAttaquant, Monstre cible): double
+        + copyOf(): Monstre
+        + toString(): String
+        + equals(Object obj): boolean
+    }
+
+    class Joueur {
+        # {static} serialVersionUID: long
+        + {static} TAILLE_EQUIPE_MAX: int
+        + {static} NOMBRE_ATTAQUES_PAR_MONSTRE: int
+        + {static} TAILLE_INVENTAIRE_MAX: int
+        - nomJoueur: String
+        + Joueur(String nomJoueur)
+        + getNomJoueur(): String
+        + getMonstres(): ArrayList<Monstre>
+        + getMonstreActuel(): Monstre
+        + setMonstreActuel(Monstre monstreActuel): void
+        + setMonstres(List<Monstre> monstres): void
+        + switchMonstreActuelAuto(): void
+        + getObjets(): ArrayList<Objet>
+        + ajouterMonstre(Monstre monstre): void
+        + ajouterObjet(Objet objet): void
+        + retirerObjet(Objet objet): void
+        + sontMonstresMorts(): boolean
+        + toString(): String
+        + equals(Object obj): boolean
+    }
+
+    class Terrain {
+        # {static} serialVersionUID: long
+        - nomTerrain: String
+        - statutTerrain: StatutTerrain
+        + Terrain(String nomTerrain, StatutTerrain statut)
+        + getNomTerrain(): String
+        + setStatutTerrain(StatutTerrain statutTerrain): void
+        + getStatutTerrain(): StatutTerrain
+        + estInnonde(): boolean
+        + toString(): String
+        + equals(Object obj): boolean
+    }
+
+    Monstre "1" o-- "0..4" Attaque : possède >
+    Monstre "1" o-- "1" Type : a un >
+    Monstre "1" o-- "1" StatutMonstre : a un >
+    Joueur "1" o-- "0..3" Monstre : possède >
+    Joueur "1" o-- "1" Monstre : monstreActuel >
+    Joueur "1" o-- "0..5" Objet : possède >
+    Terrain "1" o-- "1" StatutTerrain : a un >
+    Attaque "1" o-- "1" Type : a un >
+
+
+' ==================== TYPES ====================
+
+    ABSTRACT_CLASS Type {
+        # {static} serialVersionUID: long
+        # labelType: String
+        # faibleContre: String
+        # fortContre: String
+        + getLabelType(): String
+        + estFortContre(): String
+        + estFaibleContre(): String
+    }
+
+    class Feu extends Type {
+        - chanceBrulure: double
+        + Feu()
+        + appliqueCapaciteSpeciale(Monstre cible): void
+    }
+
+    class Eau extends Type {
+        - {static} NB_TOURS_MAX_INNONDATION: int
+        - {static} NB_TOURS_MIN_INNONDATION: int
+        - probabiliteInnondation: double
+        - probabiliteFaireChuter: double
+        + Eau()
+        + setProbabiliteInnondation(Double probabiliteInnondation): void
+        + setProbabiliteFaireChuter(Double probabiliteFaireChuter): void
+        + appliqueCapaciteSpeciale(Terrain terrain, Monstre monstreEau): void
+    }
+
+    class Nature extends Type {
+        - {static} COEF_VINGTIEME: double
+        + Nature()
+        + appliqueCapaciteSpeciale(Monstre cible, Terrain terrain): void
+    }
+
+    class Normal extends Type {
+        + Normal()
+    }
+
+    class Insecte extends Nature {
+        - {static} NB_TOUR_MAX_ATTAQUE_EMPOISONNEMENT: int
+        - nbTourAttaque: int
+        + Insecte()
+        + appliqueCapaciteSpeciale(Monstre cible, Terrain terrain): void
+    }
+
+    class Terre extends Type {
+        - {static} CHANCE_FUITE: double
+        + Terre()
+        + appliqueCapaciteSpeciale(Monstre cible): void
+    }
+
+    class Plante extends Nature {
+        - {static} CHANCE_SOIN: double
+        + Plante()
+        + appliqueCapaciteSpeciale(Monstre cible, Terrain terrain): void
+    }
+
+    class Foudre extends Type {
+        - chanceParalysie: double
+        + Foudre()
+        + setChanceParalysie(Double chanceParalysie): void
+        + appliqueCapaciteSpeciale(Monstre cible): void
+    }
+
+
+' ==================== STATUS MONSTER ====================
+
+
+        ABSTRACT_CLASS StatutMonstre {
+            # {static} serialVersionUID: long
+            # labelStatut: String
+            # nbToursEffet: int
+            # nbToursAvecEffet: int
+            + decrementerNbToursAvecEffet(): void
+            + getLabelStatut(): String
+        }
+
+        class Normal extends StatutMonstre {
+            + Normal()
+        }
+
+        class Brule extends StatutMonstre {
+            + Brule()
+            + appliquerEffets(Monstre cible, double degats): void
+        }
+
+        class Empoisonne extends StatutMonstre {
+            + Empoisonne()
+            + appliquerEffets(Monstre cible, double degats): void
+        }
+
+        class SousTerre extends StatutMonstre {
+            - {static} NB_TOURS_MAX_FUITE: int
+            - {static} NB_TOURS_MIN_FUITE: int
+            + SousTerre()
+            + appliquerEffets(Monstre cible): void
+            + sortirSousTerre(Monstre cible): void
+        }
+
+        class Paralyse extends StatutMonstre {
+            - {static} CHANCE_RATER_ATTAQUE: double
+            - {static} NB_TOURS_MAX_PARALYSIE: int
+            + Paralyse()
+            + rateAttaque(Monstre cible): void
+            + sortParalysie(Monstre cible): void
+            + appliquerEffets(Monstre cible): void
+        }
+
+
+        ABSTRACT_CLASS StatutTerrain {
+            # {static} serialVersionUID: long
+            # labelStatut: String
+            # nbToursEffet: int
+            # nbToursAvecEffet: int
+            + decrementerNbToursAvecEffet(): void
+            + getNbToursEffet(): int
+            + getNbToursAvecEffet(): int
+            + getLabelStatut(): String
+        }
+
+        class Asseche extends StatutTerrain {
+            + Asseche()
+            + appliquerEffets(Terrain terrain): void
+        }
+
+        class Innonde extends StatutTerrain {
+            - probabiliteFaireChuter: double
+            - monstreSource: Monstre
+            + Innonde(int nbToursEffet, double probabiliteFaireChuter, Monstre monstreSource)
+            + setProbabiliteFaireChuter(double probabiliteFaireChuter): void
+            + getMonstreSource(): Monstre
+            + estTermine(): boolean
+            + appliquerEffetsTerrain(Monstre cible, Terrain terrain, double degats): void
+            + retraitInnondation(Terrain terrain): void
+        }
+
+' ==================== ITEMS ====================
+
+    ABSTRACT_CLASS Objet {
+        # {static} serialVersionUID: long
+        # nomObjet: String
+        + getNomObjet(): String
+        + {abstract} utiliserObjet(Monstre cible): void
+        + {abstract} copyOf(): Objet
+    }
+
+        ABSTRACT_CLASS Medicament extends Objet {
+            + Medicament(String nomObjet)
+        }
+
+        class MedicamentAntiBrulure extends Medicament {
+            + MedicamentAntiBrulure(String nomObjet)
+            + utiliserObjet(Monstre cible): void
+            + copyOf(): MedicamentAntiBrulure
+        }
+
+        class MedicamentAntiParalysie extends Medicament {
+            + MedicamentAntiParalysie(String nomObjet)
+            + utiliserObjet(Monstre cible): void
+            + copyOf(): MedicamentAntiParalysie
+        }
+
+        class MedicamentAntiPoison extends Medicament {
+            + MedicamentAntiPoison(String nomObjet)
+            + utiliserObjet(Monstre cible): void
+            + copyOf(): MedicamentAntiPoison
+        }
+
+
+        ABSTRACT_CLASS Potion extends Objet {
+            + Potion(String nomObjet)
+        }
+
+        class PotionSante extends Potion {
+            - pointsDeSoin: int
+            + PotionSante(String nomObjet, int pointsDeSoin)
+            + utiliserObjet(Monstre cible): void
+            + copyOf(): PotionSante
+        }
+
+        class PotionVitesse extends Potion {
+            - pointsDeVitesse: int
+            + PotionVitesse(String nomObjet, int pointsDeVitesse)
+            + utiliserObjet(Monstre cible): void
+            + copyOf(): PotionVitesse
+        }
+
+        class PotionDegat extends Potion {
+            - pointsDeDegat: int
+            + PotionDegat(String nomObjet, int pointsDeDegat)
+            + utiliserObjet(Monstre cible): void
+            + copyOf(): PotionDegat
+        }
+
+
+
+' ==================== BATTLE ====================
+    ABSTRACT_CLASS Combat {
+        + joueur1: Joueur
+        + joueur2: Joueur
+        + terrain: Terrain
+        + Combat(Joueur joueur1, Joueur joueur2)
+        # {abstract} lancer(): void
+        # {abstract} executerTour(): void
+        # {abstract} afficherMessage(String message): void
+        # {abstract} afficherTitre(String titre): void
+        # {abstract} afficherSousTitre(String sousTitre): void
+        # {abstract} afficherErreur(String erreur): void
+        # {abstract} demanderSaisie(String prompt): String
+        # {abstract} gereChoixAction(Joueur joueur): Object
+        + selectionnerMonstre(Joueur joueur): void
+        + selectionnerAttaque(Joueur joueur): void
+        + selectionnerObjet(Joueur joueur): void
+        + choixAttaque(Joueur joueur): Attaque
+        + utiliseObjet(Joueur joueur): Objet
+        + changeMonstre(Joueur joueur): Monstre
+        # verifierRetraitInondation(Monstre ancienMonstre): void
+        + gereOrdreExecutionActions(Object actionJoueur1, Object actionJoueur2): void
+        + finDePartie(): void
+        + getAWinner(): Joueur
+    }
+
+        class Bot extends Joueur {
+            - {static} NIVEAU_FACILE: int
+            - {static} NIVEAU_MOYEN: int
+            - {static} NIVEAU_DIFFICILE: int
+            - random: Random
+            - niveauDifficulte: int
+            + Bot(String nomBot, int niveauDifficulte)
+            + Bot(String nomBot)
+            + chargerMonstresAutomatiquement(GameResourcesFactory resourceFactory): void
+            + chargerAttaquesAutomatiquement(GameResourcesFactory resourceFactory): void
+            + chargerObjetsAutomatiquement(GameResourcesFactory resourceFactory): void
+            + choisirActionAutomatiquement(Monstre monstreAdversaire): Attaque
+            - choisirActionFacile(Monstre monstre): Attaque
+            - choisirActionMoyen(Monstre monstre, Monstre monstreAdversaire): Attaque
+            - choisirActionDifficile(Monstre monstre, Monstre monstreAdversaire): Attaque
+            + changerMonstreAutomatiquement(): void
+        }
+
+        class CombatBot extends Combat {
+            + CombatBot(Joueur joueur, Bot bot)
+            # afficherMessage(String message): void
+            # afficherTitre(String titre): void
+            # afficherSousTitre(String sousTitre): void
+            # afficherErreur(String erreur): void
+            # demanderSaisie(String prompt): String
+            + lancer(): void
+            + executerTour(): void
+            - gereChoixActionBot(): Object
+            + gereChoixAction(Joueur joueur): Object
+            + finDePartie(): void
+        }
+
+        class CombatLocalTerminal extends Combat {
+            + CombatLocalTerminal(Joueur joueur1, Joueur joueur2)
+            # afficherMessage(String message): void
+            # afficherTitre(String titre): void
+            # afficherSousTitre(String sousTitre): void
+            # afficherErreur(String erreur): void
+            # demanderSaisie(String prompt): String
+            + lancer(): void
+            + executerTour(): void
+            + gereChoixAction(Joueur joueur): Object
+        }
+
+        class CombatEnLigne extends Combat {
+            - connection: OnlineConnection
+            - scanner: Scanner
+            - communicatingWithRemote: boolean
+            + CombatEnLigne(Joueur joueurLocal, Joueur joueurDistant, OnlineConnection connection)
+            # afficherMessage(String message): void
+            # afficherTitre(String titre): void
+            # afficherSousTitre(String sousTitre): void
+            # afficherErreur(String erreur): void
+            - setLoggingModeBasedOnContext(): void
+            # demanderSaisie(String prompt): String
+            + lancer(): void
+            + executerTour(): void
+            + gereChoixAction(Joueur joueur): Object
+            - afficherTitrePourTous(String titre): void
+            + finDePartie(): void
+        }
+
+' ==================== GAME ====================
+
+    class GameApp {
+        + {static} main(args: String[]): void
+        + demarrerJeu(): void
+        + choixModeDeJeu(): void
+    }
+
+    class GameVisual {
+        + {static} formatterMonstre(monstre): String
+        + {static} formatterAttaque(attaque): String
+        + {static} afficherBanniere(): void
+    }
+
+
+    class GameResourcesFactory {
+        + {static} getInstance(): GameResourcesFactory
+        + getTousLesMonstres(): List
+        + getToutesLesAttaques(): List
+        + getTousLesObjets(): List
+    }
+
+    class GameResourcesLoader
+
+
+' ==================== RELATIONSHIPS ====================
+
+' Core
+Joueur "1" o-- "3" Monstre : équipe
+Joueur "1" --> "1" Monstre : monstreActuel
+Joueur "1" o-- "0..5" Objet : inventaire
+
+Monstre "1" o-- "1..4" Attaque
+Monstre "1" --> "1" Type
+Monstre "1" --> "1" StatutMonstre
+
+Attaque "1" --> "1" Type
+Terrain "1" --> "1" StatutTerrain
+
+' Battle
+Combat "1" o-- "2" Joueur
+Combat "1" --> "1" Terrain
+Bot "1" --> "1" Joueur : contrôle
+Bot "1" --> "1" Joueur : adversaire
+
+' Game
+GameApp ..> Combat : crée
+GameResourcesLoader ..> GameResourcesFactory
+
+@enduml

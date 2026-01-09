@@ -25,173 +25,38 @@ Monstre Poche est un jeu de combat au tour par tour développé en Java avec Jav
 
 1. **Cloner le projet**
 ```bash
-git clone <url-du-repo>
+git clone https://github.com/stevenMarmion/monstre-poche
 cd monstre-poche
 ```
 
-3. **Compiler le projet**
+2**Compiler le projet**
 ```bash
-mvn clean compile
+mvn clean install -DskipTests
 ```
 
-4. **Créer le JAR exécutable**
-```bash
-mvn package
-```
-
-5. **Exécuter l'application**
+3**Exécuter l'application**
 ```bash
 # Ou avec exec:java (choisir son mode de lancement)
 mvn exec:java
 
 # Ou lancer l'interface graphique directement Avec Maven
 mvn javafx:run
-
-# Ou directement avec le JAR
-java -jar target/monstre-poche-1.0-SNAPSHOT-jar-with-dependencies.jar
 ```
 
----
-
-## Structure du projet
-
-```
-monstre-poche/
-├── pom.xml                          # Configuration Maven
-├── README.md                        
-├── docs/
-│   └── uml/                         # Diagrammes UML
-│       └── diagramme_classe/src/
-│           ├── 00_vue_ensemble.puml
-│           ├── 01_models_core.puml
-│           ├── 02_types.puml
-│           ├── 03_statuts.puml
-│           ├── 04_items.puml
-│           ├── 05_combat.puml
-│           └── 06_mvc.puml
-│
-├── src/
-│   ├── main/
-│   │   ├── java/com/esiea/monstre/poche/
-│   │   │   ├── MonstrePoche.java           # Point d'entrée console
-│   │   │   │
-│   │   │   ├── controllers/                # Contrôleurs MVC
-│   │   │   │   ├── INavigationCallback.java
-│   │   │   │   ├── battle/
-│   │   │   │   ├── menu/
-│   │   │   │   ├── selection/
-│   │   │   │   └── setup/
-│   │   │   │
-│   │   │   ├── models/                     # Modèles métier
-│   │   │   │   ├── core/                   # Classes de base
-│   │   │   │   ├── battle/                 # Système de combat
-│   │   │   │   ├── types/                  # Types de monstres
-│   │   │   │   ├── status/                 # Statuts
-│   │   │   │   ├── items/                  # Objets
-│   │   │   │   ├── game/                   # Gestion du jeu
-│   │   │   │   └── network/                # Jeu en ligne
-│   │   │   │
-│   │   │   └── views/                      # Vues JavaFX
-│   │   │       ├── MonstrePocheUI.java     # Point d'entrée GUI
-│   │   │       └── gui/
-│   │   │
-│   │   └── resources/                      # Ressources
-│   │       ├── attaques.txt
-│   │       ├── monstres.txt
-│   │       ├── objets.txt
-│   │       ├── css/
-│   │       └── images/
-│   │
-│   └── test/
-│       └── java/                           # Tests unitaires
-```
-
----
-
-## Commandes Maven utiles
-
-### Développement
+4.**(Optionnel) générer la javadoc**
 ```bash
-# Nettoyer le projet
-mvn clean
-
-# Compiler uniquement
-mvn compile
-
-# Compiler et tester
-mvn clean test
-
-# Empaqueter (compile + test + JAR)
-mvn package
-
-# Installer dans le dépôt local
-mvn install
-```
-
-### Exécution
-```bash
-# Exécuter l'interface graphique JavaFX
-mvn javafx:run
-
-# Exécuter le mode console
-mvn exec:java
-
-# Exécuter une classe spécifique
-mvn exec:java -Dexec.mainClass="com.esiea.monstre.poche.MonstrePoche"
-
-# Exécuter avec des arguments
-mvn exec:java -Dexec.args="arg1 arg2"
-```
-
-### Tests
-```bash
-# Exécuter les tests unitaires
-mvn test
-
-# Exécuter un test spécifique
-mvn test -Dtest=MonstreTest
-```
-
-### Documentation
-```bash
-# Générer la Javadoc
+# générer la javadoc
 mvn javadoc:javadoc
-
-# Ouvrir la Javadoc générée
-open target/site/apidocs/index.html
+# la consulter
+open target/reports/apidocs/index.html
 ```
-
 ---
 
-## Génération des diagrammes UML
+## Documentation
 
-Les diagrammes de classes sont disponibles dans `docs/uml/diagramme_classe/src/` et organisés en modules :
+Diagramme de classes des modèles.
 
-- `00_vue_ensemble.puml` : Vue d'ensemble simplifiée
-- `01_models_core.puml` : Classes de base (Monstre, Joueur, Attaque, Terrain)
-- `02_types.puml` : Hiérarchie des types
-- `03_statuts.puml` : Statuts de monstre et terrain
-- `04_items.puml` : Système d'objets
-- `05_combat.puml` : Système de combat
-- `06_mvc.puml` : Architecture MVC
-
-### Générer les diagrammes
-
-#### Avec PlantUML en ligne de commande
-```bash
-cd docs/uml/diagramme_classe/src
-plantuml *.puml
-```
-
-#### Avec Docker
-```bash
-docker run --rm -v $(pwd)/docs/uml/diagramme_classe/src:/data plantuml/plantuml *.puml
-```
-
-#### Avec l'extension VSCode
-1. Installer l'extension "PlantUML"
-2. Ouvrir un fichier `.puml`
-3. Appuyer sur `Alt+D` pour prévisualiser
+![diagramme classes modèles](./docs/uml/diagramme_classe/img/models_class_diagram.png)
 
 ---
 
@@ -201,11 +66,13 @@ docker run --rm -v $(pwd)/docs/uml/diagramme_classe/src:/data plantuml/plantuml 
 - **Build Tool** : Maven 3.6+
 - **Interface graphique** : JavaFX 21.0.2
 - **Tests** : JUnit 5.9.3
-- **Architecture** : MVC (Model-View-Controller)
+- **Architecture** : MVC 
 
 ---
 
 ## Fonctionnalités implémentées
+
+- Mode de jeu, par terminal ou par interface graphique, en local contre un bot ou un joueur, ou en ligne.
 
 ### Système de combat
 
@@ -293,7 +160,7 @@ docker run --rm -v $(pwd)/docs/uml/diagramme_classe/src:/data plantuml/plantuml 
 ### Système d'objets
 
 #### Potions
-- **Potion de Santé** : Restaure les points de vie (max = PV max)
+- **Potion de Santé (Hyper et Super potion)** : Restaure les points de vie (max = PV max)
 - **Potion de Dégât** : Augmente l'attaque du monstre
 - **Potion de Vitesse** : Augmente la vitesse du monstre
 
@@ -393,12 +260,6 @@ docker run --rm -v $(pwd)/docs/uml/diagramme_classe/src:/data plantuml/plantuml 
 - **Singleton** : Instance unique de `GameResourcesFactory`
 - **Strategy** : Différentes stratégies de combat (Local, Bot, En Ligne)
 
-#### Principes SOLID
-- Séparation des responsabilités (SRP)
-- Hiérarchie de types extensible (OCP)
-- Interfaces bien définies (ISP)
-- Injection de dépendances dans les contrôleurs (DIP)
-
 ### Fonctionnalités techniques
 
 #### Gestion du réseau
@@ -419,6 +280,60 @@ docker run --rm -v $(pwd)/docs/uml/diagramme_classe/src:/data plantuml/plantuml 
 - Cache des ressources chargées
 
 ---
+
+## Structure du projet
+
+```
+monstre-poche/
+├── pom.xml                          # Configuration Maven
+├── README.md                        
+├── docs/
+│   └── uml/                         # Diagrammes UML
+│       └── diagramme_classe/src/
+│           ├── 00_vue_ensemble.puml
+│           ├── 01_models_core.puml
+│           ├── 02_types.puml
+│           ├── 03_statuts.puml
+│           ├── 04_items.puml
+│           ├── 05_combat.puml
+│           └── 06_mvc.puml
+│
+├── src/
+│   ├── main/
+│   │   ├── java/com/esiea/monstre/poche/
+│   │   │   ├── MonstrePoche.java           # Point d'entrée console
+│   │   │   │
+│   │   │   ├── controllers/                # Contrôleurs MVC
+│   │   │   │   ├── INavigationCallback.java
+│   │   │   │   ├── battle/
+│   │   │   │   ├── menu/
+│   │   │   │   ├── selection/
+│   │   │   │   └── setup/
+│   │   │   │
+│   │   │   ├── models/                     # Modèles métier
+│   │   │   │   ├── core/                   # Classes de base
+│   │   │   │   ├── battle/                 # Système de combat
+│   │   │   │   ├── types/                  # Types de monstres
+│   │   │   │   ├── status/                 # Statuts
+│   │   │   │   ├── items/                  # Objets
+│   │   │   │   ├── game/                   # Gestion du jeu
+│   │   │   │   └── network/                # Jeu en ligne
+│   │   │   │
+│   │   │   └── views/                      # Vues JavaFX
+│   │   │       ├── MonstrePocheUI.java     # Point d'entrée GUI
+│   │   │       └── gui/
+│   │   │
+│   │   └── resources/                      # Ressources
+│   │       ├── attaques.txt
+│   │       ├── monstres.txt
+│   │       ├── objets.txt
+│   │       ├── css/
+│   │       └── images/
+│   │
+│   └── test/
+│       └── java/                           # Tests unitaires
+```
+
 
 ## Auteurs
 
