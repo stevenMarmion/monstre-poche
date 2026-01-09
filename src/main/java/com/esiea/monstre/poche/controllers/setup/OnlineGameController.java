@@ -549,7 +549,38 @@ public class OnlineGameController {
      * Gere l'action Objet.
      */
     private void handleItemAction() {
-        battleView.updateBattleLog("Fonctionnalite Objet non implementee pour le mode en ligne.");
+        if (localReady) {
+            battleView.updateBattleLog("Vous avez deja choisi votre action. En attente de l'adversaire...");
+            return;
+        }
+
+        List<Objet> objets = joueurLocal.getObjets();
+        if (objets == null || objets.isEmpty()) {
+            battleView.updateBattleLog("Aucun objet disponible.");
+            return;
+        }
+
+        battleView.displayItemChoices(objets, objet -> {
+            // Utiliser l'objet sur le monstre actuel
+            Monstre cible = joueurLocal.getMonstreActuel();
+            objet.utiliserObjet(cible);
+            joueurLocal.getObjets().remove(objet);
+
+            localAction = objet;
+            localReady = true;
+            battleView.updateBattleLog("Vous utilisez " + objet.getNomObjet() + " sur " + cible.getNomMonstre() + " !");
+            battleView.setTurn(false);
+
+            // Mettre a jour l'affichage
+            battleView.updatePokemonDisplay(battleView.getJoueur1());
+            battleView.updatePokemonDisplay(battleView.getJoueur2());
+
+            // Envoyer l'action au joueur distant
+            sendAction("ITEM", objet.getNomObjet());
+
+            battleView.updateBattleLog("En attente de l'action de " + joueurDistant.getNomJoueur() + "...");
+            tryExecuteTurn();
+        });
     }
     
     /**
