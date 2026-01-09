@@ -60,6 +60,13 @@ Diagramme de classes des modèles.
 
 ---
 
+Vidéo de démonstration du mode en ligne par interface : 
+
+```bash
+#chemin
+./demo-online-with-interface-gamemode.MP4
+```
+
 ## Technologies utilisées
 
 - **Langage** : Java 17
@@ -183,6 +190,7 @@ Diagramme de classes des modèles.
 - Détection automatique de défaite (tous monstres KO)
 
 #### Intelligence Artificielle (Bot)
+- Plusieurs modes de difficulté
 - Choix automatique de la meilleure attaque disponible
 - Stratégie basée sur les PP restants
 - Gestion autonome des tours de combat
