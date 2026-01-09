@@ -53,8 +53,6 @@ public class Innonde extends StatutTerrain {
         } else {
             CombatLogger.info(cible.getNomMonstre() + " est de type Eau et n'est pas gêné par l'inondation");
         }
-
-        this.decrementerNbToursAvecEffet();
     }
 
     public void retraitInnondation(Terrain terrain) {
