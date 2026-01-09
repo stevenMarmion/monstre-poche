@@ -11,6 +11,8 @@ import com.esiea.monstre.poche.models.network.OnlineClient;
 import com.esiea.monstre.poche.models.network.OnlineServer;
 import com.esiea.monstre.poche.views.MonstrePocheUI;
 
+import javafx.application.Application;
+
 public class GameApp {
     private static final int LANCEMENT_JEU_BOT = 1;
     private static final int LANCEMENT_JEU_LOCAL = 2;
@@ -44,7 +46,7 @@ public class GameApp {
     }
 
     public static void startAppInterface() {
-        MonstrePocheUI.main(null);
+        Application.launch(MonstrePocheUI.class);
     }
 
     private static void lancementJeuLocal() {
