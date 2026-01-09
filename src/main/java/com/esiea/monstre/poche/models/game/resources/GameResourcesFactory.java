@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
  * Les ressources sont chargées une seule fois au démarrage de l'application.
  */
 public class GameResourcesFactory {
-    private static GameResourcesFactory instance;
+    private static volatile GameResourcesFactory instance;
 
     private final Map<String, Attaque> attaquesTemplate;
     private final Map<String, Monstre> monstresTemplate;
@@ -50,7 +50,11 @@ public class GameResourcesFactory {
      */
     public static GameResourcesFactory getInstance() {
         if (instance == null) {
-            instance = new GameResourcesFactory();
+            synchronized (GameResourcesFactory.class) {
+                if (instance == null) {
+                    instance = new GameResourcesFactory();
+                }
+            }
         }
         return instance;
     }

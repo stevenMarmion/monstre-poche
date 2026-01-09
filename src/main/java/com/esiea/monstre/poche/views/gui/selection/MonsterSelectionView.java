@@ -28,11 +28,8 @@ import java.util.List;
  * Hérite de AbstractSelectionView pour réutiliser le code commun.
  */
 public class MonsterSelectionView extends AbstractSelectionView<Monstre> {
-    private GameResourcesFactory resourcesFactory;
-
-    public MonsterSelectionView(GameResourcesFactory resourcesFactory, Joueur joueur) {
+    public MonsterSelectionView(Joueur joueur) {
         super(joueur);
-        this.resourcesFactory = resourcesFactory;
         initializeView();
     }
 
@@ -77,7 +74,7 @@ public class MonsterSelectionView extends AbstractSelectionView<Monstre> {
 
     @Override
     protected void populateCards() {
-        for (Monstre monstre : resourcesFactory.getTousLesMonstres()) {
+        for (Monstre monstre : GameResourcesFactory.getInstance().getTousLesMonstres()) {
             VBox monsterCard = createCard(monstre);
             cardsContainer.getChildren().add(monsterCard);
         }

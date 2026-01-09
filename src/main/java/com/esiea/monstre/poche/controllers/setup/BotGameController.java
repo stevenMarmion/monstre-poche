@@ -4,7 +4,6 @@ import com.esiea.monstre.poche.controllers.INavigationCallback;
 import com.esiea.monstre.poche.models.battle.ai.Bot;
 import com.esiea.monstre.poche.models.battle.logs.CombatLogger;
 import com.esiea.monstre.poche.models.core.Joueur;
-import com.esiea.monstre.poche.models.game.resources.GameResourcesFactory;
 import com.esiea.monstre.poche.views.gui.setup.BotGameView;
 
 /**
@@ -48,10 +47,7 @@ public class BotGameController {
         }
 
         Joueur joueur = new Joueur(playerName);
-
         Bot bot = new Bot("Bot");
-        bot.chargerMonstresAutomatiquement(GameResourcesFactory.getInstance());
-        bot.chargerAttaquesAutomatiquement(GameResourcesFactory.getInstance());
 
         CombatLogger.info("Démarrage du jeu - " + playerName + " VS " + bot.getNomJoueur());
         INavigationCallback.showMonsterSelectionPlayer(joueur, () -> {
