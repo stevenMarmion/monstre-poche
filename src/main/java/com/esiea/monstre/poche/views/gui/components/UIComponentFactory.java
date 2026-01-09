@@ -345,8 +345,8 @@ public abstract class UIComponentFactory {
         Color titleColor = disabled ? Color.GRAY : Color.WHITE;
         Color infoColor = disabled ? Color.DARKGRAY : Color.web("#ddd");
 
-        Label titleLabel = createLabel(titleText, 12, FontWeight.BOLD, titleColor);
-        Label infoLabel = createLabel(infoText, 9, FontWeight.NORMAL, infoColor);
+        Label titleLabel = createLabel(titleText, 14, FontWeight.BOLD, titleColor);
+        Label infoLabel = createLabel(infoText, 11, FontWeight.NORMAL, infoColor);
 
         content.getChildren().addAll(titleLabel, infoLabel);
         return content;

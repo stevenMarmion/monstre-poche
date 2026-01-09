@@ -36,8 +36,8 @@ import com.esiea.monstre.poche.views.gui.config.FontConfig;
  * Image de fond en plein écran avec interface overlay.
  */
 public class BattleView extends StackPane {
-    public static final int ATTACK_BUTTON_WIDTH = 165;
-    public static final int ATTACK_BUTTON_HEIGHT = 48;
+    public static final int ATTACK_BUTTON_WIDTH = 220;
+    public static final int ATTACK_BUTTON_HEIGHT = 65;
     public static final int MONSTER_CARD_WIDTH = 110;
     public static final double HP_BAR_MAX_WIDTH = 160.0;
     public static final int ATTACK_GRID_COLUMNS = 2;
@@ -692,7 +692,13 @@ public class BattleView extends StackPane {
                 btn.setPrefHeight(ATTACK_BUTTON_HEIGHT);
 
                 String ppText = hasNoPP ? "PP VIDE" : ("PP " + a.getNbUtilisations());
-                String infoText = a.getTypeAttaque().getLabelType() + " | " + ppText + " | PWR " + a.getPuissanceAttaque();
+                String infoText = String.format(
+                        "%s | %s | PWR %d | ACC %.0f%%",
+                        a.getTypeAttaque().getLabelType(),
+                        ppText,
+                        a.getPuissanceAttaque(),
+                        100 - (a.getProbabiliteEchec() * 100)
+                );
                 VBox content = UIComponentFactory.createButtonContent(a.getNomAttaque().replace("_", " "), infoText, hasNoPP);
                 btn.setGraphic(content);
 

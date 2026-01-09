@@ -32,7 +32,12 @@ public class GameVisual {
         } else {
             ppInfo = "VIDE";
         }
-        return String.format("%-18s | PP:%-4s | Puissance:%-3d | Type:%s", attaque.getNomAttaque(), ppInfo, attaque.getPuissanceAttaque(), attaque.getTypeAttaque().getLabelType());
+        return String.format("%-18s | PP:%-4s | Puissance:%-3d | Type:%s | ACC:%.0f %%",
+                attaque.getNomAttaque(),
+                ppInfo,
+                attaque.getPuissanceAttaque(),
+                attaque.getTypeAttaque().getLabelType(),
+                100 - (attaque.getProbabiliteEchec() * 100));
     }
 
     /**
