@@ -4,7 +4,7 @@ import com.esiea.monstre.poche.models.battle.logs.CombatLogger;
 import com.esiea.monstre.poche.models.core.Monstre;
 
 public class Paralyse extends StatutMonstre {
-    private static final double CHANCE_RATER_ATTAQUE = 0.75/2;
+    private static final double CHANCE_RATER_ATTAQUE = 0.75;
     private static final int NB_TOURS_MAX_PARALYSIE = 6;
 
     public Paralyse() {

@@ -6,16 +6,11 @@ import com.esiea.monstre.poche.models.status.terrain.Paralyse;
 
 public class Foudre extends Type {
     private double chanceParalysie;
-
-    public Foudre() {
-        this(null);
-    }
     
-    public Foudre(Double chanceParalysie) {
+    public Foudre() {
         this.labelType = "Foudre";
         this.fortContre = "Eau";
         this.faibleContre = "Terre";
-        this.chanceParalysie = chanceParalysie;
     }
     
     public void setChanceParalysie(Double chanceParalysie) {

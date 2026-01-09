@@ -13,6 +13,8 @@ class EauTest {
     @BeforeEach
     void setUp() {
         typeEau = new Eau();
+        typeEau.setProbabiliteInnondation(0.4);
+        typeEau.setProbabiliteFaireChuter(0.3);
     }
 
     @Test

@@ -86,14 +86,17 @@ class AttaqueTest {
         // Avec avantage x2
         // Base = (49500 / 1250 + 2) * 2 = 83.2
         // Avec coefficient entre 0.85 et 1.0: entre 70.72 et 83.2
-        System.out.println(degats);
         assertTrue(degats >= 70 && degats <= 84);
     }
 
     @Test
     void testCalculeDegatsAttaqueAvecDesavantage() {
         Attaque attaqueFeu = new Attaque("Lance-Flammes", 15, 90, 0.1, new Feu());
-        Monstre monstreEau = new Monstre("Carapuce", 115, 48, 65, 43, new ArrayList<Attaque>(), new Eau());
+        Eau eau = new Eau();
+        eau.setProbabiliteInnondation(0.4);
+        eau.setProbabiliteFaireChuter(0.3);
+
+        Monstre monstreEau = new Monstre("Carapuce", 115, 48, 65, 43, new ArrayList<Attaque>(), eau);
         
         double degats = attaqueFeu.calculeDegatsAttaque(monstreAttaquant, monstreEau);
         

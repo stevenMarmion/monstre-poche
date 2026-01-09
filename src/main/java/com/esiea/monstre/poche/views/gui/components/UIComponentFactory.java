@@ -21,7 +21,7 @@ public abstract class UIComponentFactory {
 
     /**
      * Crée un bouton d'action stylisé avec effets hover et pressed.
-     * Utilisé pour les boutons principaux (Attaque, Sac, Pokemon, Fuite).
+     * Utilisé pour les boutons principaux (Attaque, Sac, Pokemon).
      *
      * @param text Le texte du bouton
      * @param baseColor La couleur de fond principale (ex: "#e85858")
