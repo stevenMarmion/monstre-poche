@@ -330,6 +330,8 @@ public abstract class Combat {
             Attaque attaque2 = actionJoueur2 instanceof Attaque ? (Attaque) actionJoueur2 : null;
             joueur2.getMonstreActuel().attaquer(joueur1.getMonstreActuel(), terrain, attaque2);
         }
+
+        this.terrain.getStatutTerrain().decrementerNbToursAvecEffet();
     }
 
     public void finDePartie() {
