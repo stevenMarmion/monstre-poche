@@ -212,13 +212,13 @@ Attack
 Name Chatouilles
 Type Normal
 Power 15
-Nbuse 20
+NbUse 20
 Fail 0.01
 EndAttack
 Attack
 Name Ultra-Laser
 Type Normal
 Power 140
-Nbuse 2
+NbUse 2
 Fail 0.50
 EndAttack
