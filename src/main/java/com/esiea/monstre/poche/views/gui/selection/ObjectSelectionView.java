@@ -12,6 +12,9 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.effect.Glow;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -21,19 +24,31 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Vue pour la sélection des objets - Style Pokémon amélioré.
  * Hérite de AbstractSelectionView pour réutiliser le code commun.
+ * Permet de sélectionner le même objet plusieurs fois (max 5 au total).
  */
 public class ObjectSelectionView extends AbstractSelectionView<Objet> {
 
     private List<Objet> allObjects;
+    private Map<Objet, Integer> objectCountMap;  // Compte combien de fois chaque objet est sélectionné
+    private Map<VBox, Label> cardCountLabels;    // Label affichant le compteur sur chaque carte
 
     public ObjectSelectionView(Joueur joueur) {
         super(joueur);
         this.allObjects = GameResourcesFactory.getInstance().getTousLesObjets();
+        this.objectCountMap = new HashMap<>();
+        this.cardCountLabels = new HashMap<>();
+        // Initialiser le compteur à 0 pour tous les objets
+        for (Objet objet : allObjects) {
+            objectCountMap.put(objet, 0);
+        }
         initializeView();
     }
 
@@ -89,13 +104,110 @@ public class ObjectSelectionView extends AbstractSelectionView<Objet> {
     @Override
     public List<Objet> getSelectedItems() {
         List<Objet> selected = new ArrayList<>();
-        for (VBox card : selectedCards) {
-            Objet objet = cardMap.get(card);
-            if (objet != null) {
-                selected.add(objet);
+        // Ajouter chaque objet autant de fois qu'il a été sélectionné
+        for (Entry<Objet, Integer> entry : objectCountMap.entrySet()) {
+            for (int i = 0; i < entry.getValue(); i++) {
+                Objet objetCopy = entry.getKey().copyOf();
+                selected.add(objetCopy);
             }
         }
         return selected;
+    }
+
+    /**
+     * Calcule le nombre total d'objets sélectionnés (somme de tous les compteurs).
+     */
+    private int getTotalSelectedCount() {
+        return objectCountMap.values().stream().mapToInt(Integer::intValue).sum();
+    }
+
+    /**
+     * Gère les clics sur une carte d'objet (permet sélection multiple du même objet).
+     * Clic gauche: ajoute l'objet (si pas atteint le max)
+     * Clic droit: retire l'objet (si au moins 1 sélectionné)
+     */
+    private void handleObjectCardClick(VBox card, Objet objet, Label countLabel, String typeColor, String normalStyle, MouseButton button) {
+        int currentCount = objectCountMap.get(objet);
+        int totalSelected = getTotalSelectedCount();
+
+        if (button == MouseButton.PRIMARY) {
+            // Clic gauche: ajouter
+            if (totalSelected < getMaxSelection()) {
+                objectCountMap.put(objet, currentCount + 1);
+                updateCardAppearance(card, objet, countLabel, typeColor, normalStyle);
+                updateValidateButtonCustom();
+            }
+        } else if (button == MouseButton.SECONDARY) {
+            // Clic droit: retirer
+            if (currentCount > 0) {
+                objectCountMap.put(objet, currentCount - 1);
+                updateCardAppearance(card, objet, countLabel, typeColor, normalStyle);
+                updateValidateButtonCustom();
+            }
+        }
+    }
+
+    /**
+     * Met à jour l'apparence visuelle d'une carte en fonction du nombre de sélections.
+     */
+    private void updateCardAppearance(VBox card, Objet objet, Label countLabel, String typeColor, String normalStyle) {
+        int count = objectCountMap.get(objet);
+
+        if (count == 0) {
+            // Aucune sélection: apparence normale
+            card.setStyle(normalStyle);
+            countLabel.setVisible(false);
+            card.setScaleX(1.0);
+            card.setScaleY(1.0);
+            card.setEffect(null);
+        } else {
+            // Sélectionné: apparence highlight
+            String selectedStyle = normalStyle
+                .replaceAll("-fx-border-color: [^;]+;", "-fx-border-color: #FFFFFF;")
+                .replaceAll("-fx-border-width: [^;]+;", "-fx-border-width: 4;");
+            card.setStyle(selectedStyle);
+
+            countLabel.setText("x" + count);
+            countLabel.setVisible(true);
+
+            card.setScaleX(1.05);
+            card.setScaleY(1.05);
+
+            Glow glow = new Glow(0.4);
+            DropShadow shadow = new DropShadow(12, Color.web("#FFFFFF"));
+            glow.setInput(shadow);
+            card.setEffect(glow);
+        }
+    }
+
+    /**
+     * Met à jour le bouton de validation et le compteur en fonction du total d'objets sélectionnés.
+     */
+    private void updateValidateButtonCustom() {
+        int totalCount = getTotalSelectedCount();
+
+        selectionCounter.setText(getCounterText(totalCount));
+
+        boolean canValidate = totalCount == getMaxSelection();
+
+        if (canValidate) {
+            btnValidate.setDisable(false);
+            btnValidate.setText(getValidateButtonText(totalCount));
+            selectionCounter.setStyle(
+                "-fx-background-color: #4CAF50; " +
+                "-fx-padding: 8 15; " +
+                "-fx-background-radius: 20; " +
+                "-fx-text-fill: white;"
+            );
+        } else {
+            btnValidate.setDisable(true);
+            btnValidate.setText(getValidateButtonText(totalCount));
+            selectionCounter.setStyle(
+                "-fx-background-color: rgba(0,0,0,0.5); " +
+                "-fx-padding: 8 15; " +
+                "-fx-background-radius: 20;"
+            );
+        }
     }
 
     @Override
@@ -226,11 +338,28 @@ public class ObjectSelectionView extends AbstractSelectionView<Objet> {
         // Indicateur de sélection
         Label selectionIndicator = createSelectionIndicator();
 
-        card.getChildren().addAll(iconContainer, nameLabel, typeBadge, descLabel, selectionIndicator);
+        // Compteur d'objets sélectionnés (affiche "x2", "x3", etc.)
+        Label countLabel = new Label("");
+        countLabel.setVisible(false);
+        countLabel.setFont(Font.font(FontConfig.SYSTEM.getFontName(), FontWeight.BOLD, 16));
+        countLabel.setTextFill(Color.WHITE);
+        countLabel.setStyle(
+            "-fx-background-color: rgba(76, 175, 80, 0.9); " +
+            "-fx-padding: 5 10; " +
+            "-fx-background-radius: 15; " +
+            "-fx-border-color: white; " +
+            "-fx-border-width: 2; " +
+            "-fx-border-radius: 15;"
+        );
+
+        // Stocker le label dans la map pour mise à jour ultérieure
+        cardCountLabels.put(card, countLabel);
+
+        card.getChildren().addAll(iconContainer, nameLabel, typeBadge, descLabel, selectionIndicator, countLabel);
 
         // Tooltip
         Tooltip tooltip = new Tooltip(String.format(
-            "%s\n\nType: %s\n%s\n\nCliquez pour sélectionner/désélectionner",
+            "%s\n\nType: %s\n%s\n\nClic gauche: ajouter\nClic droit: retirer",
             formatObjectName(objet.getNomObjet()),
             objectType,
             description
@@ -238,8 +367,8 @@ public class ObjectSelectionView extends AbstractSelectionView<Objet> {
         tooltip.setStyle("-fx-font-size: 12px;");
         Tooltip.install(card, tooltip);
 
-        // Événements
-        card.setOnMouseClicked(e -> handleCardClick(card, objet, selectionIndicator, typeColor, normalStyle));
+        // Événements - gestion personnalisée pour les clics multiples
+        card.setOnMouseClicked(e -> handleObjectCardClick(card, objet, countLabel, typeColor, normalStyle, e.getButton()));
         addCardHoverEffects(card, typeColor);
 
         // Association de la carte avec l'objet
