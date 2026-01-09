@@ -75,7 +75,7 @@ public class ObjectSelectionView extends AbstractSelectionView<Objet> {
 
     @Override
     protected boolean requiresMaxSelection() {
-        return false;
+        return true;
     }
 
     @Override
